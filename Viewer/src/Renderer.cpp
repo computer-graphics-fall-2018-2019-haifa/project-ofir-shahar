@@ -71,7 +71,29 @@ void Renderer::SetViewport(int viewportWidth, int viewportHeight, int viewportX,
 	createBuffers(viewportWidth, viewportHeight);
 	createOpenGLBuffer();
 }
-
+// Implementation of Bresenham algorithm
+// the inputs are
+// two points (x1,y1) and (x2,y2)
+// the algorithm will draw a black line between the points.
+void Renderer::AddLineBresenhamStyle(float x1, float y1, float x2, float y2) {
+	float a = (y2 - y1) / (x2 - x1);
+	float c = y1 + a * x1;
+	float x = x1;
+	float y = y1;
+	float e = 0 - (x2 - x1);
+	// ##########  Assume that 0 < a < 1  ###########
+	if (a < 0 || a>1) return;
+	while (x <= x2) {
+		if (e > 0) {
+			y = y + 1;
+			e = e - 2 * (x2 - x1);
+		}
+		// turn on pixel at point (x,y) with a black color
+		putPixel((int)x, (int)y, glm::vec3(0, 0, 0));
+		x = x + 1;
+		e = e + 2 * (x2 - x1);
+	}
+}
 void Renderer::Render(const Scene& scene)
 {
 	//#############################################
@@ -98,30 +120,11 @@ void Renderer::Render(const Scene& scene)
 			}
 		}
 	}
-	// Implementation of Bresenham algorithm
-	// this is a demonstration of the algorithm only. the inputs are
-	// two points (x1,y1) = (0,0)  and (x2,y2) = (100,100)
-	// the algorithm will draw a blank line from 0,0 to 100,100 on the window,
-	// beginning from the bottom left (0,0) to upper right at point (100,100) in a
-	// 45 degree angle
-	float x1 = 0;
-	float x2 = 100;
-	float y1 = 0;
-	float y2 = 100;
-	float a = (y2 - y1) / (x2 - x1);
-	float c = y1 + a * x1;
-	float x = x1;
-	float y = y1;
-	float e = 0 - (x2 - x1);
-	while (x <= x2) {
-		if (e > 0) {
-			y = y + 1;
-			e = e - 2 * (x2 - x1);
-		}
-		putPixel((int)x, (int)y, glm::vec3(0, 0, 0));
-		x = x + 1;
-		e = e + 2 * (x2 - x1);
-	}
+	
+	// this is a demonstration of the algorithm.
+	AddLineBresenhamStyle(0, 0, 200, 200);
+	AddLineBresenhamStyle(400, 400, viewportWidth, viewportHeight-100);
+	
 }
 
 //##############################
