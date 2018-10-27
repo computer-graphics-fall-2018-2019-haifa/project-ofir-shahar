@@ -76,7 +76,7 @@ void Renderer::SetViewport(int viewportWidth, int viewportHeight, int viewportX,
 // the inputs are
 // two points (x1,y1) and (x2,y2)
 // the algorithm will draw a black line between the points.
-void Renderer::AddLineBresenhamStyle(float x1, float y1, float x2, float y2) {
+void Renderer::AddLineBresenhamStyle(float x1, float y1, float x2, float y2, glm::vec3 color) {
 	// order the points so one is left and one is right depending on x1 and x2 values.
 	float xLeft = x1 >= x2 ? x2 : x1;
 	float xRight = x1 >= x2 ? x1 : x2;
@@ -96,19 +96,19 @@ void Renderer::AddLineBresenhamStyle(float x1, float y1, float x2, float y2) {
 	
 	if (yLeft == yRight) {
 		while (xLeft <= xRight) {
-			putPixel((int)xLeft, (int)yLeft, glm::vec3(0, 0, 0));
+			putPixel((int)xLeft, (int)yLeft, color);
 			xLeft = xLeft + 1;
 		}
 	}
 	else if (xLeft == xRight) {
 		if (yLeft <= yRight)
 			while (yLeft <= yRight) {
-				putPixel((int)xLeft, (int)yLeft, glm::vec3(0, 0, 0));
+				putPixel((int)xLeft, (int)yLeft, color);
 				yLeft = yLeft + 1;
 			}
 		else
 			while (yLeft >= yRight) {
-				putPixel((int)xLeft, (int)yLeft, glm::vec3(0, 0, 0));
+				putPixel((int)xLeft, (int)yLeft, color);
 				yLeft = yLeft - 1;
 			}
 	}
@@ -120,7 +120,7 @@ void Renderer::AddLineBresenhamStyle(float x1, float y1, float x2, float y2) {
 				e = e - 2 * (xRight - xLeft);
 			}
 			// turn on pixel at point (x,y) with a black color
-			putPixel((int)xLeft, (int)yLeft, glm::vec3(0, 0, 0));
+			putPixel((int)xLeft, (int)yLeft, color);
 			xLeft = xLeft + 1;
 			e = e + 2 * (xRight - xLeft);
 		}
@@ -133,7 +133,7 @@ void Renderer::AddLineBresenhamStyle(float x1, float y1, float x2, float y2) {
 				e = e - 2 * (yRight - yLeft);
 			}
 			// turn on pixel at point (x,y) with a black color
-			putPixel((int)xLeft, (int)yLeft, glm::vec3(0, 0, 0));
+			putPixel((int)xLeft, (int)yLeft, color);
 			yLeft = yLeft + 1;
 			e = e + 2 * (xRight - xLeft);
 		}
@@ -146,7 +146,7 @@ void Renderer::AddLineBresenhamStyle(float x1, float y1, float x2, float y2) {
 				e = e - 2 * (xRight - xLeft);
 			}
 			// turn on pixel at point (x,y) with a black color
-			putPixel((int)xLeft, (int)yLeft, glm::vec3(0, 0, 0));
+			putPixel((int)xLeft, (int)yLeft, color);
 			xLeft = xLeft + 1;
 			e = e - 2 * (yRight - yLeft);
 		}
@@ -159,7 +159,7 @@ void Renderer::AddLineBresenhamStyle(float x1, float y1, float x2, float y2) {
 				e = e + 2 * (yRight - yLeft);
 			}
 			// turn on pixel at point (x,y) with a black color
-			putPixel((int)xLeft, (int)yLeft, glm::vec3(0, 0, 0));
+			putPixel((int)xLeft, (int)yLeft, color);
 			yLeft = yLeft - 1;
 			e = e + 2 * (xRight - xLeft);
 		}
@@ -193,7 +193,7 @@ void Renderer::Render(const Scene& scene)
 	}
 	
 	// this is a demonstration of the algorithm.
-	AddLineBresenhamStyle(500, 540, 400, 540);
+	AddLineBresenhamStyle(500, 540, 400, 540, glm::vec3(0, 0, 0));
 	//AddLineBresenhamStyle(400, 400, viewportWidth-200, viewportHeight-100);
 	
 }
