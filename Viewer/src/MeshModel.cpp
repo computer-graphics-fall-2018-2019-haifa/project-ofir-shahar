@@ -9,7 +9,9 @@
 MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName) :
 	modelName(modelName),
 	worldTransform(glm::mat4x4(1)),
-	faces(faces)
+	faces(faces),
+	vertices(vertices),
+	normals(normals)
 {
 
 }
