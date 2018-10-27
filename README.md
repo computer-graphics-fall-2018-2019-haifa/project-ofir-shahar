@@ -4,8 +4,8 @@
 Name: 'Ofir Traubas'  
 Student Number: '301378782'
 
-Name: 'Your real name'  
-Student Number: 'Your student number'
+Name: 'Shahar Aizikovitz'  
+Student Number: '032093320'
 
 ### Lecturer
 *Roi Poranne*
