@@ -18,6 +18,9 @@ private:
 	glm::mat4x4 worldTransform;
 	glm::vec4 color;
 	std::string modelName;
+	std::vector<Face> faces;
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec3> normals;
 
 public:
 	MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName = "");
@@ -31,5 +34,10 @@ public:
 
 	const std::string& GetModelName();
 
+	const std::vector<Face>& GetFaces();
+
+	const std::vector<glm::vec3>& GetVertices();
+
+	const std::vector<glm::vec3>& GetNormals();
 	// Add more methods/functionality as needed...
 };
