@@ -56,3 +56,7 @@ const int Face::GetTextureIndex(int index)
 {
 	return textureIndices[index];
 }
+
+const std::vector<int> Face::GetVertices() {
+	return this->vertexIndices;
+}

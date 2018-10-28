@@ -143,7 +143,7 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color)
 			e = e + 2 * (xRight - xLeft);
 		}
 	}
-	else if (a > -1 && a < 0) {
+	else if (a >= -1 && a < 0) {
 		float e = 0 - (xRight - xLeft);
 		while (xLeft <= xRight) {
 			if (e > 0) {
@@ -238,7 +238,7 @@ void Renderer::AddLineBresenhamStyle(float x1, float y1, float x2, float y2, glm
 			e = e + 2 * (xRight - xLeft);
 		}
 	}
-	else if (a > -1 && a < 0) {
+	else if (a >= -1 && a < 0) {
 		float e = 0 - (xRight - xLeft);
 		while (xLeft <= xRight) {
 			if (e > 0) {
@@ -269,18 +269,18 @@ void Renderer::Render(const Scene& scene)
 {
 	
 	glm::vec3 p1, p2, color;
-	p1.x = 150.0;
-	p1.y = 150.0;
+	p1.x = 0.0;
+	p1.y = 0.0;
 	p1.z = 0.0;
-	p2.x = 250.0;
-	p2.y = 350.0;
+	p2.x = 400;
+	p2.y = 400;
 	p2.z = 0.0;
 	color.x = 0.0;
-	color.y = 1.0;
+	color.y = 0.0;
 	color.z = 0.0;
 
 	// Draw a chess board in the middle of the screen
-	for (int i = 100; i < viewportWidth - 100; i++)
+	/*for (int i = 100; i < viewportWidth - 100; i++)
 	{
 		for (int j = 100; j < viewportHeight - 100; j++)
 		{
@@ -297,10 +297,41 @@ void Renderer::Render(const Scene& scene)
 				putPixel(i, j, glm::vec3(1, 0, 0));
 			}
 		}
-	}
+	}*/
 	
-	//test drawline method
-	DrawLine(p1, p2, color);
+	//we get the model list from the scene object that was passed to Render function
+	//models = vector of pointers (pointing to a MeshModel) representing this list.
+	std::vector<std::shared_ptr<MeshModel>> models = scene.getModels();
+	std::shared_ptr<MeshModel> model;
+	//we iterate over models vector with an iterator
+	for (std::vector<std::shared_ptr<MeshModel>>::iterator it = models.begin(); it != models.end(); it++) {
+		//the iterator is pointing to a shared_ptr that points to our MeshModel. 
+		model = (*it);
+		//get the faces from the pointer to the model
+		std::vector<Face> faces = (*model).GetFaces();
+		//get the vertices from the pointer to the model
+		std::vector<glm::vec3> vertices = (*model).GetVertices();
+		//iterate over the faces vector of the model
+		for (std::vector<Face>::iterator faceIndex = faces.begin(); faceIndex != faces.end(); faceIndex++) {
+			//get the indices of the vertices for each face
+			std::vector<int> indices = (*faceIndex).GetVertices();
+			//iterate over the indices
+			for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) {
+				//here we draw a line between two successive pointes by the indexes from the indices vector
+				//if we are at the end of the indices vector we connect the vertex with this index
+				//with the vertex with the index from the start of the vector
+				if ((vindex+1) == indices.end()) {
+					//std::cout << "index at start of face: "<<vertices.at(indices.at(0) - 1).x<< std::endl;
+					/*std::cout << "xEnd=" << vertices.at(*(vindex)-1).x << " " << "yEnd=" << vertices.at(*(vindex)-1).y << " "
+						<< "xStart=" << vertices.at(indices.at(0)-1).x << " yStart=" << vertices.at(indices.at(0) - 1).y << std::endl;
+*/
+					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0));
+				} else //draw a line between the two vertices by their indices from the vector "indices"
+					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0));
+			}
+		}
+	}
+	//DrawLine(p1, p2, color);
 
 	// this is a demonstration of the algorithm.
 	//AddLineBresenhamStyle(500, 540, 400, 540, glm::vec3(0, 0, 0));
