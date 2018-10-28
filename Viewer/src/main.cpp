@@ -13,6 +13,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "ImguiMenus.h"
+#include <iostream>
 
 // Function declarations
 static void GlfwErrorCallback(int error, const char* description);

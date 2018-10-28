@@ -75,13 +75,22 @@ void Renderer::SetViewport(int viewportWidth, int viewportHeight, int viewportX,
 
 //Draw a  line between 2 vertices, represented by p1, p2 which are 2 glm:vec3 vectors
 //baesd on the Bresenham algorithem
-void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color) 
+void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale) 
 {
+	float x1, x2, y1, y2;
 	// order the points so one is left and one is right depending on x1 and x2 values.
-	float x1 = p1.x;
-	float x2 = p2.x;
-	float y1 = p1.y;
-	float y2 = p2.y;
+	if (scale) {
+		x1 = viewportWidth/2 + (p1.x * 2000);
+		x2 = viewportWidth/2 + (p2.x * 2000);
+		y1 = viewportHeight/2 + (p1.y * 2000);
+		y2 = viewportHeight/2 + (p2.y * 2000);
+	}
+	else {
+		x1 = p1.x;
+		x2 = p2.x;
+		y1 = p1.y;
+		y2 = p2.y;
+	}
 
 	float xLeft = x1 >= x2 ? x2 : x1;
 	float xRight = x1 >= x2 ? x1 : x2;
@@ -270,10 +279,10 @@ void Renderer::Render(const Scene& scene)
 	
 	glm::vec3 p1, p2, color;
 	p1.x = 0.0;
-	p1.y = 0.0;
+	p1.y = viewportHeight/2;
 	p1.z = 0.0;
-	p2.x = 400;
-	p2.y = 400;
+	p2.x = viewportWidth;
+	p2.y = viewportHeight/2;
 	p2.z = 0.0;
 	color.x = 0.0;
 	color.y = 0.0;
@@ -325,14 +334,14 @@ void Renderer::Render(const Scene& scene)
 					/*std::cout << "xEnd=" << vertices.at(*(vindex)-1).x << " " << "yEnd=" << vertices.at(*(vindex)-1).y << " "
 						<< "xStart=" << vertices.at(indices.at(0)-1).x << " yStart=" << vertices.at(indices.at(0) - 1).y << std::endl;
 */
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0));
+					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
 				} else //draw a line between the two vertices by their indices from the vector "indices"
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0));
+					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
 			}
 		}
 	}
-	//DrawLine(p1, p2, color);
-
+	DrawLine(p1, p2, glm::vec3(0,0,0),false);
+	DrawLine(glm::vec3(viewportWidth / 2, 0, 0), glm::vec3(viewportWidth / 2, viewportHeight, 0), glm::vec3(0, 0, 0),false);
 	// this is a demonstration of the algorithm.
 	//AddLineBresenhamStyle(500, 540, 400, 540, glm::vec3(0, 0, 0));
 	//AddLineBresenhamStyle(400, 400, viewportWidth-200, viewportHeight-100);
