@@ -16,6 +16,7 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int vie
 {
 	initOpenGLRendering();
 	SetViewport(viewportWidth, viewportHeight, viewportX, viewportY);
+	setScaleNumber(50);
 }
 
 Renderer::~Renderer()
@@ -34,7 +35,9 @@ void Renderer::putPixel(int i, int j, const glm::vec3& color)
 	colorBuffer[INDEX(viewportWidth, i, j, 1)] = color.y;
 	colorBuffer[INDEX(viewportWidth, i, j, 2)] = color.z;
 }
-
+void Renderer::setScaleNumber(float f) {
+	this->scaleNumber = f;
+}
 void Renderer::createBuffers(int viewportWidth, int viewportHeight)
 {
 	if (colorBuffer)
@@ -80,10 +83,10 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 	float x1, x2, y1, y2;
 	// order the points so one is left and one is right depending on x1 and x2 values.
 	if (scale) {
-		x1 = viewportWidth/2 + (p1.x * 2000);
-		x2 = viewportWidth/2 + (p2.x * 2000);
-		y1 = viewportHeight/2 + (p1.y * 2000);
-		y2 = viewportHeight/2 + (p2.y * 2000);
+		x1 = viewportWidth/2 + (p1.x * this->scaleNumber);
+		x2 = viewportWidth/2 + (p2.x * this->scaleNumber);
+		y1 = viewportHeight/2 + (p1.y * this->scaleNumber);
+		y2 = viewportHeight/2 + (p2.y * this->scaleNumber);
 	}
 	else {
 		x1 = p1.x;

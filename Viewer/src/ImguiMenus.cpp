@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <nfd.h>
 #include <random>
+#include "Renderer.h"
 
 bool showDemoWindow = false;
 bool showAnotherWindow = false;
@@ -23,7 +24,7 @@ const glm::vec4& GetClearColor()
 	return clearColor;
 }
 
-void DrawImguiMenus(ImGuiIO& io, Scene& scene)
+void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 {
 	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 	if (showDemoWindow)
@@ -42,7 +43,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our window open/close state
 		ImGui::Checkbox("Another Window", &showAnotherWindow);
 
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+		if (ImGui::SliderFloat("float", &f, 0.0f, 2000.0f)) {
+			renderer.setScaleNumber(f);
+		}// Edit 1 float using a slider from 0.0f to 2000.0f
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
