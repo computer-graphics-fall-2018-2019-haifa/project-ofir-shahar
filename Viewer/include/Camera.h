@@ -16,14 +16,16 @@ class Camera
 private:
 	glm::mat4x4 viewTransformation;
 	glm::mat4x4 projectionTransformation;
+	glm::mat4x4 scalingTransformation;
 	float zoom;
 
 public:
-	Camera(const glm::vec4& eye, const glm::vec4& at, const glm::vec4& up);
+	Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
 	~Camera();
 
 	void SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
 
+	void scaleTransform(glm::vec3& vect);
 	void SetOrthographicProjection(
 		const float height,
 		const float aspectRatio,

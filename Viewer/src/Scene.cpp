@@ -60,3 +60,7 @@ const int Scene::GetActiveModelIndex() const
 const std::vector<std::shared_ptr<MeshModel>> Scene::getModels() const{
 	return this->models;
 }
+
+const std::vector<Camera> Scene::getCameras() const {
+	return this->cameras;
+}
