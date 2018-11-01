@@ -14,7 +14,14 @@ Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 Camera::~Camera()
 {
 }
+Camera::Camera()
+{
+	SetCameraLookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
+}
 
+glm::mat4 Camera::getViewTransformation() {
+	return viewTransformation;
+}
 void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {
 	//make the vectors be homogenous

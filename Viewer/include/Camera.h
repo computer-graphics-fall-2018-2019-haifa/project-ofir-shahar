@@ -22,7 +22,7 @@ private:
 public:
 	Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
 	~Camera();
-
+	Camera();
 	void SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
 
 	void scaleTransform(glm::vec3& vect);
@@ -39,6 +39,6 @@ public:
 		const float far);
 
 	void SetZoom(const float zoom);
-
+	glm::mat4 getViewTransformation();
 	// Add more methods/functionality as needed...
 };

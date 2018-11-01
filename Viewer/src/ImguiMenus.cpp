@@ -35,6 +35,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
 		static float f = 0.0f;
+		static float turnUpDown = 0.0f;
 		static int counter = 0;
 
 		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
@@ -43,8 +44,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our window open/close state
 		ImGui::Checkbox("Another Window", &showAnotherWindow);
 
-		if (ImGui::SliderFloat("float", &f, 0.0f, 2000.0f)) {
+		if (ImGui::SliderFloat("scale", &f, 0.0f, 2000.0f)) {
 			renderer.setScaleNumber(f);
+		}// Edit 1 float using a slider from 0.0f to 2000.0f
+		if (ImGui::SliderFloat("turn left or right", &turnUpDown, -1800.00f, 1800.0f)) {
+			renderer.setEyeX(turnUpDown);
 		}// Edit 1 float using a slider from 0.0f to 2000.0f
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 

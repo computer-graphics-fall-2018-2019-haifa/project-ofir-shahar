@@ -7,6 +7,7 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include "Camera.h"
 
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 
@@ -26,7 +27,12 @@ Renderer::~Renderer()
 		delete[] colorBuffer;
 	}
 }
-
+void Renderer::setEyeX(float eyex) {
+	glm::vec3 eye = glm::vec3(0, 0, eyex);
+	glm::vec3 at = glm::vec3(viewportWidth / 2, viewportHeight / 2, 0);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	camera = Camera(eye, at, up);
+}
 void Renderer::putPixel(int i, int j, const glm::vec3& color)
 {
 	if (i < 0) return; if (i >= viewportWidth) return;
@@ -231,6 +237,24 @@ void Renderer::Render(const Scene& scene)
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
 		std::vector<glm::vec3> vertices = (*model).GetVertices();
+
+
+		// ############### IMPORTANT CODE HERE ##################
+		// in this for loop we iterate over all the vertices of the model
+		// and multiply each vertex by view, projection and viewport transformation.
+		// ######################################################
+		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
+			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 0);
+			//std::cout << "<"<<newVertex.x <<","<<newVertex.y<<","<<newVertex.z<< ">" << std::endl;
+			newVertex = camera.getViewTransformation()*newVertex;
+			/*std::cout << "<" << newVertex.x << "," << newVertex.y << "," << newVertex.z <<">"<< std::endl;
+			std::cout << "end here"<<std::endl;*/
+			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);
+		}
+		// ############## END OF IMPORTANT CODE #################
+		// ######################################################
+
+
 		//iterate over the faces vector of the model
 		for (std::vector<Face>::iterator faceIndex = faces.begin(); faceIndex != faces.end(); faceIndex++) {
 			//get the indices of the vertices for each face
