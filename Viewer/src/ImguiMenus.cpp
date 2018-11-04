@@ -50,6 +50,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		if (ImGui::SliderFloat("turn left or right", &turnUpDown, -1800.00f, 1800.0f)) {
 			renderer.setEyeX(turnUpDown);
 		}// Edit 1 float using a slider from 0.0f to 2000.0f
+
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)

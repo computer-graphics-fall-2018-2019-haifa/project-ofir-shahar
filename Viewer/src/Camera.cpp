@@ -16,7 +16,7 @@ Camera::~Camera()
 }
 Camera::Camera()
 {
-	SetCameraLookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
+	viewTransformation = glm::mat4(1);
 }
 
 glm::mat4 Camera::getViewTransformation() {

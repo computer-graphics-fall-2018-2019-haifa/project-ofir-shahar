@@ -275,6 +275,12 @@ void Renderer::Render(const Scene& scene)
 			}
 		}
 	}
+	glm::vec4 p24 = glm::vec4(p2.x, p2.y, p2.z, 0);
+	p14 = camera.getViewTransformation()*p14;
+	p24 = camera.getViewTransformation()*p24;
+	p1 = glm::vec3(p14.x, p14.y, p14.z);
+	p2 = glm::vec3(p24.x, p24.y, p24.z);
+*/
 	//draw y and x axis at the center of the screen
 	DrawLine(p1, p2, glm::vec3(0,0,0),false);
 	DrawLine(glm::vec3(viewportWidth / 2, 0, 0), glm::vec3(viewportWidth / 2, viewportHeight, 0), glm::vec3(0, 0, 0),false);
