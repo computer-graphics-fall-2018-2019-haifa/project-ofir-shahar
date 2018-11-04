@@ -275,6 +275,7 @@ void Renderer::Render(const Scene& scene)
 			}
 		}
 	}
+	/*glm::vec4 p14 = glm::vec4(p1.x, p1.y, p1.z, 0);
 	glm::vec4 p24 = glm::vec4(p2.x, p2.y, p2.z, 0);
 	p14 = camera.getViewTransformation()*p14;
 	p24 = camera.getViewTransformation()*p24;
