@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
 	//glm::vec3 eye = glm::vec3(frameBufferWidth / 2, frameBufferHeight / 2, 400);
-	glm::vec3 eye = glm::vec3(400, 0, 0);
+	glm::vec3 eye = glm::vec3(0, 0, 400);
 	glm::vec3 at = glm::vec3(frameBufferWidth / 2, frameBufferHeight / 2, 0);
 	glm::vec3 up = glm::vec3(0,1,0);
 	Camera camera = Camera(eye, at, up);
