@@ -37,7 +37,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		static float f = 0.0f;
 		static float turnUpDown = 0.0f;
 		static int counter = 0;
-
+		static float fov = 0.0f;
 		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
 		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
@@ -50,7 +50,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		if (ImGui::SliderFloat("turn left or right", &turnUpDown, -1800.00f, 1800.0f)) {
 			renderer.setEyeX(turnUpDown);
 		}// Edit 1 float using a slider from 0.0f to 2000.0f
-
+		if (ImGui::SliderFloat("FOV", &fov, 0.0f, 90.0f)) {
+			renderer.setFov(fov);
+		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)

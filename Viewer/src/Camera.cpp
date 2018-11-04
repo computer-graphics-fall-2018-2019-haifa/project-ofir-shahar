@@ -10,6 +10,7 @@
 Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 	zoom(1.0)
 {
+	SetPerspectiveProjection(45, 1, 200, 500);
 	SetCameraLookAt(eye, at, up);
 }
 
@@ -27,7 +28,7 @@ glm::mat4 Camera::getViewTransformation() {
 }
 glm::mat4 Camera::getProjectionTformation()
 {
-	return glm::mat4();
+	return this->projectionTransformation;
 }
 void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {

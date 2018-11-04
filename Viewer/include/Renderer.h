@@ -20,6 +20,7 @@ private:
 	int viewportX;
 	int viewportY;
 	float scaleNumber;
+	float fov;
 	Camera camera;
 
 	void putPixel(int x, int y, const glm::vec3& color);
@@ -44,5 +45,6 @@ public:
 	//float getScaleNumber();
 	void setScaleNumber(float f);
 	void setEyeX(float eyex);
+	void setFov(float f);
 	// Add more methods/functionality as needed...
 };
