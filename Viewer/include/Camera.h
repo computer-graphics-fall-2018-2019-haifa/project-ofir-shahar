@@ -24,7 +24,7 @@ public:
 	~Camera();
 	Camera();
 	void SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
-
+	glm::mat4x4 getProjectionTransformation(); 
 	void scaleTransform(glm::vec3& vect);
 	void SetOrthographicProjection(
 		const float height,
@@ -40,5 +40,6 @@ public:
 
 	void SetZoom(const float zoom);
 	glm::mat4 getViewTransformation();
+	glm::mat4 getProjectionTformation();
 	// Add more methods/functionality as needed...
 };

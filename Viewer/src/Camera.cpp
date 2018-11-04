@@ -5,9 +5,12 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 
+#define PI 3.14159265352 
+
 Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 	zoom(1.0)
 {
+	SetPerspectiveProjection(45, 1, 200, 500);
 	SetCameraLookAt(eye, at, up);
 }
 
@@ -16,11 +19,16 @@ Camera::~Camera()
 }
 Camera::Camera()
 {
-	viewTransformation = glm::mat4(1);
+	SetPerspectiveProjection(45, 2, 200, 500); 
+	SetCameraLookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
 }
 
 glm::mat4 Camera::getViewTransformation() {
 	return viewTransformation;
+}
+glm::mat4 Camera::getProjectionTformation()
+{
+	return this->projectionTransformation;
 }
 void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {
@@ -66,7 +74,17 @@ void Camera::SetPerspectiveProjection(
 	const float near,
 	const float far)
 {
-
+	float nearHeight = 2 * near * _CMATH_::tanf(fovy * PI / 180); 
+	float nearWidth = aspectRatio * nearHeight; 
+	float t = 0.5 * nearHeight;
+	float b = -0.5 * nearHeight;
+	float l = -0.5 * nearWidth;
+	float r = 0.5 * nearWidth;
+	glm::vec4 v1(2 * near / (r - l), 0, 0, 0);
+	glm::vec4 v2(0, 2 * near / (t - b), 0, 0);
+	glm::vec4 v3((r + l) / (r - l), (t + b) / (t - b), -1 * (far + near) / (far - near), -1);
+	glm::vec4 v4(0, 0, -2 * far * near / (far - near), 0);  
+	this->projectionTransformation = glm::mat4x4(v1, v2, v3, v4); 
 }
 
 void Camera::SetZoom(const float zoom)
@@ -77,4 +95,8 @@ void Camera::SetZoom(const float zoom)
 void Camera::scaleTransform(glm::vec3& vect) {
 	vect.x = vect.x * 50;
 	vect.x = vect.y * 50;
+}
+
+glm::mat4x4 Camera::getProjectionTransformation() {
+	return this->projectionTransformation; 
 }

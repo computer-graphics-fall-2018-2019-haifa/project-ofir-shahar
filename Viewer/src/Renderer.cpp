@@ -33,6 +33,10 @@ void Renderer::setEyeX(float eyex) {
 	glm::vec3 up = glm::vec3(0, 1, 0);
 	camera = Camera(eye, at, up);
 }
+
+void Renderer::setFov(float f) {
+	camera.SetPerspectiveProjection(f, 2, 200, 500);
+}
 void Renderer::putPixel(int i, int j, const glm::vec3& color)
 {
 	if (i < 0) return; if (i >= viewportWidth) return;
@@ -246,7 +250,7 @@ void Renderer::Render(const Scene& scene)
 		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
 			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 0);
 			//std::cout << "<"<<newVertex.x <<","<<newVertex.y<<","<<newVertex.z<< ">" << std::endl;
-			newVertex = camera.getViewTransformation()*newVertex;
+			newVertex = camera.getProjectionTformation()* camera.getViewTransformation()*newVertex;
 			/*std::cout << "<" << newVertex.x << "," << newVertex.y << "," << newVertex.z <<">"<< std::endl;
 			std::cout << "end here"<<std::endl;*/
 			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);
@@ -275,13 +279,16 @@ void Renderer::Render(const Scene& scene)
 			}
 		}
 	}
+<<<<<<< HEAD
 	/*glm::vec4 p14 = glm::vec4(p1.x, p1.y, p1.z, 0);
 	glm::vec4 p24 = glm::vec4(p2.x, p2.y, p2.z, 0);
+=======
+	/*glm::vec4 p24 = glm::vec4(p2.x, p2.y, p2.z, 0);
+>>>>>>> c382393077ff6dace273740e3d655e003e1f6cdb
 	p14 = camera.getViewTransformation()*p14;
 	p24 = camera.getViewTransformation()*p24;
 	p1 = glm::vec3(p14.x, p14.y, p14.z);
-	p2 = glm::vec3(p24.x, p24.y, p24.z);
-*/
+	p2 = glm::vec3(p24.x, p24.y, p24.z);*/
 	//draw y and x axis at the center of the screen
 	DrawLine(p1, p2, glm::vec3(0,0,0),false);
 	DrawLine(glm::vec3(viewportWidth / 2, 0, 0), glm::vec3(viewportWidth / 2, viewportHeight, 0), glm::vec3(0, 0, 0),false);
