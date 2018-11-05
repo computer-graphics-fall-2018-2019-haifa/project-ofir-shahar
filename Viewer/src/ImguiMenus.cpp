@@ -38,6 +38,12 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		static float turnUpDown = 0.0f;
 		static int counter = 0;
 		static float fov = 50.0f;
+		static float rotateLocalX = 0.0f;
+		static float rotateLocalY = 0.0f;
+		static float rotateLocalZ = 0.0f;
+		static float scaleX = 0.0f;
+		static float scaleY = 0.0f;
+		static float scaleZ = 0.0f;
 		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
 		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
@@ -52,6 +58,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		}// Edit 1 float using a slider from 0.0f to 2000.0f
 		if (ImGui::SliderFloat("FOV", &fov, 0.0f, 90.0f)) {
 			renderer.setFov(fov);
+		}
+		ImGui::Text("Current Object:");
+		ImGui::Text("Local Rotations");
+		if (ImGui::SliderFloat("Rotate local x", &rotateLocalX, 0.0, 360.0f)) {
+			renderer.rotateLocalX(rotateLocalX);
+		}
+		if (ImGui::SliderFloat("Rotate local y", &rotateLocalY, 0.0, 360.0f)) {
+			renderer.rotateLocalY(rotateLocalY);
+		}
+		if (ImGui::SliderFloat("Rotate local z", &rotateLocalZ, 0.0, 360.0f)) {
+			renderer.rotateLocalZ(rotateLocalZ);
 		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 

@@ -35,7 +35,15 @@ void Renderer::setEyeX(float eyex) {
 	glm::vec3 up = glm::vec3(0, 1, 0);
 	camera.SetCameraLookAt(eye, at, up);
 }
-
+void Renderer::rotateLocalX(float x) {
+	currentModel->setRotationTransform(x, 1, 1);
+}
+void Renderer::rotateLocalY(float y) {
+	currentModel->setRotationTransform(1, y, 1);
+}
+void Renderer::rotateLocalZ(float z) {
+	currentModel->setRotationTransform(1, 1, z);
+}
 void Renderer::setFov(float f) {
 	camera.SetPerspectiveProjection(f, 1, 1, 10);
 }
@@ -239,6 +247,8 @@ void Renderer::Render(const Scene& scene)
 	for (std::vector<std::shared_ptr<MeshModel>>::iterator it = models.begin(); it != models.end(); it++) {
 		//the iterator is pointing to a shared_ptr that points to our MeshModel. 
 		model = (*it);
+		currentModel = &(*model);
+		glm::mat4 localTransform = currentModel->GetLocalTransform();
 		//get the faces from the pointer to the model
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
@@ -252,6 +262,7 @@ void Renderer::Render(const Scene& scene)
 		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
 			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 0);
 			//std::cout << "<"<<newVertex.x <<","<<newVertex.y<<","<<newVertex.z<< ">" << std::endl;
+			newVertex = localTransform * newVertex;
 			newVertex = camera.getViewTransformation()*newVertex;
 			newVertex = camera.getProjectionTformation()*newVertex;
 			/*std::cout << "<" << newVertex.x << "," << newVertex.y << "," << newVertex.z <<">"<< std::endl;
