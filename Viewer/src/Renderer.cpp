@@ -9,6 +9,7 @@
 #include <iostream>
 #include "Camera.h"
 
+#define PI 3.14159265358
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 
 Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int viewportY) :
@@ -28,7 +29,8 @@ Renderer::~Renderer()
 	}
 }
 void Renderer::setEyeX(float eyex) {
-	glm::vec3 eye = glm::vec3(0, 0, eyex);
+	glm::vec3 eye;
+	eye = glm::vec3(1280 * sin(PI*eyex / 180), 0, cos(PI*eyex / 180) * 1280);
 	glm::vec3 at = glm::vec3(viewportWidth / 2, viewportHeight / 2, 0);
 	glm::vec3 up = glm::vec3(0, 1, 0);
 	camera.SetCameraLookAt(eye, at, up);
