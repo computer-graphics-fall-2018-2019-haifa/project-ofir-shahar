@@ -44,12 +44,12 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		static float scaleX = 0.0f;
 		static float scaleY = 0.0f;
 		static float scaleZ = 0.0f;
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our window open/close state
-		ImGui::Checkbox("Another Window", &showAnotherWindow);
+		ImGui::Begin("Ofir And Shahar Project");                          // Create a window called "Hello, world!" and append into it.
 		
+		/*ImGui::Text("This is some useful text.");*/               // Display some text (you can use a format strings too)
+		//ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our window open/close state
+		//ImGui::Checkbox("Another Window", &showAnotherWindow);
+		ImGui::Text("Current Camera:");
 		if (ImGui::SliderFloat("scale", &f, 0.0f, 2000.0f)) {
 			renderer.setScaleNumber(f);
 		}// Edit 1 float using a slider from 0.0f to 2000.0f
@@ -69,6 +69,18 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		}
 		if (ImGui::SliderFloat("Rotate local z", &rotateLocalZ, 0.0, 360.0f)) {
 			renderer.rotateLocalZ(rotateLocalZ);
+		}
+		if (ImGui::IsMouseDown(0)) {
+			//IMPLEMENT HERE WHAT HAPPENS WHEN ------LEFT MOUSE BUTTON ------- IS DOWN
+			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
+		}
+		if (ImGui::IsMouseDown(1)) {
+			//IMPLEMENT HERE WHAT HAPPENS WHEN ------RIGHT MOUSE BUTTON ------- IS DOWN
+			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
+		}
+		if (ImGui::IsMouseDown(2)) {
+			//IMPLEMENT HERE WHAT HAPPENS WHEN ------MIDDLE MOUSE BUTTON ------- IS DOWN
+			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
 		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
