@@ -17,6 +17,8 @@ private:
 	glm::mat4x4 viewTransformation;
 	glm::mat4x4 projectionTransformation;
 	glm::mat4x4 scalingTransformation;
+	glm::vec3 oldeye;
+	glm::vec3 oldat;
 	float zoom;
 
 public:

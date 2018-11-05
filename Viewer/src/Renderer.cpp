@@ -31,11 +31,11 @@ void Renderer::setEyeX(float eyex) {
 	glm::vec3 eye = glm::vec3(0, 0, eyex);
 	glm::vec3 at = glm::vec3(viewportWidth / 2, viewportHeight / 2, 0);
 	glm::vec3 up = glm::vec3(0, 1, 0);
-	camera = Camera(eye, at, up);
+	camera.SetCameraLookAt(eye, at, up);
 }
 
 void Renderer::setFov(float f) {
-	camera.SetPerspectiveProjection(f, 2, 200, 500);
+	camera.SetPerspectiveProjection(f, 1, 1, 10);
 }
 void Renderer::putPixel(int i, int j, const glm::vec3& color)
 {
@@ -250,7 +250,8 @@ void Renderer::Render(const Scene& scene)
 		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
 			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 0);
 			//std::cout << "<"<<newVertex.x <<","<<newVertex.y<<","<<newVertex.z<< ">" << std::endl;
-			newVertex = camera.getProjectionTformation()* camera.getViewTransformation()*newVertex;
+			newVertex = camera.getViewTransformation()*newVertex;
+			newVertex = camera.getProjectionTformation()*newVertex;
 			/*std::cout << "<" << newVertex.x << "," << newVertex.y << "," << newVertex.z <<">"<< std::endl;
 			std::cout << "end here"<<std::endl;*/
 			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);
@@ -279,7 +280,6 @@ void Renderer::Render(const Scene& scene)
 			}
 		}
 	}
-<<<<<<< HEAD
 	/*glm::vec4 p14 = glm::vec4(p1.x, p1.y, p1.z, 0);
 	glm::vec4 p24 = glm::vec4(p2.x, p2.y, p2.z, 0);
 =======

@@ -34,20 +34,20 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
-		static float f = 0.0f;
-		static float turnUpDown = 0.0f;
+		static float f = 1500.0f;
+		static float turnUpDown = 1800.0f;
 		static int counter = 0;
-		static float fov = 0.0f;
+		static float fov = 50.0f;
 		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
 		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our window open/close state
 		ImGui::Checkbox("Another Window", &showAnotherWindow);
-
+		
 		if (ImGui::SliderFloat("scale", &f, 0.0f, 2000.0f)) {
 			renderer.setScaleNumber(f);
 		}// Edit 1 float using a slider from 0.0f to 2000.0f
-		if (ImGui::SliderFloat("turn left or right", &turnUpDown, -1800.00f, 1800.0f)) {
+		if (ImGui::SliderFloat("turn left or right", &turnUpDown, -1800.0f, 1800.0f)) {
 			renderer.setEyeX(turnUpDown);
 		}// Edit 1 float using a slider from 0.0f to 2000.0f
 		if (ImGui::SliderFloat("FOV", &fov, 0.0f, 90.0f)) {
@@ -89,6 +89,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					nfdresult_t result = NFD_OpenDialog("obj;png,jpg", NULL, &outPath);
 					if (result == NFD_OKAY) {
 						scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(outPath)));
+						renderer.setEyeX(1800);
+						renderer.setScaleNumber(1800);
+						renderer.setFov(45);
 						free(outPath);
 					}
 					else if (result == NFD_CANCEL) {
