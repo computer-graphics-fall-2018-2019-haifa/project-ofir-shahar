@@ -16,6 +16,7 @@ class Camera
 private:
 	glm::mat4x4 viewTransformation;
 	glm::mat4x4 projectionTransformation;
+	glm::mat4x4 orthographicTransformation;
 	glm::mat4x4 scalingTransformation;
 	float zoom;
 
@@ -39,7 +40,7 @@ public:
 		const float far);
 
 	void SetZoom(const float zoom);
-	glm::mat4 getViewTransformation();
-	glm::mat4 getProjectionTformation();
-	// Add more methods/functionality as needed...
+	const glm::mat4 getViewTransformation();
+	const glm::mat4 getProjectionTformation();
+	const glm::mat4 getOrthographicTransformation(); 
 };

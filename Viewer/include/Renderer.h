@@ -7,6 +7,8 @@
 #include <imgui/imgui.h>
 #include "Camera.h"
 
+typedef enum projection { Perspective, orthgraphic };
+
 /*
  * Renderer class.
  */
@@ -21,6 +23,7 @@ private:
 	int viewportY;
 	float scaleNumber;
 	float fov;
+	bool projection; 
 	Camera camera;
 
 	void putPixel(int x, int y, const glm::vec3& color);
@@ -46,5 +49,7 @@ public:
 	void setScaleNumber(float f);
 	void setEyeX(float eyex);
 	void setFov(float f);
-	// Add more methods/functionality as needed...
+	void setProjection(bool p);
+
+	const bool getProjection();
 };

@@ -7,6 +7,7 @@
 #include <cmath>
 #include <memory>
 #include <stdio.h>
+#include <iostream>
 #include <string>
 #include <sstream>
 #include <stdlib.h>
@@ -57,6 +58,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
 			counter++;
+		if (ImGui::Button("Projection"))
+		{
+			renderer.setProjection(!renderer.getProjection()); 
+			std::cout << "projection=" << renderer.getProjection() << std::endl; 
+		}
 		ImGui::SameLine();
 		ImGui::Text("counter = %d", counter);
 
@@ -96,6 +102,23 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					else {
 					}
 
+				}
+				ImGui::EndMenu();
+			}
+			//load model
+			if (ImGui::BeginMenu("scene models"))
+			{
+				std::vector<std::shared_ptr<MeshModel>> models = scene.getModels(); 
+				std::vector<std::shared_ptr<MeshModel>>::iterator it;
+				const char *name;
+
+				for (it = models.begin(); it != models.end(); it++)
+				{
+					name = (*it)->GetModelName().c_str(); 
+					if (ImGui::MenuItem(name))
+					{
+						std::cout << name << std::endl;
+					}
 				}
 				ImGui::EndMenu();
 			}

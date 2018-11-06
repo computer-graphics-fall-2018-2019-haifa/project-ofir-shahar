@@ -10,6 +10,7 @@
 Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 	zoom(1.0)
 {
+
 	SetPerspectiveProjection(45, 1, 200, 500);
 	SetCameraLookAt(eye, at, up);
 }
@@ -23,12 +24,16 @@ Camera::Camera()
 	SetCameraLookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
 }
 
-glm::mat4 Camera::getViewTransformation() {
+const glm::mat4 Camera::getViewTransformation() {
 	return viewTransformation;
 }
-glm::mat4 Camera::getProjectionTformation()
+const glm::mat4 Camera::getProjectionTformation()
 {
 	return this->projectionTransformation;
+}
+const glm::mat4 Camera::getOrthographicTransformation()
+{
+	return this->orthographicTransformation; 
 }
 void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {
@@ -59,13 +64,29 @@ void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const gl
 
 }
 
+//Function create the Normalized projection matrix by (P=ST)
+//1. T = translate the center of the volume to the origin 
+//2. S = Scale to the volume of unit cube
 void Camera::SetOrthographicProjection(
 	const float height,
 	const float aspectRatio,
 	const float near,
 	const float far)
 {
+	glm::vec4 v1, v2, v3, v4;
+	float right, left, bottom, top, width = height * aspectRatio; 
 
+	right = 0.5 * width; 
+	left = -0.5 * width; 
+	top = 0.5 * height;
+	bottom = -0.5 * height;
+
+	v1 = glm::vec4(2 / (right - left), 0, 0, 0);
+	v2 = glm::vec4(0, 2 / (top - bottom), 0, 0); 
+	v3 = glm::vec4(0, 0, 2 / (near - far), 0);
+	v4 = glm::vec4(-(right + left) / (right - left), -(top + bottom) /(top - bottom), -(far + near) / (far - near), 1); 
+	
+	this->orthographicTransformation = glm::mat4(v1, v2, v3, v4); 
 }
 
 void Camera::SetPerspectiveProjection(
