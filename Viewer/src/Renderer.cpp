@@ -9,6 +9,7 @@
 #include <iostream>
 #include "Camera.h"
 
+#define PI 3.14159265358
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 
 Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int viewportY) :
@@ -28,14 +29,23 @@ Renderer::~Renderer()
 	}
 }
 void Renderer::setEyeX(float eyex) {
-	glm::vec3 eye = glm::vec3(0, 0, eyex);
+	glm::vec3 eye;
+	eye = glm::vec3(1280 * sin(PI*eyex / 180), 0, cos(PI*eyex / 180) * 1280);
 	glm::vec3 at = glm::vec3(viewportWidth / 2, viewportHeight / 2, 0);
 	glm::vec3 up = glm::vec3(0, 1, 0);
-	camera = Camera(eye, at, up);
+	camera.SetCameraLookAt(eye, at, up);
 }
-
+void Renderer::rotateLocalX(float x) {
+	currentModel->setRotationTransform(x, 1, 1);
+}
+void Renderer::rotateLocalY(float y) {
+	currentModel->setRotationTransform(1, y, 1);
+}
+void Renderer::rotateLocalZ(float z) {
+	currentModel->setRotationTransform(1, 1, z);
+}
 void Renderer::setFov(float f) {
-	camera.SetPerspectiveProjection(f, 2, 200, 500);
+	camera.SetPerspectiveProjection(f, 1, 1, 10);
 }
 void Renderer::setProjection(bool p)
 {
@@ -245,6 +255,8 @@ void Renderer::Render(const Scene& scene)
 	for (std::vector<std::shared_ptr<MeshModel>>::iterator it = models.begin(); it != models.end(); it++) {
 		//the iterator is pointing to a shared_ptr that points to our MeshModel. 
 		model = (*it);
+		currentModel = &(*model);
+		glm::mat4 localTransform = currentModel->GetLocalTransform();
 		//get the faces from the pointer to the model
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
@@ -258,7 +270,13 @@ void Renderer::Render(const Scene& scene)
 		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
 			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 0);
 			//std::cout << "<"<<newVertex.x <<","<<newVertex.y<<","<<newVertex.z<< ">" << std::endl;
+<<<<<<< HEAD
 			newVertex = (this->projection) ? camera.getOrthographicTransformation() * camera.getViewTransformation()*newVertex : camera.getProjectionTformation() * camera.getViewTransformation()*newVertex;
+=======
+			newVertex = localTransform * newVertex;
+			newVertex = camera.getViewTransformation()*newVertex;
+			newVertex = camera.getProjectionTformation()*newVertex;
+>>>>>>> 2efa6611ae1c885a3a9ce3035dd27b6c29ecb7b3
 			/*std::cout << "<" << newVertex.x << "," << newVertex.y << "," << newVertex.z <<">"<< std::endl;
 			std::cout << "end here"<<std::endl;*/
 			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);
@@ -287,7 +305,11 @@ void Renderer::Render(const Scene& scene)
 			}
 		}
 	}
+	/*glm::vec4 p14 = glm::vec4(p1.x, p1.y, p1.z, 0);
+	glm::vec4 p24 = glm::vec4(p2.x, p2.y, p2.z, 0);
+=======
 	/*glm::vec4 p24 = glm::vec4(p2.x, p2.y, p2.z, 0);
+>>>>>>> c382393077ff6dace273740e3d655e003e1f6cdb
 	p14 = camera.getViewTransformation()*p14;
 	p24 = camera.getViewTransformation()*p24;
 	p1 = glm::vec3(p14.x, p14.y, p14.z);

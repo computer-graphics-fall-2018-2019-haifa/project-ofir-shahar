@@ -35,24 +35,53 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
-		static float f = 0.0f;
+		static float f = 1500.0f;
 		static float turnUpDown = 0.0f;
 		static int counter = 0;
-		static float fov = 0.0f;
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our window open/close state
-		ImGui::Checkbox("Another Window", &showAnotherWindow);
-
+		static float fov = 50.0f;
+		static float rotateLocalX = 0.0f;
+		static float rotateLocalY = 0.0f;
+		static float rotateLocalZ = 0.0f;
+		static float scaleX = 0.0f;
+		static float scaleY = 0.0f;
+		static float scaleZ = 0.0f;
+		ImGui::Begin("Ofir And Shahar Project");                          // Create a window called "Hello, world!" and append into it.
+		
+		/*ImGui::Text("This is some useful text.");*/               // Display some text (you can use a format strings too)
+		//ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our window open/close state
+		//ImGui::Checkbox("Another Window", &showAnotherWindow);
+		ImGui::Text("Current Camera:");
 		if (ImGui::SliderFloat("scale", &f, 0.0f, 2000.0f)) {
 			renderer.setScaleNumber(f);
 		}// Edit 1 float using a slider from 0.0f to 2000.0f
-		if (ImGui::SliderFloat("turn left or right", &turnUpDown, -1800.00f, 1800.0f)) {
+		if (ImGui::SliderFloat("turn left or right", &turnUpDown, 0.0f, 360.0f)) {
 			renderer.setEyeX(turnUpDown);
 		}// Edit 1 float using a slider from 0.0f to 2000.0f
 		if (ImGui::SliderFloat("FOV", &fov, 0.0f, 90.0f)) {
 			renderer.setFov(fov);
+		}
+		ImGui::Text("Current Object:");
+		ImGui::Text("Local Rotations");
+		if (ImGui::SliderFloat("Rotate local x", &rotateLocalX, 0.0, 360.0f)) {
+			renderer.rotateLocalX(rotateLocalX);
+		}
+		if (ImGui::SliderFloat("Rotate local y", &rotateLocalY, 0.0, 360.0f)) {
+			renderer.rotateLocalY(rotateLocalY);
+		}
+		if (ImGui::SliderFloat("Rotate local z", &rotateLocalZ, 0.0, 360.0f)) {
+			renderer.rotateLocalZ(rotateLocalZ);
+		}
+		if (ImGui::IsMouseDown(0)) {
+			//IMPLEMENT HERE WHAT HAPPENS WHEN ------LEFT MOUSE BUTTON ------- IS DOWN
+			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
+		}
+		if (ImGui::IsMouseDown(1)) {
+			//IMPLEMENT HERE WHAT HAPPENS WHEN ------RIGHT MOUSE BUTTON ------- IS DOWN
+			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
+		}
+		if (ImGui::IsMouseDown(2)) {
+			//IMPLEMENT HERE WHAT HAPPENS WHEN ------MIDDLE MOUSE BUTTON ------- IS DOWN
+			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
 		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
@@ -95,6 +124,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					nfdresult_t result = NFD_OpenDialog("obj;png,jpg", NULL, &outPath);
 					if (result == NFD_OKAY) {
 						scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(outPath)));
+						renderer.setEyeX(0);
+						renderer.setScaleNumber(1800);
+						renderer.setFov(45);
 						free(outPath);
 					}
 					else if (result == NFD_CANCEL) {
