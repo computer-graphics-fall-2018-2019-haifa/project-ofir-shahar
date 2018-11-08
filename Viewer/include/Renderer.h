@@ -50,14 +50,14 @@ public:
 	void setScaleNumber(float f);
 	void setEyeX(float eyex);
 	void setFov(float f);
-<<<<<<< HEAD
+
 	void setProjection(bool p);
 
 	const bool getProjection();
-=======
+
 	void rotateLocalX(float x);
 	void rotateLocalY(float y);
 	void rotateLocalZ(float z);
 	// Add more methods/functionality as needed...
->>>>>>> 2efa6611ae1c885a3a9ce3035dd27b6c29ecb7b3
+
 };

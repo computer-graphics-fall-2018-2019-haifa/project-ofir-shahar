@@ -10,13 +10,9 @@
 Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 	zoom(1.0)
 {
-<<<<<<< HEAD
-
 	SetPerspectiveProjection(45, 1, 200, 500);
-=======
 	oldeye = eye;
 	oldat = at;
->>>>>>> 2efa6611ae1c885a3a9ce3035dd27b6c29ecb7b3
 	SetCameraLookAt(eye, at, up);
 	SetPerspectiveProjection(45,0.5 , 100, 1000);
 	

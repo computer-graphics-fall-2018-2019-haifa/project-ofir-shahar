@@ -124,9 +124,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					nfdresult_t result = NFD_OpenDialog("obj;png,jpg", NULL, &outPath);
 					if (result == NFD_OKAY) {
 						scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(outPath)));
-						renderer.setEyeX(0);
+						/*renderer.setEyeX(0);
 						renderer.setScaleNumber(1800);
-						renderer.setFov(45);
+						renderer.setFov(45);*/
 						free(outPath);
 					}
 					else if (result == NFD_CANCEL) {

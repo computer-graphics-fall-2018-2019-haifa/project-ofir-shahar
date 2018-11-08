@@ -270,13 +270,10 @@ void Renderer::Render(const Scene& scene)
 		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
 			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 0);
 			//std::cout << "<"<<newVertex.x <<","<<newVertex.y<<","<<newVertex.z<< ">" << std::endl;
-<<<<<<< HEAD
 			newVertex = (this->projection) ? camera.getOrthographicTransformation() * camera.getViewTransformation()*newVertex : camera.getProjectionTformation() * camera.getViewTransformation()*newVertex;
-=======
 			newVertex = localTransform * newVertex;
 			newVertex = camera.getViewTransformation()*newVertex;
 			newVertex = camera.getProjectionTformation()*newVertex;
->>>>>>> 2efa6611ae1c885a3a9ce3035dd27b6c29ecb7b3
 			/*std::cout << "<" << newVertex.x << "," << newVertex.y << "," << newVertex.z <<">"<< std::endl;
 			std::cout << "end here"<<std::endl;*/
 			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);
