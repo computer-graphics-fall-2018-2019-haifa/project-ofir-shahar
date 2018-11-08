@@ -13,6 +13,7 @@
 #include <nfd.h>
 #include <random>
 #include "Renderer.h"
+#include <iostream>
 
 bool showDemoWindow = false;
 bool showAnotherWindow = false;
@@ -44,41 +45,68 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		static float scaleX = 0.0f;
 		static float scaleY = 0.0f;
 		static float scaleZ = 0.0f;
+		static float translateX = 0.0f;
+		static float translateY = 0.0f;
+		static float translateZ = 0.0f;
+		static float ar = 1.0;
+		static float n = 1.0;
+		static float fa = 10.0;
 		ImGui::Begin("Ofir And Shahar Project");                          // Create a window called "Hello, world!" and append into it.
 		
 		/*ImGui::Text("This is some useful text.");*/               // Display some text (you can use a format strings too)
 		//ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our window open/close state
 		//ImGui::Checkbox("Another Window", &showAnotherWindow);
 		ImGui::Text("Current Camera:");
-		if (ImGui::SliderFloat("scale", &f, 0.0f, 2000.0f)) {
-			renderer.setScaleNumber(f);
-		}// Edit 1 float using a slider from 0.0f to 2000.0f
-		if (ImGui::SliderFloat("turn left or right", &turnUpDown, 0.0f, 360.0f)) {
+		
+		if (ImGui::SliderFloat("turn left or right", &turnUpDown, 0.0f, 360.0f) && renderer.isHasModel()) {
 			renderer.setEyeX(turnUpDown);
 		}// Edit 1 float using a slider from 0.0f to 2000.0f
-		if (ImGui::SliderFloat("FOV", &fov, 0.0f, 90.0f)) {
-			renderer.setFov(fov);
+		if (ImGui::SliderFloat("FOV", &fov, 0.0f, 90.0f) && renderer.isHasModel()) {
+			renderer.setPerspective(fov,ar,n,fa);
+		}
+		if (ImGui::SliderFloat("ASPECT RATIO", &ar, 1.0f, 90.0f) && renderer.isHasModel()) {
+			renderer.setPerspective(fov, ar, n, fa);
+		}
+		if (ImGui::SliderFloat("NEAR", &n, 1.0f, 90.0f) && renderer.isHasModel()) {
+			renderer.setPerspective(fov, ar, n, fa);
+		}
+		if (ImGui::SliderFloat("FAR", &fa, 10.0f, 150.0f) && renderer.isHasModel()) {
+			renderer.setPerspective(fov, ar, n, fa);
 		}
 		ImGui::Text("Current Object:");
 		ImGui::Text("Local Rotations");
-		if (ImGui::SliderFloat("Rotate local x", &rotateLocalX, 0.0, 360.0f)) {
+		if (ImGui::SliderFloat("Rotate local x", &rotateLocalX, 0.0, 360.0f) && renderer.isHasModel()) {
 			renderer.rotateLocalX(rotateLocalX);
 		}
-		if (ImGui::SliderFloat("Rotate local y", &rotateLocalY, 0.0, 360.0f)) {
+		if (ImGui::SliderFloat("Rotate local y", &rotateLocalY, 0.0, 360.0f) && renderer.isHasModel()) {
 			renderer.rotateLocalY(rotateLocalY);
 		}
-		if (ImGui::SliderFloat("Rotate local z", &rotateLocalZ, 0.0, 360.0f)) {
+		if (ImGui::SliderFloat("Rotate local z", &rotateLocalZ, 0.0, 360.0f) && renderer.isHasModel()) {
 			renderer.rotateLocalZ(rotateLocalZ);
 		}
-		if (ImGui::IsMouseDown(0)) {
+		ImGui::Text("Translations:");
+		if (ImGui::SliderFloat("Translate x", &translateX, -1280.0f, 1280.0f) && renderer.isHasModel()) {
+			renderer.translateX(translateX);
+		}
+		if (ImGui::SliderFloat("Translate y", &translateY, -1280.0f, 1280.0f) && renderer.isHasModel()) {
+			renderer.translateY(translateY);
+		}
+		if (ImGui::SliderFloat("Translate z", &translateZ, -1280.0f, 1280.0f) && renderer.isHasModel()) {
+			renderer.translateZ(translateZ);
+		}
+		ImGui::Text("Scaling:");
+		if (ImGui::SliderFloat("scale", &f, 0.0f, 2000.0f) && renderer.isHasModel()) {
+			renderer.setScaleNumber(f);
+		}
+		if (ImGui::IsMouseDown(0) && renderer.isHasModel()) {
 			//IMPLEMENT HERE WHAT HAPPENS WHEN ------LEFT MOUSE BUTTON ------- IS DOWN
 			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
 		}
-		if (ImGui::IsMouseDown(1)) {
+		if (ImGui::IsMouseDown(1) && renderer.isHasModel()) {
 			//IMPLEMENT HERE WHAT HAPPENS WHEN ------RIGHT MOUSE BUTTON ------- IS DOWN
 			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
 		}
-		if (ImGui::IsMouseDown(2)) {
+		if (ImGui::IsMouseDown(2) && renderer.isHasModel()) {
 			//IMPLEMENT HERE WHAT HAPPENS WHEN ------MIDDLE MOUSE BUTTON ------- IS DOWN
 			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
 		}
@@ -118,9 +146,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					nfdresult_t result = NFD_OpenDialog("obj;png,jpg", NULL, &outPath);
 					if (result == NFD_OKAY) {
 						scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(outPath)));
+						renderer.setHasModel();
 						renderer.setEyeX(0);
-						renderer.setScaleNumber(1800);
-						renderer.setFov(45);
+						renderer.setPerspective(50,1,1,10);
 						free(outPath);
 					}
 					else if (result == NFD_CANCEL) {

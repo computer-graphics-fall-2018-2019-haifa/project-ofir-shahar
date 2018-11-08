@@ -23,6 +23,7 @@ private:
 	float fov;
 	Camera camera;
 	MeshModel* currentModel;
+	bool hasModel;
 
 	void putPixel(int x, int y, const glm::vec3& color);
 	void createBuffers(int viewportWidth, int viewportHeight);
@@ -36,7 +37,8 @@ private:
 public:
 	Renderer(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
 	~Renderer();
-
+	bool isHasModel();
+	void setHasModel();
 	void Render(const Scene& scene);
 	void SwapBuffers();
 	void ClearColorBuffer(const glm::vec3& color);
@@ -46,9 +48,12 @@ public:
 	//float getScaleNumber();
 	void setScaleNumber(float f);
 	void setEyeX(float eyex);
-	void setFov(float f);
+	void setPerspective(float f, float ar, float n, float fa);
 	void rotateLocalX(float x);
 	void rotateLocalY(float y);
 	void rotateLocalZ(float z);
+	void translateX(float x);
+	void translateY(float y);
+	void translateZ(float z);
 	// Add more methods/functionality as needed...
 };

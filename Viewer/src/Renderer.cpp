@@ -14,11 +14,12 @@
 
 Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int viewportY) :
 	colorBuffer(nullptr),
-	zBuffer(nullptr)
+	zBuffer(nullptr),
+	hasModel(false)
 {
 	initOpenGLRendering();
 	SetViewport(viewportWidth, viewportHeight, viewportX, viewportY);
-	setScaleNumber(50);
+	//setScaleNumber(50);
 }
 
 Renderer::~Renderer()
@@ -27,6 +28,13 @@ Renderer::~Renderer()
 	{
 		delete[] colorBuffer;
 	}
+}
+
+bool Renderer::isHasModel() {
+	return hasModel;
+}
+void Renderer::setHasModel() {
+	this->hasModel = true;
 }
 void Renderer::setEyeX(float eyex) {
 	glm::vec3 eye;
@@ -44,8 +52,21 @@ void Renderer::rotateLocalY(float y) {
 void Renderer::rotateLocalZ(float z) {
 	currentModel->setRotationTransform(1, 1, z);
 }
-void Renderer::setFov(float f) {
-	camera.SetPerspectiveProjection(f, 1, 1, 10);
+
+void Renderer::translateX(float xt) {
+	if (currentModel != NULL)
+		currentModel->setTranslationTransform(xt, 0, 0);
+}
+void Renderer::translateY(float yt) {
+	if (currentModel != NULL)
+		currentModel->setTranslationTransform(0, yt, 0);
+}
+void Renderer::translateZ(float zt) {
+	if (currentModel != NULL)
+		currentModel->setTranslationTransform(0, 0, zt);
+}
+void Renderer::setPerspective(float f, float ar, float n, float fa) {
+	camera.SetPerspectiveProjection(f, ar, n, fa);
 }
 void Renderer::putPixel(int i, int j, const glm::vec3& color)
 {
@@ -56,7 +77,9 @@ void Renderer::putPixel(int i, int j, const glm::vec3& color)
 	colorBuffer[INDEX(viewportWidth, i, j, 2)] = color.z;
 }
 void Renderer::setScaleNumber(float f) {
-	this->scaleNumber = f;
+	//this->scaleNumber = f;
+	if (currentModel!=NULL)
+		currentModel->setScaleTransform(f,f,f);
 }
 void Renderer::createBuffers(int viewportWidth, int viewportHeight)
 {
@@ -103,10 +126,10 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 	float x1, x2, y1, y2;
 	// order the points so one is left and one is right depending on x1 and x2 values.
 	if (scale) {
-		x1 = viewportWidth/2 + (p1.x * this->scaleNumber);
-		x2 = viewportWidth/2 + (p2.x * this->scaleNumber);
-		y1 = viewportHeight/2 + (p1.y * this->scaleNumber);
-		y2 = viewportHeight/2 + (p2.y * this->scaleNumber);
+		x1 = viewportWidth/2 + (p1.x);
+		x2 = viewportWidth/2 + (p2.x);
+		y1 = viewportHeight/2 + (p1.y);
+		y2 = viewportHeight/2 + (p2.y);
 	}
 	else {
 		x1 = p1.x;
@@ -249,6 +272,7 @@ void Renderer::Render(const Scene& scene)
 		model = (*it);
 		currentModel = &(*model);
 		glm::mat4 localTransform = currentModel->GetLocalTransform();
+		glm::mat4 translateTransform = currentModel->getTranslationTransform();
 		//get the faces from the pointer to the model
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
@@ -260,11 +284,17 @@ void Renderer::Render(const Scene& scene)
 		// and multiply each vertex by view, projection and viewport transformation.
 		// ######################################################
 		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
-			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 0);
+			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 1);
 			//std::cout << "<"<<newVertex.x <<","<<newVertex.y<<","<<newVertex.z<< ">" << std::endl;
 			newVertex = localTransform * newVertex;
+			//float w = newVertex.w;
+			//newVertex.w = 1;
+			newVertex = translateTransform * newVertex;
+			newVertex.w = 0;
 			newVertex = camera.getViewTransformation()*newVertex;
+			newVertex.w = 1;
 			newVertex = camera.getProjectionTformation()*newVertex;
+
 			/*std::cout << "<" << newVertex.x << "," << newVertex.y << "," << newVertex.z <<">"<< std::endl;
 			std::cout << "end here"<<std::endl;*/
 			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);

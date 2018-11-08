@@ -9,8 +9,8 @@
 MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName) :
 	modelName(modelName),
 	localTransform(glm::mat4(1)),
-	worldTransform(glm::mat4x4(1)),
-	scaleTransform(glm::mat4(1)),
+	worldTransform(glm::mat4(1)),
+	scaleTransform(glm::mat4(1500)),
 	rotationTransform(glm::mat4(1)),
 	xRotation(glm::mat4(1)),
 	yRotation(glm::mat4(1)),
@@ -20,7 +20,7 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3
 	vertices(vertices),
 	normals(normals)
 {
-
+	setScaleTransform(1500, 1500, 1500);
 }
 
 MeshModel::~MeshModel()
@@ -28,12 +28,16 @@ MeshModel::~MeshModel()
 
 }
 
-void MeshModel::SetWorldTransformation(const glm::mat4x4& worldTransform)
+void MeshModel::SetWorldTransformation(const glm::mat4& worldTransform)
 {
 	this->worldTransform = worldTransform;
 }
 
-const glm::mat4x4& MeshModel::GetWorldTransformation() const
+const glm::mat4& MeshModel::getTranslationTransform() const {
+	return this->translationTransform;
+}
+
+const glm::mat4& MeshModel::GetWorldTransformation() const
 {
 	return worldTransform;
 }
@@ -74,10 +78,16 @@ void MeshModel::setScaleTransform(float xFactor, float yFactor, float zFactor) {
 	glm::vec4 yVec(0, yFactor, 0, 0);
 	glm::vec4 zVec(0, 0, zFactor, 0);
 	glm::vec4 lastVec(0, 0, 0, 1);
-	this->scaleTransform = glm::mat4(xVec, yVec, zVec, lastVec);
+	scaleTransform = glm::mat4(xVec, yVec, zVec, lastVec);
 	localTransform = this->rotationTransform * this->scaleTransform;
 }
-
+void MeshModel::setTranslationTransform(float x, float y, float z) {
+	glm::vec4 xVec = translationTransform[0];
+	glm::vec4 yVec = translationTransform[1];
+	glm::vec4 zVec = translationTransform[2];
+	glm::vec4 lVec(x, y, z, 1);
+	translationTransform = glm::mat4(xVec, yVec, zVec, lVec);
+}
 void MeshModel::setRotationTransform(float xDegree, float yDegree, float zDegree) {
 	if (yDegree == 1 && zDegree == 1) {
 		auto rad = xDegree * PI / 180;
@@ -113,6 +123,9 @@ void MeshModel::setRotationTransform(float xDegree, float yDegree, float zDegree
 		localTransform = this->rotationTransform * this->scaleTransform;
 	}
 }
-MeshModel::MeshModel() {
 
+const glm::mat4& MeshModel::GetScaleTransform() const {
+	return this->scaleTransform;
+}
+MeshModel::MeshModel() {
 }
