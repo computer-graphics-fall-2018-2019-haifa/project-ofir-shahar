@@ -53,17 +53,23 @@ void Renderer::rotateLocalZ(float z) {
 	currentModel->setRotationTransform(1, 1, z);
 }
 
-void Renderer::translateX(float xt) {
-	if (currentModel != NULL)
-		currentModel->setTranslationTransform(xt, 0, 0);
+void Renderer::rotateWorldX(float x) {
+	currentModel->setWorldRotation(x, 1, 1);
 }
-void Renderer::translateY(float yt) {
-	if (currentModel != NULL)
-		currentModel->setTranslationTransform(0, yt, 0);
+void Renderer::rotateWorldY(float y) {
+	currentModel->setWorldRotation(1, y, 1);
 }
-void Renderer::translateZ(float zt) {
+void Renderer::rotateWorldZ(float z) {
+	currentModel->setWorldRotation(1, 1, z);
+}
+void Renderer::setWorldTranslation(float x, float y, float z) {
 	if (currentModel != NULL)
-		currentModel->setTranslationTransform(0, 0, zt);
+		currentModel->setWorldTranslation(x, y, z);
+}
+
+void Renderer::translate(float xt, float yt, float zt) {
+	if (currentModel != NULL)
+		currentModel->setTranslationTransform(xt, yt, zt);
 }
 void Renderer::setPerspective(float f, float ar, float n, float fa) {
 	camera.SetPerspectiveProjection(f, ar, n, fa);
@@ -272,7 +278,12 @@ void Renderer::Render(const Scene& scene)
 		model = (*it);
 		currentModel = &(*model);
 		glm::mat4 localTransform = currentModel->GetLocalTransform();
+		glm::mat4 scaleTransform = currentModel->GetScaleTransform();
 		glm::mat4 translateTransform = currentModel->getTranslationTransform();
+		glm::mat4 rotationTransform = currentModel->GetRotationTransform();
+		glm::mat4 worldTransform = currentModel->GetWorldTransformation();
+		glm::mat4 worldTranslate = currentModel->GetWorldTranslate();
+		glm::mat4 worldRotate = currentModel->GetWorldRotation();
 		//get the faces from the pointer to the model
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
@@ -285,16 +296,22 @@ void Renderer::Render(const Scene& scene)
 		// ######################################################
 		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
 			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 1);
-			//std::cout << "<"<<newVertex.x <<","<<newVertex.y<<","<<newVertex.z<< ">" << std::endl;
-			newVertex = localTransform * newVertex;
-			//float w = newVertex.w;
-			//newVertex.w = 1;
+			// set LOCAL tranformations first.
+			newVertex = scaleTransform * newVertex;
+			newVertex.w = 1;
+			newVertex = rotationTransform * newVertex;
+			newVertex.w = 1;
 			newVertex = translateTransform * newVertex;
+			// new set WORLD transformations.
+			newVertex.w = 1;
+			newVertex = worldRotate * newVertex;
+			newVertex.w = 1;
+			newVertex = worldTranslate * newVertex;
 			newVertex.w = 0;
 			newVertex = camera.getViewTransformation()*newVertex;
-			newVertex.w = 1;
+			newVertex.w = 0;
 			newVertex = camera.getProjectionTformation()*newVertex;
-
+			//newVertex = glm::vec4(newVertex.x / newVertex.w, newVertex.y / newVertex.w, newVertex.z / newVertex.w, newVertex.w / newVertex.w);
 			/*std::cout << "<" << newVertex.x << "," << newVertex.y << "," << newVertex.z <<">"<< std::endl;
 			std::cout << "end here"<<std::endl;*/
 			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);

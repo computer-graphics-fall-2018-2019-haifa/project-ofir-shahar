@@ -19,9 +19,16 @@ private:
 	glm::mat4 scaleTransform;
 	glm::mat4 rotationTransform;
 	glm::mat4 translationTransform;
+
+	glm::mat4 worldTranslation;
+	glm::mat4 worldRotation;
+	
 	glm::mat4 xRotation;
 	glm::mat4 yRotation;
 	glm::mat4 zRotation;
+	glm::mat4 xRotationWorld;
+	glm::mat4 yRotationWorld;
+	glm::mat4 zRotationWorld;
 	glm::mat4 worldTransform;
 	glm::vec4 color;
 	std::string modelName;
@@ -34,6 +41,10 @@ public:
 	const glm::mat4& GetWorldTransformation() const;
 	const glm::mat4& GetLocalTransform() const;
 	const glm::mat4& GetScaleTransform() const;
+	const glm::mat4& GetTranslationTransform() const;
+	const glm::mat4& GetRotationTransform() const;
+	const glm::mat4& GetWorldTranslate() const;
+	const glm::mat4& GetWorldRotation() const;
 	const glm::vec4& GetColor() const;
 	void SetColor(const glm::vec4& color);
 
@@ -50,6 +61,10 @@ public:
 	void setRotationTransform(float xDegree, float yDegree, float zDegree);
 
 	void setTranslationTransform(float x, float y, float z);
+
+	void setWorldTranslation(float x, float y, float z);
+
+	void setWorldRotation(float xDegree, float yDegree, float zDegree);
 
 	const glm::mat4& getTranslationTransform() const;
 	// Add more methods/functionality as needed...

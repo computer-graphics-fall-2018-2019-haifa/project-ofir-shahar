@@ -10,11 +10,16 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3
 	modelName(modelName),
 	localTransform(glm::mat4(1)),
 	worldTransform(glm::mat4(1)),
+	worldTranslation(glm::mat4(1)),
+	worldRotation(glm::mat4(1)),
 	scaleTransform(glm::mat4(1500)),
 	rotationTransform(glm::mat4(1)),
 	xRotation(glm::mat4(1)),
 	yRotation(glm::mat4(1)),
 	zRotation(glm::mat4(1)),
+	xRotationWorld(glm::mat4(1)),
+	yRotationWorld(glm::mat4(1)),
+	zRotationWorld(glm::mat4(1)),
 	translationTransform(glm::mat4(1)),
 	faces(faces),
 	vertices(vertices),
@@ -73,13 +78,27 @@ const std::vector<glm::vec3>& MeshModel::GetNormals() {
 	return this->normals;
 }
 
+const glm::mat4& MeshModel::GetRotationTransform() const {
+	return this->rotationTransform;
+}
+const glm::mat4& MeshModel::GetTranslationTransform() const {
+	return this->translationTransform;
+}
+
+const glm::mat4& MeshModel::GetWorldTranslate() const {
+	return this->worldTranslation;
+}
+const glm::mat4& MeshModel::GetWorldRotation() const {
+	return this->worldRotation;
+}
+
 void MeshModel::setScaleTransform(float xFactor, float yFactor, float zFactor) {
 	glm::vec4 xVec(xFactor, 0, 0, 0);
 	glm::vec4 yVec(0, yFactor, 0, 0);
 	glm::vec4 zVec(0, 0, zFactor, 0);
 	glm::vec4 lastVec(0, 0, 0, 1);
 	scaleTransform = glm::mat4(xVec, yVec, zVec, lastVec);
-	localTransform = this->rotationTransform * this->scaleTransform;
+	localTransform = this->translationTransform * (this->rotationTransform * this->scaleTransform);
 }
 void MeshModel::setTranslationTransform(float x, float y, float z) {
 	glm::vec4 xVec = translationTransform[0];
@@ -87,7 +106,18 @@ void MeshModel::setTranslationTransform(float x, float y, float z) {
 	glm::vec4 zVec = translationTransform[2];
 	glm::vec4 lVec(x, y, z, 1);
 	translationTransform = glm::mat4(xVec, yVec, zVec, lVec);
+	localTransform = this->translationTransform * (this->rotationTransform * this->scaleTransform);
 }
+
+void MeshModel::setWorldTranslation(float x, float y, float z) {
+	glm::vec4 xVec = worldTranslation[0];
+	glm::vec4 yVec = worldTranslation[1];
+	glm::vec4 zVec = worldTranslation[2];
+	glm::vec4 lVec(x, y, z, 1);
+	worldTranslation = glm::mat4(xVec, yVec, zVec, lVec);
+	worldTransform = this->worldTranslation * this->worldRotation;
+}
+
 void MeshModel::setRotationTransform(float xDegree, float yDegree, float zDegree) {
 	if (yDegree == 1 && zDegree == 1) {
 		auto rad = xDegree * PI / 180;
@@ -98,7 +128,7 @@ void MeshModel::setRotationTransform(float xDegree, float yDegree, float zDegree
 		xRotation = glm::mat4(xVec, yVec, zVec, lastVec);
 		this->rotationTransform = this->yRotation*xRotation;
 		this->rotationTransform = this->zRotation*rotationTransform;
-		localTransform = this->rotationTransform * this->scaleTransform;
+		localTransform = this->translationTransform * (this->rotationTransform * this->scaleTransform);
 	}
 	else if (xDegree == 1 && zDegree == 1) {
 		auto rad = yDegree * PI / 180;
@@ -109,7 +139,7 @@ void MeshModel::setRotationTransform(float xDegree, float yDegree, float zDegree
 		yRotation = glm::mat4(xVec, yVec, zVec, lastVec);
 		this->rotationTransform = this->yRotation*xRotation;
 		this->rotationTransform = this->zRotation*rotationTransform;
-		localTransform = this->rotationTransform * this->scaleTransform;
+		localTransform = this->translationTransform*(this->rotationTransform * this->scaleTransform);
 	}
 	else if (xDegree ==1 && yDegree == 1) {
 		auto rad = zDegree * PI / 180;
@@ -120,10 +150,45 @@ void MeshModel::setRotationTransform(float xDegree, float yDegree, float zDegree
 		zRotation = glm::mat4(xVec, yVec, zVec, lastVec);
 		this->rotationTransform = this->yRotation*xRotation;
 		this->rotationTransform = this->zRotation*rotationTransform;
-		localTransform = this->rotationTransform * this->scaleTransform;
+		localTransform = this->translationTransform*(this->rotationTransform * this->scaleTransform);
 	}
 }
 
+void MeshModel::setWorldRotation(float xDegree, float yDegree, float zDegree) {
+	if (yDegree == 1 && zDegree == 1) {
+		auto rad = xDegree * PI / 180;
+		glm::vec4 xVec(1, 0, 0, 0);
+		glm::vec4 yVec(0, cos(rad), sin(rad), 0);
+		glm::vec4 zVec(0, -sin(rad), cos(rad), 0);
+		glm::vec4 lastVec(0, 0, 0, 1);
+		xRotationWorld = glm::mat4(xVec, yVec, zVec, lastVec);
+		this->worldRotation = this->yRotationWorld*xRotationWorld;
+		this->worldRotation = this->zRotationWorld*worldRotation;
+		worldTransform = this->worldTranslation * this->worldRotation;
+	}
+	else if (xDegree == 1 && zDegree == 1) {
+		auto rad = yDegree * PI / 180;
+		glm::vec4 xVec(cos(rad), 0, sin(rad), 0);
+		glm::vec4 yVec(0, 1, 0, 0);
+		glm::vec4 zVec(-sin(rad), 0, cos(rad), 0);
+		glm::vec4 lastVec(0, 0, 0, 1);
+		yRotationWorld = glm::mat4(xVec, yVec, zVec, lastVec);
+		this->worldRotation = this->yRotationWorld*xRotationWorld;
+		this->worldRotation = this->zRotationWorld*worldRotation;
+		worldTransform = this->worldTranslation * this->worldRotation;
+	}
+	else if (xDegree == 1 && yDegree == 1) {
+		auto rad = zDegree * PI / 180;
+		glm::vec4 xVec(cos(rad), sin(rad), 0, 0);
+		glm::vec4 yVec(-sin(rad), cos(rad), 0, 0);
+		glm::vec4 zVec(0, 0, 1, 0);
+		glm::vec4 lastVec(0, 0, 0, 1);
+		zRotationWorld = glm::mat4(xVec, yVec, zVec, lastVec);
+		this->worldRotation = this->yRotationWorld*xRotationWorld;
+		this->worldRotation = this->zRotationWorld*worldRotation;
+		worldTransform = this->worldTranslation * this->worldRotation;
+	}
+}
 const glm::mat4& MeshModel::GetScaleTransform() const {
 	return this->scaleTransform;
 }

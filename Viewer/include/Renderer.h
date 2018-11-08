@@ -52,8 +52,10 @@ public:
 	void rotateLocalX(float x);
 	void rotateLocalY(float y);
 	void rotateLocalZ(float z);
-	void translateX(float x);
-	void translateY(float y);
-	void translateZ(float z);
+	void rotateWorldX(float x);
+	void rotateWorldY(float y);
+	void rotateWorldZ(float z);
+	void translate(float x, float y, float z);
+	void setWorldTranslation(float x, float y, float z);
 	// Add more methods/functionality as needed...
 };

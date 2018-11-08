@@ -51,6 +51,12 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		static float ar = 1.0;
 		static float n = 1.0;
 		static float fa = 10.0;
+		static float worldX = 0.0f;
+		static float worldY = 0.0f;
+		static float worldZ = 0.0f;
+		static float rotateWorldX = 0.0f;
+		static float rotateWorldY = 0.0f;
+		static float rotateWorldZ = 0.0f;
 		ImGui::Begin("Ofir And Shahar Project");                          // Create a window called "Hello, world!" and append into it.
 		
 		/*ImGui::Text("This is some useful text.");*/               // Display some text (you can use a format strings too)
@@ -84,19 +90,39 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		if (ImGui::SliderFloat("Rotate local z", &rotateLocalZ, 0.0, 360.0f) && renderer.isHasModel()) {
 			renderer.rotateLocalZ(rotateLocalZ);
 		}
-		ImGui::Text("Translations:");
+		ImGui::Text("Local Translations:");
 		if (ImGui::SliderFloat("Translate x", &translateX, -1280.0f, 1280.0f) && renderer.isHasModel()) {
-			renderer.translateX(translateX);
+			renderer.translate(translateX,translateY,translateZ);
 		}
 		if (ImGui::SliderFloat("Translate y", &translateY, -1280.0f, 1280.0f) && renderer.isHasModel()) {
-			renderer.translateY(translateY);
+			renderer.translate(translateX, translateY, translateZ);
 		}
 		if (ImGui::SliderFloat("Translate z", &translateZ, -1280.0f, 1280.0f) && renderer.isHasModel()) {
-			renderer.translateZ(translateZ);
+			renderer.translate(translateX, translateY, translateZ);
 		}
 		ImGui::Text("Scaling:");
 		if (ImGui::SliderFloat("scale", &f, 0.0f, 2000.0f) && renderer.isHasModel()) {
 			renderer.setScaleNumber(f);
+		}
+		ImGui::Text("Object to World Translations");
+		if (ImGui::SliderFloat("X:", &worldX, 0.0f, 1280.0f)) {
+			renderer.setWorldTranslation(worldX, worldY, worldZ);
+		}
+		if (ImGui::SliderFloat("Y:", &worldY, 0.0f, 1280.0f)) {
+			renderer.setWorldTranslation(worldX, worldY, worldZ);
+		}
+		if (ImGui::SliderFloat("Z:", &worldZ, 0.0f, 1280.0f)) {
+			renderer.setWorldTranslation(worldX, worldY, worldZ);
+		}
+		ImGui::Text("World Rotations");
+		if (ImGui::SliderFloat("Rotate world x", &rotateWorldX, 0.0, 360.0f) && renderer.isHasModel()) {
+			renderer.rotateWorldX(rotateWorldX);
+		}
+		if (ImGui::SliderFloat("Rotate world y", &rotateWorldY, 0.0, 360.0f) && renderer.isHasModel()) {
+			renderer.rotateWorldY(rotateWorldY);
+		}
+		if (ImGui::SliderFloat("Rotate world z", &rotateWorldZ, 0.0, 360.0f) && renderer.isHasModel()) {
+			renderer.rotateWorldZ(rotateLocalZ);
 		}
 		if (ImGui::IsMouseDown(0) && renderer.isHasModel()) {
 			//IMPLEMENT HERE WHAT HAPPENS WHEN ------LEFT MOUSE BUTTON ------- IS DOWN
@@ -148,6 +174,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 						scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(outPath)));
 						renderer.setHasModel();
 						renderer.setEyeX(0);
+						//renderer.translate(640, 360, 0);
 						renderer.setPerspective(50,1,1,10);
 						free(outPath);
 					}
