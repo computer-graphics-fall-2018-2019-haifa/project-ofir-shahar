@@ -14,11 +14,12 @@
 
 Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int viewportY) :
 	colorBuffer(nullptr),
-	zBuffer(nullptr)
+	zBuffer(nullptr),
+	hasModel(false)
 {
 	initOpenGLRendering();
 	SetViewport(viewportWidth, viewportHeight, viewportX, viewportY);
-	setScaleNumber(50);
+	//setScaleNumber(50);
 }
 
 Renderer::~Renderer()
@@ -27,6 +28,13 @@ Renderer::~Renderer()
 	{
 		delete[] colorBuffer;
 	}
+}
+
+bool Renderer::isHasModel() {
+	return hasModel;
+}
+void Renderer::setHasModel() {
+	this->hasModel = true;
 }
 void Renderer::setEyeX(float eyex) {
 	glm::vec3 eye;
@@ -44,8 +52,27 @@ void Renderer::rotateLocalY(float y) {
 void Renderer::rotateLocalZ(float z) {
 	currentModel->setRotationTransform(1, 1, z);
 }
-void Renderer::setFov(float f) {
-	camera.SetPerspectiveProjection(f, 1, 1, 10);
+
+void Renderer::rotateWorldX(float x) {
+	currentModel->setWorldRotation(x, 1, 1);
+}
+void Renderer::rotateWorldY(float y) {
+	currentModel->setWorldRotation(1, y, 1);
+}
+void Renderer::rotateWorldZ(float z) {
+	currentModel->setWorldRotation(1, 1, z);
+}
+void Renderer::setWorldTranslation(float x, float y, float z) {
+	if (currentModel != NULL)
+		currentModel->setWorldTranslation(x, y, z);
+}
+
+void Renderer::translate(float xt, float yt, float zt) {
+	if (currentModel != NULL)
+		currentModel->setTranslationTransform(xt, yt, zt);
+}
+void Renderer::setPerspective(float f, float ar, float n, float fa) {
+	camera.SetPerspectiveProjection(f, ar, n, fa);
 }
 void Renderer::setProjection(bool p)
 {
@@ -64,7 +91,9 @@ void Renderer::putPixel(int i, int j, const glm::vec3& color)
 	colorBuffer[INDEX(viewportWidth, i, j, 2)] = color.z;
 }
 void Renderer::setScaleNumber(float f) {
-	this->scaleNumber = f;
+	//this->scaleNumber = f;
+	if (currentModel!=NULL)
+		currentModel->setScaleTransform(f,f,f);
 }
 void Renderer::createBuffers(int viewportWidth, int viewportHeight)
 {
@@ -111,10 +140,10 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 	float x1, x2, y1, y2;
 	// order the points so one is left and one is right depending on x1 and x2 values.
 	if (scale) {
-		x1 = viewportWidth/2 + (p1.x * this->scaleNumber);
-		x2 = viewportWidth/2 + (p2.x * this->scaleNumber);
-		y1 = viewportHeight/2 + (p1.y * this->scaleNumber);
-		y2 = viewportHeight/2 + (p2.y * this->scaleNumber);
+		x1 = viewportWidth/2 + (p1.x);
+		x2 = viewportWidth/2 + (p2.x);
+		y1 = viewportHeight/2 + (p1.y);
+		y2 = viewportHeight/2 + (p2.y);
 	}
 	else {
 		x1 = p1.x;
@@ -257,6 +286,12 @@ void Renderer::Render(const Scene& scene)
 		model = (*it);
 		currentModel = &(*model);
 		glm::mat4 localTransform = currentModel->GetLocalTransform();
+		glm::mat4 scaleTransform = currentModel->GetScaleTransform();
+		glm::mat4 translateTransform = currentModel->getTranslationTransform();
+		glm::mat4 rotationTransform = currentModel->GetRotationTransform();
+		glm::mat4 worldTransform = currentModel->GetWorldTransformation();
+		glm::mat4 worldTranslate = currentModel->GetWorldTranslate();
+		glm::mat4 worldRotate = currentModel->GetWorldRotation();
 		//get the faces from the pointer to the model
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
@@ -268,12 +303,30 @@ void Renderer::Render(const Scene& scene)
 		// and multiply each vertex by view, projection and viewport transformation.
 		// ######################################################
 		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
-			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 0);
+
+			//glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 0);
 			//std::cout << "<"<<newVertex.x <<","<<newVertex.y<<","<<newVertex.z<< ">" << std::endl;
-			newVertex = (this->projection) ? camera.getOrthographicTransformation() * camera.getViewTransformation()*newVertex : camera.getProjectionTformation() * camera.getViewTransformation()*newVertex;
-			newVertex = localTransform * newVertex;
+			//newVertex = (this->projection) ? camera.getOrthographicTransformation() * camera.getViewTransformation()*newVertex : camera.getProjectionTformation() * camera.getViewTransformation()*newVertex;
+			//newVertex = localTransform * newVertex;
+
+			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 1);
+			// set LOCAL tranformations first.
+			newVertex = scaleTransform * newVertex;
+			newVertex.w = 1;
+			newVertex = rotationTransform * newVertex;
+			newVertex.w = 1;
+			newVertex = translateTransform * newVertex;
+			// new set WORLD transformations.
+			newVertex.w = 1;
+			newVertex = worldRotate * newVertex;
+			newVertex.w = 1;
+			newVertex = worldTranslate * newVertex;
+			newVertex.w = 0;
+
 			newVertex = camera.getViewTransformation()*newVertex;
+			newVertex.w = 0;
 			newVertex = camera.getProjectionTformation()*newVertex;
+			//newVertex = glm::vec4(newVertex.x / newVertex.w, newVertex.y / newVertex.w, newVertex.z / newVertex.w, newVertex.w / newVertex.w);
 			/*std::cout << "<" << newVertex.x << "," << newVertex.y << "," << newVertex.z <<">"<< std::endl;
 			std::cout << "end here"<<std::endl;*/
 			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);

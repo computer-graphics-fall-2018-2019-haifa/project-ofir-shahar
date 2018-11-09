@@ -99,6 +99,8 @@ void Camera::SetPerspectiveProjection(
 	const float far)
 {
 	float nearHeight = 2*near * tan(0.5*fovy * PI / 180); 
+	float nearHeight = 2*near * tan(0.5*fovy * PI / 180);
+	float num = 1 / tan(0.5 * fovy * PI / 180);
 	float nearWidth = aspectRatio * nearHeight; 
 	float t = 0.5 * nearHeight;
 	float b = -0.5 * nearHeight;
@@ -107,8 +109,8 @@ void Camera::SetPerspectiveProjection(
 	glm::vec4 v1(near / r, 0, 0, 0);
 	glm::vec4 v2(0, near / t, 0, 0);
 	glm::vec4 v3(0, 0, -1 * (far + near) / (far - near), -1);
-	glm::vec4 v4(0, 0, -2 * far * near / (far - near), 0);  
-	this->projectionTransformation = glm::mat4x4(v1, v2, v3, v4); 
+	glm::vec4 v4(0, 0, -2 *( far * near )/ (far - near), 0);
+	this->projectionTransformation = glm::mat4(v1, v2, v3, v4); 
 }
 
 void Camera::SetZoom(const float zoom)
