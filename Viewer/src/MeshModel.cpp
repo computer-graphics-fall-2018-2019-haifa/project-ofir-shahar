@@ -33,6 +33,24 @@ MeshModel::~MeshModel()
 
 }
 
+void MeshModel::createCube()
+{
+	
+	for (std::vector<glm::vec3>::iterator it = this->vertices.begin(); it != this->vertices.end(); it++)
+	{
+		this->cube.back.z = (this->cube.back.z >= (*it).z)  ? this->cube.back.z : (*it).z; 
+		this->cube.front.z = (this->cube.front.z <= (*it).z) ? this->cube.front.z : (*it).z;
+
+		this->cube.right.x = (this->cube.right.x >= (*it).x) ? this->cube.right.x : (*it).x;
+		this->cube.left.x = (this->cube.left.x <= (*it).x) ? this->cube.left.x : (*it).x;
+
+		this->cube.top.y = (this->cube.top.y >= (*it).y) ? this->cube.top.y : (*it).y;
+		this->cube.right.y = (this->cube.top.y >= (*it).y) ? this->cube.top.y : (*it).y;
+	}
+
+	//std::cout << "back:" << this->cube.back.z << " " << this->cube.y << std::endl;  
+}
+
 void MeshModel::SetWorldTransformation(const glm::mat4& worldTransform)
 {
 	this->worldTransform = worldTransform;
@@ -40,6 +58,16 @@ void MeshModel::SetWorldTransformation(const glm::mat4& worldTransform)
 
 const glm::mat4& MeshModel::getTranslationTransform() const {
 	return this->translationTransform;
+}
+
+void MeshModel::setCube(const Cube c)
+{
+	this->cube = c; 
+}
+
+const Cube MeshModel::getCube() const 
+{
+	return this->cube;
 }
 
 const glm::mat4& MeshModel::GetWorldTransformation() const
