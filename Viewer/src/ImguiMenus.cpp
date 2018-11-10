@@ -139,8 +139,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
-		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-			counter++;
+		if (ImGui::Button("cube"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			renderer.setToDrawaCube(!renderer.getToDrawaCube());
+			std::cout << "draw bube: " << renderer.getToDrawaCube() << std::endl; 
+		}
 		if (ImGui::Button("Projection"))
 		{
 			renderer.setProjection(!renderer.getProjection()); 

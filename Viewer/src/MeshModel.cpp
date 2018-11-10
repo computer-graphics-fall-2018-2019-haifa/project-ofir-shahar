@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sstream>
 #define PI 3.14159265358
+
+//ctor
 MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName) :
 	modelName(modelName),
 	localTransform(glm::mat4(1)),
@@ -25,6 +27,8 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3
 	vertices(vertices),
 	normals(normals)
 {
+	this->drawCube = false;
+	this->createCube();
 	setScaleTransform(1500, 1500, 1500);
 }
 
@@ -35,20 +39,34 @@ MeshModel::~MeshModel()
 
 void MeshModel::createCube()
 {
-	
+	std::cout << "cube created" << std::endl;
 	for (std::vector<glm::vec3>::iterator it = this->vertices.begin(); it != this->vertices.end(); it++)
 	{
-		this->cube.back.z = (this->cube.back.z >= (*it).z)  ? this->cube.back.z : (*it).z; 
-		this->cube.front.z = (this->cube.front.z <= (*it).z) ? this->cube.front.z : (*it).z;
+		this->cube.back = (this->cube.back >= (*it).z)  ? this->cube.back : (*it).z; 
+		this->cube.front = (this->cube.front <= (*it).z) ? this->cube.front : (*it).z;
 
-		this->cube.right.x = (this->cube.right.x >= (*it).x) ? this->cube.right.x : (*it).x;
-		this->cube.left.x = (this->cube.left.x <= (*it).x) ? this->cube.left.x : (*it).x;
+		this->cube.right = (this->cube.right >= (*it).x) ? this->cube.right : (*it).x;
+		this->cube.left = (this->cube.left <= (*it).x) ? this->cube.left : (*it).x;
 
-		this->cube.top.y = (this->cube.top.y >= (*it).y) ? this->cube.top.y : (*it).y;
-		this->cube.right.y = (this->cube.top.y >= (*it).y) ? this->cube.top.y : (*it).y;
+		this->cube.top = (this->cube.top >= (*it).y) ? this->cube.top : (*it).y;
+		this->cube.right = (this->cube.top >= (*it).y) ? this->cube.top : (*it).y;
 	}
 
-	//std::cout << "back:" << this->cube.back.z << " " << this->cube.y << std::endl;  
+	//calculate the cube corners
+	this->cube.fbl = glm::vec3(this->getCube().left, this->getCube().bottom, this->getCube().front);
+	this->cube.fbr = glm::vec3(this->getCube().right, this->getCube().bottom, this->getCube().front);
+
+	this->cube.ftl = glm::vec3(this->getCube().left, this->getCube().top, this->getCube().front);
+	this->cube.ftr = glm::vec3(this->getCube().right, this->getCube().top, this->getCube().front);
+
+	this->cube.bbl = glm::vec3(this->getCube().left, this->getCube().bottom, this->getCube().back);
+	this->cube.bbr = glm::vec3(this->getCube().right, this->getCube().bottom, this->getCube().back);
+
+	this->cube.btl = glm::vec3(this->getCube().left, this->getCube().top, this->getCube().back);
+	this->cube.btr = glm::vec3(this->getCube().right, this->getCube().top, this->getCube().back);
+
+	//debug
+	std::cout << "back:" << this->cube.back << " " << this->getCube().back << std::endl;  
 }
 
 void MeshModel::SetWorldTransformation(const glm::mat4& worldTransform)
@@ -68,6 +86,16 @@ void MeshModel::setCube(const Cube c)
 const Cube MeshModel::getCube() const 
 {
 	return this->cube;
+}
+
+void MeshModel::setDrawCube(const bool b)
+{
+	this->drawCube = b;
+}
+
+const bool MeshModel::getDrawCube() const
+{
+	return this->drawCube;
 }
 
 const glm::mat4& MeshModel::GetWorldTransformation() const

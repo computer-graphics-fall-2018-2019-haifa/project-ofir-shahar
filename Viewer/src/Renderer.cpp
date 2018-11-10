@@ -240,6 +240,25 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 	}
 }
 
+void Renderer::drawCube()
+{
+	//draw the cube
+	DrawLine(this->currentModel->getCube().fbl, this->currentModel->getCube().fbr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(this->currentModel->getCube().fbr, this->currentModel->getCube().ftr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(this->currentModel->getCube().ftr, this->currentModel->getCube().ftl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(this->currentModel->getCube().ftl, this->currentModel->getCube().fbl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+
+	DrawLine(this->currentModel->getCube().bbl, this->currentModel->getCube().bbr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(this->currentModel->getCube().bbr, this->currentModel->getCube().btr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(this->currentModel->getCube().btr, this->currentModel->getCube().btl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(this->currentModel->getCube().btl, this->currentModel->getCube().bbl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+
+	DrawLine(this->currentModel->getCube().fbl, this->currentModel->getCube().bbl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(this->currentModel->getCube().fbr, this->currentModel->getCube().bbr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(this->currentModel->getCube().ftl, this->currentModel->getCube().btl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(this->currentModel->getCube().ftr, this->currentModel->getCube().btr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+}
+
 
 
 void Renderer::Render(const Scene& scene)
@@ -256,25 +275,7 @@ void Renderer::Render(const Scene& scene)
 	color.y = 0.0;
 	color.z = 0.0;
 
-	// Draw a chess board in the middle of the screen
-	/*for (int i = 100; i < viewportWidth - 100; i++)
-	{
-		for (int j = 100; j < viewportHeight - 100; j++)
-		{
-			int mod_i = i / 50;
-			int mod_j = j / 50;
-
-			int odd = (mod_i + mod_j) % 2;
-			if (odd)
-			{
-				putPixel(i, j, glm::vec3(0, 1, 0));
-			}
-			else
-			{
-				putPixel(i, j, glm::vec3(1, 0, 0));
-			}
-		}
-	}*/
+	
 	
 	//we get the model list from the scene object that was passed to Render function
 	//models = vector of pointers (pointing to a MeshModel) representing this list.
@@ -296,6 +297,8 @@ void Renderer::Render(const Scene& scene)
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
 		std::vector<glm::vec3> vertices = (*model).GetVertices();
+
+		if (currentModel->getDrawCube()) drawCube(); 
 
 
 		// ############### IMPORTANT CODE HERE ##################
@@ -355,16 +358,8 @@ void Renderer::Render(const Scene& scene)
 			}
 		}
 	}
-	/*glm::vec4 p14 = glm::vec4(p1.x, p1.y, p1.z, 0);
-	glm::vec4 p24 = glm::vec4(p2.x, p2.y, p2.z, 0);
-=======
-	/*glm::vec4 p24 = glm::vec4(p2.x, p2.y, p2.z, 0);
->>>>>>> c382393077ff6dace273740e3d655e003e1f6cdb
-	p14 = camera.getViewTransformation()*p14;
-	p24 = camera.getViewTransformation()*p24;
-	p1 = glm::vec3(p14.x, p14.y, p14.z);
-	p2 = glm::vec3(p24.x, p24.y, p24.z);*/
-	//draw y and x axis at the center of the screen
+
+	
 	DrawLine(p1, p2, glm::vec3(0,0,0),false);
 	DrawLine(glm::vec3(viewportWidth / 2, 0, 0), glm::vec3(viewportWidth / 2, viewportHeight, 0), glm::vec3(0, 0, 0),false);
 	
