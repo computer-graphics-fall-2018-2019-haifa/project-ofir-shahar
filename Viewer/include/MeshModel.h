@@ -4,6 +4,12 @@
 #include <memory>
 #include "Face.h"
 
+typedef struct Cube {
+	float front, back, right, left, top, bottom;
+	glm::vec3 fbl, fbr, ftl, ftr, bbl, bbr, btl, btr;
+	glm::vec3 color; 
+}Cube;
+
 /*
  * MeshModel class.
  * This class represents a mesh model (with faces and normals informations).
@@ -18,7 +24,7 @@ private:
 	glm::mat4 localTransform;
 	glm::mat4 scaleTransform;
 	glm::mat4 rotationTransform;
-	glm::mat4 translationTransform;
+	glm::mat4 translationTransform, worldTranslation, xRotationWorld, yRotationWorld, zRotationWorld;
 
 	glm::mat4 worldRotation;
 	glm::mat4 xRotation;
@@ -27,6 +33,10 @@ private:
 	glm::mat4x4 worldTransform;
 	glm::vec4 color;
 	std::string modelName;
+	bool drawCube;
+	void createCube();
+	Cube cube; 
+
 
 public:
 	MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName = "");
@@ -62,5 +72,12 @@ public:
 	void setWorldRotation(float xDegree, float yDegree, float zDegree);
 
 	const glm::mat4& getTranslationTransform() const;
-	// Add more methods/functionality as needed...
+	
+	const Cube getCube() const { return this->cube; }
+
+	void setCube(const Cube c) { this->cube = c; }
+
+	const bool getDrawCube() { return this->drawCube; }
+
+	void setDrawCube(const bool b) { this->drawCube = b; }
 };

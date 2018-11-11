@@ -99,7 +99,7 @@ void Camera::SetPerspectiveProjection(
 	const float far)
 {
 	float nearHeight = 2*near * tan(0.5*fovy * PI / 180); 
-	float nearHeight = 2*near * tan(0.5*fovy * PI / 180);
+	//float nearHeight = 2*near * tan(0.5*fovy * PI / 180);
 	float num = 1 / tan(0.5 * fovy * PI / 180);
 	float nearWidth = aspectRatio * nearHeight; 
 	float t = 0.5 * nearHeight;

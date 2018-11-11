@@ -7,6 +7,7 @@
 #include <sstream>
 #define PI 3.14159265358
 
+
 //ctor
 MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName) :
 	modelName(modelName),
@@ -76,26 +77,6 @@ void MeshModel::SetWorldTransformation(const glm::mat4& worldTransform)
 
 const glm::mat4& MeshModel::getTranslationTransform() const {
 	return this->translationTransform;
-}
-
-void MeshModel::setCube(const Cube c)
-{
-	this->cube = c; 
-}
-
-const Cube MeshModel::getCube() const 
-{
-	return this->cube;
-}
-
-void MeshModel::setDrawCube(const bool b)
-{
-	this->drawCube = b;
-}
-
-const bool MeshModel::getDrawCube() const
-{
-	return this->drawCube;
 }
 
 const glm::mat4& MeshModel::GetWorldTransformation() const
