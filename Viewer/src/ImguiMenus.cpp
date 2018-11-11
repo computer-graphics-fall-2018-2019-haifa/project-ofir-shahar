@@ -125,9 +125,10 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		if (ImGui::SliderFloat("Rotate world z", &rotateWorldZ, 0.0, 360.0f) && renderer.isHasModel()) {
 			renderer.rotateWorldZ(rotateLocalZ);
 		}
-		if (ImGui::IsMouseDown(0) && renderer.isHasModel()) {
-			//IMPLEMENT HERE WHAT HAPPENS WHEN ------LEFT MOUSE BUTTON ------- IS DOWN
-			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
+		//left mouse down
+		if (ImGui::IsMouseDown(0) /*&& renderer.isHasModel() */) {
+			ImVec2 c = ImGui::GetMousePos();
+			std::cout << "x= " << c.x << " y=" << c.y << std::endl; 
 		}
 		if (ImGui::IsMouseDown(1) && renderer.isHasModel()) {
 			//IMPLEMENT HERE WHAT HAPPENS WHEN ------RIGHT MOUSE BUTTON ------- IS DOWN
