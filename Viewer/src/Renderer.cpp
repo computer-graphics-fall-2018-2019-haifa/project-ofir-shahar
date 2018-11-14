@@ -302,11 +302,13 @@ void Renderer::Render(const Scene& scene)
 	//models = vector of pointers (pointing to a MeshModel) representing this list.
 	std::vector<std::shared_ptr<MeshModel>> models = scene.getModels();
 	std::shared_ptr<MeshModel> model;
+	Cube c; 
 	//we iterate over models vector with an iterator
 	for (std::vector<std::shared_ptr<MeshModel>>::iterator it = models.begin(); it != models.end(); it++) {
 		//the iterator is pointing to a shared_ptr that points to our MeshModel. 
 		model = (*it);
 		currentModel = &(*model);
+		c = currentModel->getCube(); 
 		glm::mat4 localTransform = currentModel->GetLocalTransform();
 		glm::mat4 scaleTransform = currentModel->GetScaleTransform();
 		glm::mat4 translateTransform = currentModel->getTranslationTransform();
@@ -321,9 +323,50 @@ void Renderer::Render(const Scene& scene)
 
 
 		//adjust cube coordinates
-		currentModel->AdjustCube(scaleTransform, rotationTransform, translateTransform, worldRotate, worldTranslate, camera.getViewTransformation(), camera.getProjectionTformation());
+		/*currentModel->AdjustCube(scaleTransform/*, rotationTransform, translateTransform, worldRotate, worldTranslate, camera.getViewTransformation(), camera.getProjectionTformation()*);*/
+		for (int i = 0; i < 8; i++)
+		{
+			c.cPoints[i] = scaleTransform * c.cPoints[i];
+			c.cPoints[i].w = 1;
 
-		if (this->tooDrawaCube) drawCube(); 
+			c.cPoints[i] = rotationTransform * c.cPoints[i];
+			c.cPoints[i].w = 1;
+
+			c.cPoints[i] = translateTransform * c.cPoints[i];
+			c.cPoints[i].w = 1;
+
+			c.cPoints[i] = worldRotate * c.cPoints[i];
+			c.cPoints[i].w = 1;
+
+			c.cPoints[i] = worldTranslate * c.cPoints[i];
+			c.cPoints[i].w = 0;
+
+			c.cPoints[i] = camera.getViewTransformation() * c.cPoints[i];
+			c.cPoints[i].w = 0;
+
+			c.cPoints[i] = camera.getProjectionTformation() * c.cPoints[i];
+			c.cPoints[i].w = 0; 
+		}
+
+		if (this->tooDrawaCube)
+		{
+			//draw the cube
+			DrawLine(c.cPoints[0], c.cPoints[2], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[1], c.cPoints[3], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[0], c.cPoints[1], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[2], c.cPoints[3], glm::vec3(1, 0, 0), true);
+			
+			DrawLine(c.cPoints[4], c.cPoints[6], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[5], c.cPoints[7], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[4], c.cPoints[5], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[6], c.cPoints[7], glm::vec3(1, 0, 0), true);
+			
+			DrawLine(c.cPoints[0], c.cPoints[4], glm::vec3(0, 0, 1), true);
+			DrawLine(c.cPoints[1], c.cPoints[5], glm::vec3(0, 0, 1), true);
+			DrawLine(c.cPoints[2], c.cPoints[6], glm::vec3(0, 0, 1), true);
+			DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);
+			
+		}
 
 
 		// ############### IMPORTANT CODE HERE ##################

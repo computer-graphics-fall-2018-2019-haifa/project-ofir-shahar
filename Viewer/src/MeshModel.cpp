@@ -47,14 +47,14 @@ void MeshModel::createCube()
 	//find minimums and maximums of the cube faces
 	for (std::vector<glm::vec3>::iterator it = this->vertices.begin(); it != this->vertices.end(); it++)
 	{
-		if (this->cube.back >= (it)->z)  this->cube.back = (it)->z; 
-		if (this->cube.front < (it)->z)  this->cube.front = (it)->z;
+		if (this->cube.back >= (*it).z)  this->cube.back = (*it).z; 
+		if (this->cube.front < (*it).z)  this->cube.front = (*it).z;
 
-		if (this->cube.right <= (it)->x) this->cube.right = (it)->x;
-		if (this->cube.left > (it)->x) this->cube.left = (it)->x;
+		if (this->cube.right <= (*it).x) this->cube.right = (*it).x;
+		if (this->cube.left > (*it).x) this->cube.left = (*it).x;
 
-		if (this->cube.bottom >= (it)->y) this->cube.top = (it)->y;
-		if (this->cube.top < (it)->y) this->cube.top = (it)->y;
+		if (this->cube.bottom >= (*it).y) this->cube.top = (*it).y;
+		if (this->cube.top < (*it).y) this->cube.top = (*it).y;
 	}
 
 	//calculate the cube corners verices
@@ -81,8 +81,6 @@ void MeshModel::createCube()
 	this->cube.cPoints[6] = glm::vec4(this->getCube().left, this->getCube().top, this->getCube().back, 1);
 	this->cube.cPoints[7] = glm::vec4(this->getCube().right, this->getCube().top, this->getCube().back, 1);
 	
-	//debug
-	std::cout << "back:" << this->cube.back << " " << this->getCube().back << std::endl;  
 }
 
 void MeshModel::SetWorldTransformation(const glm::mat4& worldTransform)
@@ -94,14 +92,14 @@ const glm::mat4& MeshModel::getTranslationTransform() const {
 	return this->translationTransform;
 }
 
-void MeshModel::AdjustCube(const glm::mat4 scale, glm::mat4 rotate, glm::mat4 translate, glm::mat4 wrotate, glm::mat4 wtranslate, glm::mat4 cview, glm::mat4 cproj)
+void MeshModel::AdjustCube(const glm::mat4 scale/*, glm::mat4 rotate, glm::mat4 translate, glm::mat4 wrotate, glm::mat4 wtranslate, glm::mat4 cview, glm::mat4 cproj*/)
 {
 	for (int i = 0; i < 8; i++)
 	{
 		this->cube.cPoints[i] = scale* this->cube.cPoints[i];
 		this->cube.cPoints[i].w = 1; 
 	}
-
+	/*
 	for (int i = 0; i < 8; i++)
 	{
 		this->cube.cPoints[i] = rotate * this->cube.cPoints[i];
@@ -119,7 +117,7 @@ void MeshModel::AdjustCube(const glm::mat4 scale, glm::mat4 rotate, glm::mat4 tr
 		this->cube.cPoints[i] = wrotate * this->cube.cPoints[i];
 		this->cube.cPoints[i].w = 1;
 	}
-
+	
 	for (int i = 0; i < 8; i++)
 	{
 		this->cube.cPoints[i] = cview * this->cube.cPoints[i];
@@ -131,7 +129,7 @@ void MeshModel::AdjustCube(const glm::mat4 scale, glm::mat4 rotate, glm::mat4 tr
 		this->cube.cPoints[i] = cproj * this->cube.cPoints[i];
 		this->cube.cPoints[i].w = 1;
 	}
-
+	*/
 	this->PrintCube(this->cube);
 }
 

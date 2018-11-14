@@ -83,7 +83,7 @@ public:
 
 	void setDrawCube(const bool b) { this->drawCube = b; }
 
-	void AdjustCube(const glm::mat4 scale, glm::mat4 rotate, glm::mat4 translate, glm::mat4 wrotate, glm::mat4 wtranslate, glm::mat4 cview, glm::mat4 cproj);
+	void AdjustCube(const glm::mat4 scale/*, glm::mat4 rotate, glm::mat4 translate, glm::mat4 wrotate, glm::mat4 wtranslate, glm::mat4 cview, glm::mat4 cproj*/);
 
 
 
