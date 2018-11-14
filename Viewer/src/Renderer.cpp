@@ -242,21 +242,42 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 
 void Renderer::drawCube()
 {
+	Cube c = this->currentModel->getCube(); 
+	this->currentModel->PrintCube(c);
+
 	//draw the cube
-	DrawLine(this->currentModel->getCube().fbl, this->currentModel->getCube().fbr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
-	DrawLine(this->currentModel->getCube().fbr, this->currentModel->getCube().ftr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
-	DrawLine(this->currentModel->getCube().ftr, this->currentModel->getCube().ftl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
-	DrawLine(this->currentModel->getCube().ftl, this->currentModel->getCube().fbl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(c.cPoints[0], c.cPoints[1], c.color, false );
+	DrawLine(c.cPoints[1], c.cPoints[2], c.color, false );
+	DrawLine(c.cPoints[2], c.cPoints[3], c.color, false );
+	DrawLine(c.cPoints[3], c.cPoints[1], c.color, false );
 
-	DrawLine(this->currentModel->getCube().bbl, this->currentModel->getCube().bbr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
-	DrawLine(this->currentModel->getCube().bbr, this->currentModel->getCube().btr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
-	DrawLine(this->currentModel->getCube().btr, this->currentModel->getCube().btl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
-	DrawLine(this->currentModel->getCube().btl, this->currentModel->getCube().bbl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(c.cPoints[4], c.cPoints[5], c.color, false );
+	DrawLine(c.cPoints[5], c.cPoints[6], c.color, false );
+	DrawLine(c.cPoints[6], c.cPoints[7], c.color, false );
+	DrawLine(c.cPoints[7], c.cPoints[4], c.color, false );
 
-	DrawLine(this->currentModel->getCube().fbl, this->currentModel->getCube().bbl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
-	DrawLine(this->currentModel->getCube().fbr, this->currentModel->getCube().bbr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
-	DrawLine(this->currentModel->getCube().ftl, this->currentModel->getCube().btl, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
-	DrawLine(this->currentModel->getCube().ftr, this->currentModel->getCube().btr, this->currentModel->getCube().color, true /*this->currentModel->scale ?? maybe create scale for each model*/);
+	DrawLine(c.cPoints[0], c.cPoints[4], c.color, false );
+	DrawLine(c.cPoints[1], c.cPoints[5], c.color, false );
+	DrawLine(c.cPoints[2], c.cPoints[6], c.color, false );
+	DrawLine(c.cPoints[3], c.cPoints[7], c.color, false );
+	
+	/*/
+	DrawLine(glm::vec3(-100, -100, -50), glm::vec3(100, -100, -50), glm::vec3(1, 0, 0), false);
+	DrawLine(glm::vec3(100, -100, -50), glm::vec3(100, 100, -50), glm::vec3(1, 0, 0), false);
+	DrawLine(glm::vec3(100, 100, -50), glm::vec3(-100, 100, -50), glm::vec3(1, 0, 0), false);
+	DrawLine(glm::vec3(-100, 100, -50), glm::vec3(-100, -100, -50), glm::vec3(1, 0, 0), false);
+
+	DrawLine(glm::vec3(-100, -100, 50), glm::vec3(100, -100, 50), glm::vec3(1, 0, 0), false);
+	DrawLine(glm::vec3(100, -100, 50), glm::vec3 (100, 100, 50), glm::vec3(1, 0, 0), false);
+	DrawLine(glm::vec3(100, 100, 50), glm::vec3(-100, 100, 50), glm::vec3(1, 0, 0), false);
+	DrawLine(glm::vec3(-100, 100, 50), glm::vec3(-100, -100, 50), glm::vec3(1, 0, 0), false);
+
+	DrawLine(glm::vec3(-100, -100, -50), glm::vec3(-100, -100, 50), glm::vec3(1, 0, 0), false);
+	DrawLine(glm::vec3(-100, 100, -50), glm::vec3(-100, 100, 50), glm::vec3(1, 0, 0), false);
+	DrawLine(glm::vec3(100, -100, -50), glm::vec3(100, -100, 50), glm::vec3(1, 0, 0), false);
+	DrawLine(glm::vec3(100, 100, -50), glm::vec3(100, 100, 50), glm::vec3(1, 0, 0), false);
+	*/
+
 }
 
 
@@ -298,11 +319,15 @@ void Renderer::Render(const Scene& scene)
 		//get the vertices from the pointer to the model
 		std::vector<glm::vec3> vertices = (*model).GetVertices();
 
-		if (currentModel->getDrawCube()) drawCube(); 
+
+		//adjust cube coordinates
+		currentModel->AdjustCube(scaleTransform, rotationTransform, translateTransform, worldRotate, worldTranslate, camera.getViewTransformation(), camera.getProjectionTformation());
+
+		if (this->tooDrawaCube) drawCube(); 
 
 
 		// ############### IMPORTANT CODE HERE ##################
-		// in this for loop we iterate over all the vertices of the model
+		// in this for loop we iterate over all the vertices of the model 
 		// and multiply each vertex by view, projection and viewport transformation.
 		// ######################################################
 		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
@@ -353,7 +378,8 @@ void Renderer::Render(const Scene& scene)
 						<< "xStart=" << vertices.at(indices.at(0)-1).x << " yStart=" << vertices.at(indices.at(0) - 1).y << std::endl;
 */
 					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
-				} else //draw a line between the two vertices by their indices from the vector "indices"
+				} 
+				else //draw a line between the two vertices by their indices from the vector "indices"
 					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
 			}
 		}

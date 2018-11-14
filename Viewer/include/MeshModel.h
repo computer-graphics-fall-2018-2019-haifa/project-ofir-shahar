@@ -1,13 +1,15 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <iostream>
 #include <string>
 #include <memory>
 #include "Face.h"
 
 typedef struct Cube {
 	float front, back, right, left, top, bottom;
-	glm::vec3 fbl, fbr, ftl, ftr, bbl, bbr, btl, btr;
-	glm::vec3 color; 
+	glm::vec4 cPoints[8];  
+	glm::vec4 fbl, fbr, ftl, ftr, bbl, bbr, btl, btr;
+	glm::vec4 color; 
 }Cube;
 
 /*
@@ -80,4 +82,10 @@ public:
 	const bool getDrawCube() { return this->drawCube; }
 
 	void setDrawCube(const bool b) { this->drawCube = b; }
+
+	void AdjustCube(const glm::mat4 scale, glm::mat4 rotate, glm::mat4 translate, glm::mat4 wrotate, glm::mat4 wtranslate, glm::mat4 cview, glm::mat4 cproj);
+
+
+
+	void PrintCube(Cube cube) { std::cout << "front=" << cube.front << " back=" << cube.back << " right=" << cube.right << " left=" << cube.left << " top=" << cube.top << " bottom=" << cube.bottom << std::endl; }
 };
