@@ -243,7 +243,6 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 void Renderer::drawCube()
 {
 	Cube c = this->currentModel->getCube(); 
-	this->currentModel->PrintCube(c);
 
 	//draw the cube
 	DrawLine(c.cPoints[0], c.cPoints[1], c.color, false );
@@ -261,22 +260,6 @@ void Renderer::drawCube()
 	DrawLine(c.cPoints[2], c.cPoints[6], c.color, false );
 	DrawLine(c.cPoints[3], c.cPoints[7], c.color, false );
 	
-	/*/
-	DrawLine(glm::vec3(-100, -100, -50), glm::vec3(100, -100, -50), glm::vec3(1, 0, 0), false);
-	DrawLine(glm::vec3(100, -100, -50), glm::vec3(100, 100, -50), glm::vec3(1, 0, 0), false);
-	DrawLine(glm::vec3(100, 100, -50), glm::vec3(-100, 100, -50), glm::vec3(1, 0, 0), false);
-	DrawLine(glm::vec3(-100, 100, -50), glm::vec3(-100, -100, -50), glm::vec3(1, 0, 0), false);
-
-	DrawLine(glm::vec3(-100, -100, 50), glm::vec3(100, -100, 50), glm::vec3(1, 0, 0), false);
-	DrawLine(glm::vec3(100, -100, 50), glm::vec3 (100, 100, 50), glm::vec3(1, 0, 0), false);
-	DrawLine(glm::vec3(100, 100, 50), glm::vec3(-100, 100, 50), glm::vec3(1, 0, 0), false);
-	DrawLine(glm::vec3(-100, 100, 50), glm::vec3(-100, -100, 50), glm::vec3(1, 0, 0), false);
-
-	DrawLine(glm::vec3(-100, -100, -50), glm::vec3(-100, -100, 50), glm::vec3(1, 0, 0), false);
-	DrawLine(glm::vec3(-100, 100, -50), glm::vec3(-100, 100, 50), glm::vec3(1, 0, 0), false);
-	DrawLine(glm::vec3(100, -100, -50), glm::vec3(100, -100, 50), glm::vec3(1, 0, 0), false);
-	DrawLine(glm::vec3(100, 100, -50), glm::vec3(100, 100, 50), glm::vec3(1, 0, 0), false);
-	*/
 
 }
 
@@ -320,10 +303,12 @@ void Renderer::Render(const Scene& scene)
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
 		std::vector<glm::vec3> vertices = (*model).GetVertices();
+		std::vector<glm::vec3> normals = (*model).GetNormals(); 
+		typedef std::vector<glm::vec3>::iterator normal_it;
+		typedef std::vector<Face>::iterator faces_it; 
 
 
 		//adjust cube coordinates
-		/*currentModel->AdjustCube(scaleTransform/*, rotationTransform, translateTransform, worldRotate, worldTranslate, camera.getViewTransformation(), camera.getProjectionTformation()*);*/
 		for (int i = 0; i < 8; i++)
 		{
 			c.cPoints[i] = scaleTransform * c.cPoints[i];
@@ -344,13 +329,59 @@ void Renderer::Render(const Scene& scene)
 			c.cPoints[i] = camera.getViewTransformation() * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
-			c.cPoints[i] = camera.getProjectionTformation() * c.cPoints[i];
+			c.cPoints[i] = camera.getProjectionTformation() * c.cPoints[i]; 
 			c.cPoints[i].w = 0; 
 		}
 
+		//adjust face normals and faces centeroids positions
+		for (std::pair<normal_it, faces_it> it(normals.begin(), faces.begin()); it.first != normals.end(); it.first++, it.second++)
+		{
+			glm::vec4 normal_vertex = glm::vec4((*it.first).x, (*it.first).y, (*it.first).z, 1);
+			glm::vec4 center_vertex = glm::vec4((*it.second).GetCenter().x, (*it.second).GetCenter().y, (*it.second).GetCenter().z, 1); 
+			// set LOCAL tranformations first.
+			normal_vertex = scaleTransform * normal_vertex;
+			normal_vertex.w = 1;
+			normal_vertex = rotationTransform * normal_vertex;
+			normal_vertex.w = 1;
+			normal_vertex = translateTransform * normal_vertex;
+			// new set WORLD transformations.
+			normal_vertex.w = 1;
+			normal_vertex = worldRotate * normal_vertex;
+			normal_vertex.w = 1;
+			normal_vertex = worldTranslate * normal_vertex;
+			normal_vertex.w = 0;
+			// new CAMERA transformations.
+			normal_vertex = camera.getViewTransformation()*normal_vertex;
+			normal_vertex.w = 0;
+			normal_vertex = camera.getProjectionTformation()*normal_vertex;
+
+			// set LOCAL tranformations second.
+			center_vertex = scaleTransform * center_vertex;
+			center_vertex.w = 1;
+			center_vertex = rotationTransform * center_vertex;
+			center_vertex.w = 1;
+			center_vertex = translateTransform * center_vertex;
+			// new set WORLD transformations.
+			center_vertex.w = 1;
+			center_vertex = worldRotate * center_vertex;
+			center_vertex.w = 1;
+			center_vertex = worldTranslate * center_vertex;
+			center_vertex.w = 0;
+			// new CAMERA transformations.
+			center_vertex = camera.getViewTransformation()*center_vertex;
+			center_vertex.w = 0;
+			center_vertex = camera.getProjectionTformation()*center_vertex;
+
+			//finalll store newlly acquired coordinates
+			(*it.first) = glm::vec3(normal_vertex.x, normal_vertex.y, normal_vertex.z); 
+			(*it.second).SetCenter(center_vertex); 
+		}
+		
+		
+
+		//draw the cube
 		if (this->tooDrawaCube)
 		{
-			//draw the cube
 			DrawLine(c.cPoints[0], c.cPoints[2], glm::vec3(1, 0, 0), true);
 			DrawLine(c.cPoints[1], c.cPoints[3], glm::vec3(1, 0, 0), true);
 			DrawLine(c.cPoints[0], c.cPoints[1], glm::vec3(1, 0, 0), true);
@@ -364,21 +395,24 @@ void Renderer::Render(const Scene& scene)
 			DrawLine(c.cPoints[0], c.cPoints[4], glm::vec3(0, 0, 1), true);
 			DrawLine(c.cPoints[1], c.cPoints[5], glm::vec3(0, 0, 1), true);
 			DrawLine(c.cPoints[2], c.cPoints[6], glm::vec3(0, 0, 1), true);
-			DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);
-			
+			DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);	
 		}
 
+		//draw the face normals
+		if (this->toDrawFaceNormals)
+		{
+			glm::vec3 green(0, 1, 0); 
+			for (std::vector<Face>::iterator face_it = faces.begin(); face_it != faces.end(); face_it++) 
+			{
+				putPixel((int)(face_it->GetCenter().x), (int)(face_it->GetCenter().y), green);
+			}
+		}
 
 		// ############### IMPORTANT CODE HERE ##################
 		// in this for loop we iterate over all the vertices of the model 
 		// and multiply each vertex by view, projection and viewport transformation.
 		// ######################################################
 		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
-
-			//glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 0);
-			//std::cout << "<"<<newVertex.x <<","<<newVertex.y<<","<<newVertex.z<< ">" << std::endl;
-			//newVertex = (this->projection) ? camera.getOrthographicTransformation() * camera.getViewTransformation()*newVertex : camera.getProjectionTformation() * camera.getViewTransformation()*newVertex;
-			//newVertex = localTransform * newVertex;
 
 			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 1);
 			// set LOCAL tranformations first.
@@ -397,9 +431,7 @@ void Renderer::Render(const Scene& scene)
 			newVertex = camera.getViewTransformation()*newVertex;
 			newVertex.w = 0;
 			newVertex = camera.getProjectionTformation()*newVertex;
-			//newVertex = glm::vec4(newVertex.x / newVertex.w, newVertex.y / newVertex.w, newVertex.z / newVertex.w, newVertex.w / newVertex.w);
-			/*std::cout << "<" << newVertex.x << "," << newVertex.y << "," << newVertex.z <<">"<< std::endl;
-			std::cout << "end here"<<std::endl;*/
+
 			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);
 		}
 		// ############## END OF IMPORTANT CODE #################

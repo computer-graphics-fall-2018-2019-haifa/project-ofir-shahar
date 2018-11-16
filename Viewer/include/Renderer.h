@@ -27,7 +27,7 @@ private:
 	Camera camera;
 	MeshModel* currentModel;
 	bool hasModel;
-	bool tooDrawaCube;
+	bool tooDrawaCube, toDrawFaceNormals;
 
 	void putPixel(int x, int y, const glm::vec3& color);
 	void createBuffers(int viewportWidth, int viewportHeight);
@@ -76,5 +76,7 @@ public:
 	void setWorldTranslation(float x, float y, float z);
 	const void setToDrawaCube(const bool b) { this->tooDrawaCube = b; }
 	bool getToDrawaCube() const { return this->tooDrawaCube; }
+	const void setToDrawFaceNormals(bool b) { this->toDrawFaceNormals = b; }
+	bool getToDrawFaceNormals() const { return this->toDrawFaceNormals; }
 
 };

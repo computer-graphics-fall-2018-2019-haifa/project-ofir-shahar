@@ -14,11 +14,7 @@ public:
 	static glm::vec2 Vec2fFromStream(std::istream& issLine);
 	static MeshModel LoadMeshModel(const std::string& filePath);
 
-	// Add here more static utility functions...
-	// For example:
-	//	1. function that gets an angle, and returns a rotation matrix around a certian axis
-	//	2. function that gets a vector, and returns a translation matrix
-	//	3. anything else that may be useful in global scope
+	static glm::vec4 Centeroid(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3); 
 
 private:
 	static std::string GetFileName(const std::string& filePath);

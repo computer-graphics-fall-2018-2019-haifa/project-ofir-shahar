@@ -46,7 +46,7 @@ MeshModel Utils::LoadMeshModel(const std::string& filePath)
 		}
 		else if (lineType == "vn")
 		{
-			// Add the required code here...
+			normals.push_back(Utils::Vec3fFromStream(issLine));
 		}
 		else if (lineType == "vt")
 		{
@@ -67,6 +67,17 @@ MeshModel Utils::LoadMeshModel(const std::string& filePath)
 	}
 
 	return MeshModel(faces, vertices, normals, Utils::GetFileName(filePath));
+}
+
+glm::vec4 Utils::Centeroid(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3)
+{
+	glm::vec4 result;
+
+	result.x = (1 / 3)*(v1.x + v2.x + v3.x);
+	result.y = (1 / 3)*(v1.y + v2.y + v3.y);
+	result.z = (1 / 3)*(v1.z + v2.z + v3.z);
+
+	return result;
 }
 
 std::string Utils::GetFileName(const std::string& filePath)

@@ -139,11 +139,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
 		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
-
-		if (ImGui::Button("cube"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+		//showboundering cube (toggle)
+		if (ImGui::Button("cube"))                            
 		{
 			renderer.setToDrawaCube(!renderer.getToDrawaCube());
 			std::cout << "draw bube: " << renderer.getToDrawaCube() << std::endl; 
+		}
+		//show face normals (toggle)
+		if (ImGui::Button("face normals"))                            
+		{
+			renderer.setToDrawFaceNormals(!renderer.getToDrawFaceNormals());
+			std::cout << "projection=" << renderer.getToDrawFaceNormals() << std::endl;
 		}
 		if (ImGui::Button("Projection"))
 		{

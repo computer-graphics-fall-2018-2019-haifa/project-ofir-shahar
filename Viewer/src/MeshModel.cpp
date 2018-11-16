@@ -30,12 +30,26 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3
 {
 	this->drawCube = false;
 	this->createCube();
+	this->createCenteroids(); 
 	setScaleTransform(1500, 1500, 1500);
 }
 
 MeshModel::~MeshModel()
 {
 
+}
+
+void MeshModel::createCenteroids()
+{
+	for (std::vector<Face>::iterator f = this->faces.begin(); f != this->faces.end(); f++)
+	{ 
+		glm::vec3 point1 = this->vertices.at((*f).GetVertexIndex(0) - 1); 
+		glm::vec3 point2 = this->vertices.at((*f).GetVertexIndex(1) - 1);
+		glm::vec3 point3 = this->vertices.at((*f).GetVertexIndex(2) - 1);
+		glm::vec3 center = glm::vec3((point1.x + point2.x + point3.x)/3, (point1.y + point2.y + point3.y)/3, (point1.z + point2.z + point3.z)/3); 
+			
+		f->SetCenter(center);
+	}
 }
 
 void MeshModel::createCube()
@@ -58,20 +72,6 @@ void MeshModel::createCube()
 	}
 
 	//calculate the cube corners verices
-	this->cube.fbl = glm::vec4(this->getCube().left, this->getCube().bottom, this->getCube().front, 1);
-	
-	this->cube.fbr = glm::vec4(this->getCube().right, this->getCube().bottom, this->getCube().front, 1);
-	
-
-	this->cube.ftl = glm::vec4(this->getCube().left, this->getCube().top, this->getCube().front, 1);
-	this->cube.ftr = glm::vec4(this->getCube().right, this->getCube().top, this->getCube().front, 1);
-
-	this->cube.bbl = glm::vec4(this->getCube().left, this->getCube().bottom, this->getCube().back, 1);
-	this->cube.bbr = glm::vec4(this->getCube().right, this->getCube().bottom, this->getCube().back, 1);
-
-	this->cube.btl = glm::vec4(this->getCube().left, this->getCube().top, this->getCube().back, 1);
-	this->cube.btr = glm::vec4(this->getCube().right, this->getCube().top, this->getCube().back, 1);
-
 	this->cube.cPoints[0] = glm::vec4(this->getCube().left, this->getCube().bottom, this->getCube().front, 1);
 	this->cube.cPoints[1] = glm::vec4(this->getCube().right, this->getCube().bottom, this->getCube().front, 1);
 	this->cube.cPoints[2] = glm::vec4(this->getCube().left, this->getCube().top, this->getCube().front, 1);
@@ -83,6 +83,15 @@ void MeshModel::createCube()
 	
 }
 
+void MeshModel::createNormals()
+{
+	glm::vec3 lines[2];
+	for (std::vector<glm::vec3>::iterator it = this->vertices.begin(); it != this->normals.end(); it++)
+	{
+
+	}
+}
+
 void MeshModel::SetWorldTransformation(const glm::mat4& worldTransform)
 {
 	this->worldTransform = worldTransform;
@@ -92,46 +101,6 @@ const glm::mat4& MeshModel::getTranslationTransform() const {
 	return this->translationTransform;
 }
 
-void MeshModel::AdjustCube(const glm::mat4 scale/*, glm::mat4 rotate, glm::mat4 translate, glm::mat4 wrotate, glm::mat4 wtranslate, glm::mat4 cview, glm::mat4 cproj*/)
-{
-	for (int i = 0; i < 8; i++)
-	{
-		this->cube.cPoints[i] = scale* this->cube.cPoints[i];
-		this->cube.cPoints[i].w = 1; 
-	}
-	/*
-	for (int i = 0; i < 8; i++)
-	{
-		this->cube.cPoints[i] = rotate * this->cube.cPoints[i];
-		this->cube.cPoints[i].w = 1;
-	}
-
-	for (int i = 0; i < 8; i++)
-	{
-		this->cube.cPoints[i] = translate * this->cube.cPoints[i];
-		this->cube.cPoints[i].w = 1;
-	}
-
-	for (int i = 0; i < 8; i++)
-	{
-		this->cube.cPoints[i] = wrotate * this->cube.cPoints[i];
-		this->cube.cPoints[i].w = 1;
-	}
-	
-	for (int i = 0; i < 8; i++)
-	{
-		this->cube.cPoints[i] = cview * this->cube.cPoints[i];
-		this->cube.cPoints[i].w = 1;
-	}
-
-	for (int i = 0; i < 8; i++)
-	{
-		this->cube.cPoints[i] = cproj * this->cube.cPoints[i];
-		this->cube.cPoints[i].w = 1;
-	}
-	*/
-	this->PrintCube(this->cube);
-}
 
 const glm::mat4& MeshModel::GetWorldTransformation() const
 {
