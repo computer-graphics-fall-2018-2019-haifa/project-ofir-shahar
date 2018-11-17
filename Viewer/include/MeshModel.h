@@ -22,7 +22,7 @@ private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
-	std::vector<glm::vec4> centeroids; 
+	std::vector<glm::vec4> centerLine; 
 
 	glm::mat4 localTransform;
 	glm::mat4 scaleTransform;
@@ -39,7 +39,7 @@ private:
 	bool drawCube;
 	void createCube();
 	void createNormals();
-	void createCenteroids(); 
+	void createCenterLines();
 	Cube cube; 
 
 
@@ -86,7 +86,8 @@ public:
 
 	void setDrawCube(const bool b) { this->drawCube = b; }
 
-	const std::vector<glm::vec4> getCenteroids() const { return this->centeroids; }
+	const std::vector<glm::vec4> getCenteLines() const { return this->centerLine; }
 
-	void setCenteroids(const std::vector<glm::vec4> v) { this->centeroids = v; }
+	void setCenteLines(const std::vector<glm::vec4> c) { this->centerLine = c; }
+	
 };

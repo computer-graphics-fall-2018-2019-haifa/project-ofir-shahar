@@ -267,10 +267,10 @@ void Renderer::Render(const Scene& scene)
 	
 	glm::vec3 p1, p2, color;
 	p1.x = 0.0;
-	p1.y = (int)viewportHeight/2;
+	p1.y = (int)(viewportHeight/2);
 	p1.z = 0.0;
-	p2.x = viewportWidth;
-	p2.y = (int)viewportHeight/2;
+	p2.x = (int)viewportWidth;
+	p2.y = (int)(viewportHeight/2);
 	p2.z = 0.0;
 	color.x = 0.0;
 	color.y = 0.0;
@@ -407,9 +407,20 @@ void Renderer::Render(const Scene& scene)
 			{
 				glm::vec4 normal_vertex = glm::vec4((*it.first).x, (*it.first).y, (*it.first).z, 1);
 				glm::vec4 center_vertex = glm::vec4((*it.second).GetCenter().x, (*it.second).GetCenter().y, (*it.second).GetCenter().z, 1);
-				//norm = (float)sqrt(pow(,2));
-				DrawLine(center_vertex, glm::vec3(center_vertex.x + normal_vertex.x, center_vertex.y + normal_vertex.y, center_vertex.z + normal_vertex.z), color, true);
+				//draw a cross
+				putPixel(normal_vertex.x, normal_vertex.y, glm::vec3(0, 1, 0));
+				putPixel(normal_vertex.x + 1, normal_vertex.y, glm::vec3(0, 1, 0));
+				putPixel(normal_vertex.x - 1, normal_vertex.y, glm::vec3(0, 1, 0));
+				putPixel(normal_vertex.x, normal_vertex.y + 1, glm::vec3(0, 1, 0));
+				putPixel(normal_vertex.x, normal_vertex.y - 1, glm::vec3(0, 1, 0));
+				//draw the normal
+				DrawLine(center_vertex, glm::vec3(center_vertex.x + normal_vertex.x, center_vertex.y + normal_vertex.y, -(center_vertex.z + normal_vertex.z)), color, true);
 			}
+		}
+
+		if (this->toDrawLineNormals)
+		{
+
 		}
 
 		// ############### IMPORTANT CODE HERE ##################
@@ -451,18 +462,7 @@ void Renderer::Render(const Scene& scene)
 		}
 		// ############## END OF IMPORTANT CODE #################
 		// ######################################################
-		/*c.cPoints[0] = glm::vec4(c.left, c.bottom, c.front, 1);
-		c.cPoints[1] = glm::vec4(c.right, c.bottom, c.front, 1);
-		c.cPoints[2] = glm::vec4(c.left, c.top, c.front, 1);
-		c.cPoints[3] = glm::vec4(c.right, c.top, c.front, 1);
-		c.cPoints[4] = glm::vec4(c.left, c.bottom, c.back, 1);
-		c.cPoints[5] = glm::vec4(c.right, c.bottom, c.back, 1);
-		c.cPoints[6] = glm::vec4(c.left, c.top, c.back, 1);
-		c.cPoints[7] = glm::vec4(c.right, c.top, c.back, 1);
-		*/
-
-
-
+	
 		//iterate over the faces vector of the model
 		for (std::vector<Face>::iterator faceIndex = faces.begin(); faceIndex != faces.end(); faceIndex++) {
 			//get the indices of the vertices for each face
@@ -473,10 +473,6 @@ void Renderer::Render(const Scene& scene)
 				//if we are at the end of the indices vector we connect the vertex with this index
 				//with the vertex with the index from the start of the vector
 				if ((vindex+1) == indices.end()) {
-					//std::cout << "index at start of face: "<<vertices.at(indices.at(0) - 1).x<< std::endl;
-					/*std::cout << "xEnd=" << vertices.at(*(vindex)-1).x << " " << "yEnd=" << vertices.at(*(vindex)-1).y << " "
-						<< "xStart=" << vertices.at(indices.at(0)-1).x << " yStart=" << vertices.at(indices.at(0) - 1).y << std::endl;
-*/
 					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
 				} 
 				else //draw a line between the two vertices by their indices from the vector "indices"

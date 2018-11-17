@@ -30,7 +30,7 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3
 {
 	this->drawCube = false;
 	this->createCube();
-	this->createCenteroids(); 
+	this->createCenterLines();
 	setScaleTransform(1500, 1500, 1500);
 }
 
@@ -39,7 +39,7 @@ MeshModel::~MeshModel()
 
 }
 
-void MeshModel::createCenteroids()
+void MeshModel::createCenterLines()
 {
 	for (std::vector<Face>::iterator f = this->faces.begin(); f != this->faces.end(); f++)
 	{ 
