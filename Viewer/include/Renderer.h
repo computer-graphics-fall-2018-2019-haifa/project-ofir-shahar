@@ -7,7 +7,6 @@
 #include <imgui/imgui.h>
 #include "Camera.h"
 
-typedef enum projection { Perspective, orthgraphic };
 
 /*
  * Renderer class.
@@ -27,7 +26,7 @@ private:
 	Camera camera;
 	MeshModel* currentModel;
 	bool hasModel;
-	bool tooDrawaCube, toDrawFaceNormals;
+	bool tooDrawaCube, toDrawFaceNormals, toDrawLineNormals;
 
 	void putPixel(int x, int y, const glm::vec3& color);
 	void createBuffers(int viewportWidth, int viewportHeight);

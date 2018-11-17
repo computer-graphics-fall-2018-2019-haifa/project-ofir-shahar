@@ -149,8 +149,15 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		if (ImGui::Button("face normals"))                            
 		{
 			renderer.setToDrawFaceNormals(!renderer.getToDrawFaceNormals());
-			std::cout << "projection=" << renderer.getToDrawFaceNormals() << std::endl;
+			std::cout << "face normals" << renderer.getToDrawFaceNormals() << std::endl;
 		}
+		//show lines normals (toggle)
+		if (ImGui::Button("lines normals"))
+		{
+			renderer.setToDrawFaceNormals(!renderer.getToDrawFaceNormals());
+			std::cout << "lines normals" << renderer.getToDrawFaceNormals() << std::endl;
+		}
+		//projection
 		if (ImGui::Button("Projection"))
 		{
 			renderer.setProjection(!renderer.getProjection()); 

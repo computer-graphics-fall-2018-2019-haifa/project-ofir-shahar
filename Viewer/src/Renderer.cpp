@@ -243,24 +243,21 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 void Renderer::drawCube()
 {
 	Cube c = this->currentModel->getCube(); 
-
 	//draw the cube
-	DrawLine(c.cPoints[0], c.cPoints[1], c.color, false );
-	DrawLine(c.cPoints[1], c.cPoints[2], c.color, false );
-	DrawLine(c.cPoints[2], c.cPoints[3], c.color, false );
-	DrawLine(c.cPoints[3], c.cPoints[1], c.color, false );
+	DrawLine(c.cPoints[0], c.cPoints[2], glm::vec3(1, 0, 0), true);
+	DrawLine(c.cPoints[1], c.cPoints[3], glm::vec3(1, 0, 0), true);
+	DrawLine(c.cPoints[0], c.cPoints[1], glm::vec3(1, 0, 0), true);
+	DrawLine(c.cPoints[2], c.cPoints[3], glm::vec3(1, 0, 0), true);
 
-	DrawLine(c.cPoints[4], c.cPoints[5], c.color, false );
-	DrawLine(c.cPoints[5], c.cPoints[6], c.color, false );
-	DrawLine(c.cPoints[6], c.cPoints[7], c.color, false );
-	DrawLine(c.cPoints[7], c.cPoints[4], c.color, false );
+	DrawLine(c.cPoints[4], c.cPoints[6], glm::vec3(1, 0, 0), true);
+	DrawLine(c.cPoints[5], c.cPoints[7], glm::vec3(1, 0, 0), true);
+	DrawLine(c.cPoints[4], c.cPoints[5], glm::vec3(1, 0, 0), true);
+	DrawLine(c.cPoints[6], c.cPoints[7], glm::vec3(1, 0, 0), true);
 
-	DrawLine(c.cPoints[0], c.cPoints[4], c.color, false );
-	DrawLine(c.cPoints[1], c.cPoints[5], c.color, false );
-	DrawLine(c.cPoints[2], c.cPoints[6], c.color, false );
-	DrawLine(c.cPoints[3], c.cPoints[7], c.color, false );
-	
-
+	DrawLine(c.cPoints[0], c.cPoints[4], glm::vec3(0, 0, 1), true);
+	DrawLine(c.cPoints[1], c.cPoints[5], glm::vec3(0, 0, 1), true);
+	DrawLine(c.cPoints[2], c.cPoints[6], glm::vec3(0, 0, 1), true);
+	DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);
 }
 
 
@@ -270,10 +267,10 @@ void Renderer::Render(const Scene& scene)
 	
 	glm::vec3 p1, p2, color;
 	p1.x = 0.0;
-	p1.y = viewportHeight/2;
+	p1.y = (int)viewportHeight/2;
 	p1.z = 0.0;
 	p2.x = viewportWidth;
-	p2.y = viewportHeight/2;
+	p2.y = (int)viewportHeight/2;
 	p2.z = 0.0;
 	color.x = 0.0;
 	color.y = 0.0;
@@ -306,6 +303,7 @@ void Renderer::Render(const Scene& scene)
 		std::vector<glm::vec3> normals = (*model).GetNormals(); 
 		typedef std::vector<glm::vec3>::iterator normal_it;
 		typedef std::vector<Face>::iterator faces_it; 
+		typedef std::vector<glm::vec4>::iterator center_it;
 
 
 		//adjust cube coordinates
@@ -332,6 +330,25 @@ void Renderer::Render(const Scene& scene)
 			c.cPoints[i] = camera.getProjectionTformation() * c.cPoints[i]; 
 			c.cPoints[i].w = 0; 
 		}
+		//draw the cube
+		if (this->tooDrawaCube)
+		{
+			DrawLine(c.cPoints[0], c.cPoints[2], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[1], c.cPoints[3], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[0], c.cPoints[1], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[2], c.cPoints[3], glm::vec3(1, 0, 0), true);
+
+			DrawLine(c.cPoints[4], c.cPoints[6], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[5], c.cPoints[7], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[4], c.cPoints[5], glm::vec3(1, 0, 0), true);
+			DrawLine(c.cPoints[6], c.cPoints[7], glm::vec3(1, 0, 0), true);
+
+			DrawLine(c.cPoints[0], c.cPoints[4], glm::vec3(0, 0, 1), true);
+			DrawLine(c.cPoints[1], c.cPoints[5], glm::vec3(0, 0, 1), true);
+			DrawLine(c.cPoints[2], c.cPoints[6], glm::vec3(0, 0, 1), true);
+			DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);
+		}
+		
 
 		//adjust face normals and faces centeroids positions
 		for (std::pair<normal_it, faces_it> it(normals.begin(), faces.begin()); it.first != normals.end(); it.first++, it.second++)
@@ -376,35 +393,22 @@ void Renderer::Render(const Scene& scene)
 			(*it.first) = glm::vec3(normal_vertex.x, normal_vertex.y, normal_vertex.z); 
 			(*it.second).SetCenter(center_vertex); 
 		}
-		
-		
-
-		//draw the cube
-		if (this->tooDrawaCube)
-		{
-			DrawLine(c.cPoints[0], c.cPoints[2], glm::vec3(1, 0, 0), true);
-			DrawLine(c.cPoints[1], c.cPoints[3], glm::vec3(1, 0, 0), true);
-			DrawLine(c.cPoints[0], c.cPoints[1], glm::vec3(1, 0, 0), true);
-			DrawLine(c.cPoints[2], c.cPoints[3], glm::vec3(1, 0, 0), true);
-			
-			DrawLine(c.cPoints[4], c.cPoints[6], glm::vec3(1, 0, 0), true);
-			DrawLine(c.cPoints[5], c.cPoints[7], glm::vec3(1, 0, 0), true);
-			DrawLine(c.cPoints[4], c.cPoints[5], glm::vec3(1, 0, 0), true);
-			DrawLine(c.cPoints[6], c.cPoints[7], glm::vec3(1, 0, 0), true);
-			
-			DrawLine(c.cPoints[0], c.cPoints[4], glm::vec3(0, 0, 1), true);
-			DrawLine(c.cPoints[1], c.cPoints[5], glm::vec3(0, 0, 1), true);
-			DrawLine(c.cPoints[2], c.cPoints[6], glm::vec3(0, 0, 1), true);
-			DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);	
-		}
 
 		//draw the face normals
 		if (this->toDrawFaceNormals)
 		{
-			glm::vec3 green(0, 1, 0); 
+			float norm;
+			glm::vec3 color(1, 0, 0); 
 			for (std::vector<Face>::iterator face_it = faces.begin(); face_it != faces.end(); face_it++) 
 			{
-				putPixel((int)(face_it->GetCenter().x), (int)(face_it->GetCenter().y), green);
+				putPixel((int)(face_it->GetCenter().x), (int)(face_it->GetCenter().y), color);
+			}
+			for (std::pair<normal_it, faces_it> it(normals.begin(), faces.begin()); it.first != normals.end(); it.first++, it.second++)
+			{
+				glm::vec4 normal_vertex = glm::vec4((*it.first).x, (*it.first).y, (*it.first).z, 1);
+				glm::vec4 center_vertex = glm::vec4((*it.second).GetCenter().x, (*it.second).GetCenter().y, (*it.second).GetCenter().z, 1);
+				//norm = (float)sqrt(pow(,2));
+				DrawLine(center_vertex, glm::vec3(center_vertex.x + normal_vertex.x, center_vertex.y + normal_vertex.y, center_vertex.z + normal_vertex.z), color, true);
 			}
 		}
 
@@ -432,10 +436,31 @@ void Renderer::Render(const Scene& scene)
 			newVertex.w = 0;
 			newVertex = camera.getProjectionTformation()*newVertex;
 
+			/*set new cube faces
+			if (c.back >= newVertex.z) c.back = newVertex.z; 
+			if (c.front < newVertex.z)  c.front = newVertex.z;
+
+			if (c.right <= newVertex.x) c.right = newVertex.x;
+			if (c.left > newVertex.x) c.left = newVertex.x;
+
+			if (c.bottom >= newVertex.y) c.top = newVertex.y;
+			if (c.top < newVertex.y) c.top = newVertex.y;
+			*/
+
 			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);
 		}
 		// ############## END OF IMPORTANT CODE #################
 		// ######################################################
+		/*c.cPoints[0] = glm::vec4(c.left, c.bottom, c.front, 1);
+		c.cPoints[1] = glm::vec4(c.right, c.bottom, c.front, 1);
+		c.cPoints[2] = glm::vec4(c.left, c.top, c.front, 1);
+		c.cPoints[3] = glm::vec4(c.right, c.top, c.front, 1);
+		c.cPoints[4] = glm::vec4(c.left, c.bottom, c.back, 1);
+		c.cPoints[5] = glm::vec4(c.right, c.bottom, c.back, 1);
+		c.cPoints[6] = glm::vec4(c.left, c.top, c.back, 1);
+		c.cPoints[7] = glm::vec4(c.right, c.top, c.back, 1);
+		*/
+
 
 
 		//iterate over the faces vector of the model
@@ -458,6 +483,7 @@ void Renderer::Render(const Scene& scene)
 					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
 			}
 		}
+
 	}
 
 	
