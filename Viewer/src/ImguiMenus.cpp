@@ -64,6 +64,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		//ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our window open/close state
 		//ImGui::Checkbox("Another Window", &showAnotherWindow);
 		ImGui::Text("Current Camera:");
+
+		ImVec2 size = ImGui::GetWindowSize();
 		
 		if (ImGui::SliderFloat("turn left or right", &turnUpDown, 0.0f, 360.0f) && renderer.isHasModel()) {
 			renderer.setEyeX(turnUpDown);

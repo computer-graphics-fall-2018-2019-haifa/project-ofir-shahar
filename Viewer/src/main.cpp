@@ -24,6 +24,8 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 void Cleanup(GLFWwindow* window);
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
+
+
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
@@ -40,6 +42,8 @@ int main(int argc, char **argv)
 	{
 		return 1;
 	}
+
+	
 
 	// Move OpenGL context to the newly created window
 	glfwMakeContextCurrent(window);
@@ -139,13 +143,13 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	int frameBufferWidth, frameBufferHeight;
 	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
 
-	// Resize handling here... (a suggestion)
+	renderer.SetViewport(frameBufferWidth, frameBufferHeight, 0, 0); 
 
-	// Clear the frame buffer
+	// Clear the frame buffer0
 	renderer.ClearColorBuffer(GetClearColor());
 
 	// Render the scene
-	renderer.Render(scene);
+	renderer.Render(scene); 
 
 	// Swap buffers
 	renderer.SwapBuffers();
