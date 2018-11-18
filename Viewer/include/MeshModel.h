@@ -36,6 +36,7 @@ private:
 	glm::mat4x4 worldTransform;
 	glm::vec4 color;
 	std::string modelName;
+	bool draw;
 	bool drawCube;
 	void createCube();
 	void createNormals();
@@ -57,6 +58,10 @@ public:
 	const glm::mat4& GetWorldRotation() const;
 	const glm::vec4& GetColor() const;
 	void SetColor(const glm::vec4& color);
+
+	void setDraw(const bool b) { this->draw = b; }
+
+	const bool& getDraw() { return this->draw; }
 
 	const std::string& GetModelName();
 

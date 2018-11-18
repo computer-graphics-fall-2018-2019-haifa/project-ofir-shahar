@@ -41,6 +41,8 @@ private:
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
 	void drawCube(); 
 
+	std::vector<std::string> ExcludeModels;
+
 public:
 	Renderer(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
 	~Renderer();
@@ -51,8 +53,11 @@ public:
 	void ClearColorBuffer(const glm::vec3& color);
 	void SetViewport(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
 	
-	//void AddLineBresenhamStyle(float x1, float y1, float x2, float y2, glm::vec3 color);
-	//float getScaleNumber();
+	//getters\setters
+	//---------------
+	const std::vector<std::string> getExcludeModels() const { return this->ExcludeModels; }
+	void setExcludeModels(std::vector<std::string> v) { this->ExcludeModels = v; }
+
 	void setScaleNumber(float f);
 	void setEyeX(float eyex);
 

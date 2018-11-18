@@ -296,6 +296,10 @@ void Renderer::Render(const Scene& scene)
 		glm::mat4 worldTransform = currentModel->GetWorldTransformation();
 		glm::mat4 worldTranslate = currentModel->GetWorldTranslate();
 		glm::mat4 worldRotate = currentModel->GetWorldRotation();
+		glm::vec3 red_color(1, 0, 0);
+		glm::vec3 green_color(0, 1, 0);
+		glm::vec3 black_color(0, 0, 0);
+		glm::vec4 normal_vertex;
 		//get the faces from the pointer to the model
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
@@ -315,6 +319,11 @@ void Renderer::Render(const Scene& scene)
 			c.cPoints[6] = glm::vec4(c.left, c.top, c.back, 1);
 			c.cPoints[7] = glm::vec4(c.right, c.top, c.back, 1);
 		*/
+
+		for (std::vector<std::string>::iterator name_it = this->ExcludeModels.begin(); name_it != this->ExcludeModels.end(); name_it++)
+		{
+			//if (name_it::compare(currentModel->GetModelName())) break;
+		}
 
 		//adjust cube coordinates
 		for (int i = 0; i < 8; i++)
@@ -362,73 +371,30 @@ void Renderer::Render(const Scene& scene)
 		
 
 		//adjust face normals and faces centeroids positions
-		for (std::pair<normal_it, faces_it> it(normals.begin(), faces.begin()); it.first != normals.end(); it.first++, it.second++)
-		{
-			glm::vec4 normal_vertex = glm::vec4((*it.first).x, (*it.first).y, (*it.first).z, 1);
-			glm::vec4 center_vertex = glm::vec4((*it.second).GetCenter().x, (*it.second).GetCenter().y, (*it.second).GetCenter().z, 1); 
-			// set LOCAL tranformations first.
-			normal_vertex = scaleTransform * normal_vertex;
-			normal_vertex.w = 1;
-			normal_vertex = rotationTransform * normal_vertex;
-			normal_vertex.w = 1;
-			normal_vertex = translateTransform * normal_vertex;
-			// new set WORLD transformations.
-			normal_vertex.w = 1;
-			normal_vertex = worldRotate * normal_vertex;
-			normal_vertex.w = 1;
-			normal_vertex = worldTranslate * normal_vertex;
-			normal_vertex.w = 0;
-			// new CAMERA transformations.
-			normal_vertex = camera.getViewTransformation()*normal_vertex;
-			normal_vertex.w = 0;
-			normal_vertex = camera.getProjectionTformation()*normal_vertex;
-
-			// set LOCAL tranformations second.
-			center_vertex = scaleTransform * center_vertex;
-			center_vertex.w = 1;
-			center_vertex = rotationTransform * center_vertex;
-			center_vertex.w = 1;
-			center_vertex = translateTransform * center_vertex;
-			// new set WORLD transformations.
-			center_vertex.w = 1;
-			center_vertex = worldRotate * center_vertex;
-			center_vertex.w = 1;
-			center_vertex = worldTranslate * center_vertex;
-			center_vertex.w = 0;
-			// new CAMERA transformations.
-			center_vertex = camera.getViewTransformation()*center_vertex;
-			center_vertex.w = 0;
-			center_vertex = camera.getProjectionTformation()*center_vertex;
-
-			//finalll store newlly acquired coordinates
-			(*it.first) = glm::vec3(normal_vertex.x, normal_vertex.y, normal_vertex.z); 
-			(*it.second).SetCenter(center_vertex); 
-		}
+		
 
 		//draw the face normals
-		if (this->toDrawFaceNormals)
-		{
-			float norm;
-			glm::vec3 red_color(1, 0, 0); 
-			glm::vec3 green_color(0, 1, 0);
-			for (std::vector<Face>::iterator face_it = faces.begin(); face_it != faces.end(); face_it++) 
-			{
-				putPixel((int)(face_it->GetCenter().x), (int)(face_it->GetCenter().y), color);
-			}
-			for (std::pair<normal_it, faces_it> it(normals.begin(), faces.begin()); it.first != normals.end(); it.first++, it.second++)
-			{
-				glm::vec4 normal_vertex = glm::vec4((*it.first).x, (*it.first).y, (*it.first).z, 1);
-				glm::vec4 center_vertex = glm::vec4((*it.second).GetCenter().x, (*it.second).GetCenter().y, (*it.second).GetCenter().z, 1);
-				//draw a cross
-				putPixel(normal_vertex.x, normal_vertex.y, glm::vec3(0, 1, 0));
-				putPixel(normal_vertex.x + 1, normal_vertex.y, green_color);
-				putPixel(normal_vertex.x - 1, normal_vertex.y, green_color);
-				putPixel(normal_vertex.x, normal_vertex.y + 1, green_color);
-				putPixel(normal_vertex.x, normal_vertex.y - 1, green_color);
-				//draw the normal
-				DrawLine(center_vertex, glm::vec3(center_vertex.x + normal_vertex.x, center_vertex.y + normal_vertex.y, -(center_vertex.z + normal_vertex.z)), red_color, true);
-			}
-		}
+		//if (this->toDrawFaceNormals)
+		//{
+		//	float norm;
+		//	for (std::vector<Face>::iterator face_it = faces.begin(); face_it != faces.end(); face_it++) 
+		//	{
+		//		putPixel((int)(face_it->GetCenter().x), (int)(face_it->GetCenter().y), red_color);
+		//	}
+		//	for (std::pair<normal_it, faces_it> it(normals.begin(), faces.begin()); it.first != normals.end(); it.first++, it.second++)
+		//	{
+		//		glm::vec4 normal_vertex = glm::vec4((*it.first).x, (*it.first).y, (*it.first).z, 1);
+		//		glm::vec4 center_vertex = glm::vec4((*it.second).GetCenter().x, (*it.second).GetCenter().y, (*it.second).GetCenter().z, 1);
+		//		//draw a cross
+		//		putPixel(normal_vertex.x, normal_vertex.y, glm::vec3(0, 1, 0));
+		//		putPixel(normal_vertex.x + 1, normal_vertex.y, green_color);
+		//		putPixel(normal_vertex.x - 1, normal_vertex.y, green_color);
+		//		putPixel(normal_vertex.x, normal_vertex.y + 1, green_color);
+		//		putPixel(normal_vertex.x, normal_vertex.y - 1, green_color);
+		//		//draw the normal
+		//		DrawLine(center_vertex, glm::vec3(center_vertex.x + normal_vertex.x, center_vertex.y + normal_vertex.y, -(center_vertex.z + normal_vertex.z)), red_color, true);
+		//	}
+		//}
 
 		if (this->toDrawLineNormals)
 		{
@@ -458,6 +424,7 @@ void Renderer::Render(const Scene& scene)
 			newVertex = camera.getViewTransformation()*newVertex;
 			newVertex.w = 0;
 			newVertex = camera.getProjectionTformation()*newVertex;
+			//normals per face
 
 			//set new cube faces
 			if (c.back >= newVertex.z) c.back = newVertex.z; 
@@ -477,6 +444,8 @@ void Renderer::Render(const Scene& scene)
 
 		//iterate over the faces vector of the model
 		for (std::vector<Face>::iterator faceIndex = faces.begin(); faceIndex != faces.end(); faceIndex++) {
+			//draw normals
+			
 			//get the indices of the vertices for each face
 			std::vector<int> indices = (*faceIndex).GetVertices();
 			//iterate over the indices
@@ -489,6 +458,25 @@ void Renderer::Render(const Scene& scene)
 				} 
 				else //draw a line between the two vertices by their indices from the vector "indices"
 					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
+
+				glm::vec3 first, second, third;
+				first = vertices.at((*faceIndex).GetVertexIndex(0) - 1);
+				second = vertices.at((*faceIndex).GetVertexIndex(1) - 1);
+				third = vertices.at((*faceIndex).GetVertexIndex(2) - 1);
+				glm::vec3 centerv = glm::vec3((first.x + second.x + third.x) / 3, (first.y + second.y + third.y) / 3, (first.z + second.z + third.z) / 3);
+
+				//normals
+				glm::vec3 normal = glm::normalize(glm::cross(first - second, first - third));
+				normal.x *= -50; normal.y *= -50; normal.z *= -50;
+				if (this->toDrawFaceNormals)
+				{
+					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y, red_color);
+					putPixel(viewportWidth / 2 + centerv.x + 1, viewportHeight / 2 + centerv.y, red_color);
+					putPixel(viewportWidth / 2 + centerv.x - 1, viewportHeight / 2 + centerv.y, red_color);
+					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y + 1, red_color);
+					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y - 1, red_color);
+					DrawLine( centerv, glm::vec3(centerv.x + normal.x, centerv.y + normal.y, -(centerv.z + normal.z)), red_color, true);
+				}
 			}
 		}
 

@@ -229,6 +229,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					name = (*it)->GetModelName().c_str(); 
 					if (ImGui::MenuItem(name))
 					{
+						
 						std::cout << name << std::endl;
 					}
 				}

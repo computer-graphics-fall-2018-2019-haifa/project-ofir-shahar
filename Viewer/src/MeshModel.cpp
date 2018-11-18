@@ -67,7 +67,7 @@ void MeshModel::createCube()
 		if (this->cube.right <= (*it).x) this->cube.right = (*it).x;
 		if (this->cube.left > (*it).x) this->cube.left = (*it).x;
 
-		if (this->cube.bottom >= (*it).y) this->cube.top = (*it).y;
+		if (this->cube.bottom >= (*it).y) this->cube.bottom = (*it).y;
 		if (this->cube.top < (*it).y) this->cube.top = (*it).y;
 	}
 

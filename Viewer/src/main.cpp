@@ -143,6 +143,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	int frameBufferWidth, frameBufferHeight;
 	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
 
+	//adjust viewport upon resize window
 	renderer.SetViewport(frameBufferWidth, frameBufferHeight, 0, 0); 
 
 	// Clear the frame buffer0
