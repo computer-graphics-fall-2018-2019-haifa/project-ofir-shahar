@@ -41,6 +41,7 @@ private:
 	void createCube();
 	void createNormals();
 	void createCenterLines();
+	bool isCurrentModel;
 	Cube cube; 
 
 
@@ -94,5 +95,9 @@ public:
 	const std::vector<glm::vec4> getCenteLines() const { return this->centerLine; }
 
 	void setCenteLines(const std::vector<glm::vec4> c) { this->centerLine = c; }
+
+	void setIsCurrentModel(const bool& b) { this->isCurrentModel = b; } 
+	
+	bool getIsCurrentModel() const { return this->isCurrentModel; }
 	
 };

@@ -145,7 +145,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		if (ImGui::Button("cube"))                            
 		{
 			renderer.setToDrawaCube(!renderer.getToDrawaCube());
-			std::cout << "draw bube: " << renderer.getToDrawaCube() << std::endl; 
+			std::cout << "draw cube: " << renderer.getToDrawaCube() << std::endl; 
 		}
 		//show face normals (toggle)
 		if (ImGui::Button("face normals"))                            
@@ -197,7 +197,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					nfdresult_t result = NFD_OpenDialog("obj;png,jpg", NULL, &outPath);
 					if (result == NFD_OKAY) {
 						scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(outPath)));
-
+						//set renderer current model to the first model in the scene model list
+						renderer.setCurrentModel(scene.getModels().at(scene.GetModelCount() - 1));
 						/*renderer.setEyeX(0);
 						renderer.setScaleNumber(1800);
 						renderer.setFov(45);*/
@@ -227,9 +228,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 				for (it = models.begin(); it != models.end(); it++)
 				{
 					name = (*it)->GetModelName().c_str(); 
+					(*it)->setIsCurrentModel(false); 
+
 					if (ImGui::MenuItem(name))
-					{
-						
+					{	
+						(*it)->setIsCurrentModel(true);
 						std::cout << name << std::endl;
 					}
 				}

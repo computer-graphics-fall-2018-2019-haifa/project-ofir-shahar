@@ -24,10 +24,9 @@ private:
 	float fov;
 	bool projection; 
 	Camera camera;
-	MeshModel* currentModel;
 	bool hasModel;
 	bool tooDrawaCube, toDrawFaceNormals, toDrawLineNormals;
-
+	std::shared_ptr<MeshModel> currentModel;
 	void putPixel(int x, int y, const glm::vec3& color);
 	void createBuffers(int viewportWidth, int viewportHeight);
 
@@ -47,6 +46,8 @@ public:
 	Renderer(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
 	~Renderer();
 	bool isHasModel();
+	
+
 	void setHasModel();
 	void Render(const Scene& scene);
 	void SwapBuffers();
@@ -82,5 +83,7 @@ public:
 	bool getToDrawaCube() const { return this->tooDrawaCube; }
 	const void setToDrawFaceNormals(bool b) { this->toDrawFaceNormals = b; }
 	bool getToDrawFaceNormals() const { return this->toDrawFaceNormals; }
+
+	void setCurrentModel(std::shared_ptr<MeshModel> m) { this->currentModel = m; }
 
 };

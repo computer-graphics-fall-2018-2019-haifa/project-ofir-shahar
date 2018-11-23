@@ -29,6 +29,7 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3
 	normals(normals)
 {
 	this->drawCube = false;
+	this->isCurrentModel = false;
 	this->createCube();
 	this->createCenterLines();
 	setScaleTransform(1500, 1500, 1500);

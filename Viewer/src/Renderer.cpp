@@ -19,6 +19,9 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int vie
 {
 	initOpenGLRendering();
 	SetViewport(viewportWidth, viewportHeight, viewportX, viewportY);
+	this->toDrawFaceNormals = false;
+	this->toDrawLineNormals = false;
+	this->tooDrawaCube = false;
 	//setScaleNumber(50);
 }
 
@@ -44,32 +47,32 @@ void Renderer::setEyeX(float eyex) {
 	camera.SetCameraLookAt(eye, at, up);
 }
 void Renderer::rotateLocalX(float x) {
-	currentModel->setRotationTransform(x, 1, 1);
+	this->currentModel->setRotationTransform(x, 1, 1);
 }
 void Renderer::rotateLocalY(float y) {
-	currentModel->setRotationTransform(1, y, 1);
+	this->currentModel->setRotationTransform(1, y, 1);
 }
 void Renderer::rotateLocalZ(float z) {
-	currentModel->setRotationTransform(1, 1, z);
+	this->currentModel->setRotationTransform(1, 1, z);
 }
 
 void Renderer::rotateWorldX(float x) {
-	currentModel->setWorldRotation(x, 1, 1);
+	this->currentModel->setWorldRotation(x, 1, 1);
 }
 void Renderer::rotateWorldY(float y) {
-	currentModel->setWorldRotation(1, y, 1);
+	this->currentModel->setWorldRotation(1, y, 1);
 }
 void Renderer::rotateWorldZ(float z) {
-	currentModel->setWorldRotation(1, 1, z);
+	this->currentModel->setWorldRotation(1, 1, z);
 }
 void Renderer::setWorldTranslation(float x, float y, float z) {
-	if (currentModel != NULL)
-		currentModel->setWorldTranslation(x, y, z);
+	if (this->currentModel != NULL)
+		this->currentModel->setWorldTranslation(x, y, z);
 }
 
 void Renderer::translate(float xt, float yt, float zt) {
-	if (currentModel != NULL)
-		currentModel->setTranslationTransform(xt, yt, zt);
+	if (this->currentModel != NULL)
+		this->currentModel->setTranslationTransform(xt, yt, zt);
 }
 void Renderer::setPerspective(float f, float ar, float n, float fa) {
 	camera.SetPerspectiveProjection(f, ar, n, fa);
@@ -92,8 +95,8 @@ void Renderer::putPixel(int i, int j, const glm::vec3& color)
 }
 void Renderer::setScaleNumber(float f) {
 	//this->scaleNumber = f;
-	if (currentModel!=NULL)
-		currentModel->setScaleTransform(f,f,f);
+	if (this->currentModel!=NULL)
+		this->currentModel->setScaleTransform(f,f,f);
 }
 void Renderer::createBuffers(int viewportWidth, int viewportHeight)
 {
@@ -281,21 +284,22 @@ void Renderer::Render(const Scene& scene)
 	//we get the model list from the scene object that was passed to Render function
 	//models = vector of pointers (pointing to a MeshModel) representing this list.
 	std::vector<std::shared_ptr<MeshModel>> models = scene.getModels();
-	std::shared_ptr<MeshModel> model;
+	std::shared_ptr<MeshModel> model; 
 	
 	//we iterate over models vector with an iterator
 	for (std::vector<std::shared_ptr<MeshModel>>::iterator it = models.begin(); it != models.end(); it++) {
 		//the iterator is pointing to a shared_ptr that points to our MeshModel. 
 		model = (*it);
-		currentModel = &(*model);
-		Cube c = currentModel->getCube();
-		glm::mat4 localTransform = currentModel->GetLocalTransform();
-		glm::mat4 scaleTransform = currentModel->GetScaleTransform();
-		glm::mat4 translateTransform = currentModel->getTranslationTransform();
-		glm::mat4 rotationTransform = currentModel->GetRotationTransform();
-		glm::mat4 worldTransform = currentModel->GetWorldTransformation();
-		glm::mat4 worldTranslate = currentModel->GetWorldTranslate();
-		glm::mat4 worldRotate = currentModel->GetWorldRotation();
+
+		//this->currentModel = &(*model);
+		Cube c = model->getCube();
+		glm::mat4 localTransform = model->GetLocalTransform();
+		glm::mat4 scaleTransform = model->GetScaleTransform();
+		glm::mat4 translateTransform = model->getTranslationTransform();
+		glm::mat4 rotationTransform = model->GetRotationTransform();
+		glm::mat4 worldTransform = model->GetWorldTransformation();
+		glm::mat4 worldTranslate = model->GetWorldTranslate();
+		glm::mat4 worldRotate = model->GetWorldRotation();
 		glm::vec3 red_color(1, 0, 0);
 		glm::vec3 green_color(0, 1, 0);
 		glm::vec3 black_color(0, 0, 0);
@@ -309,20 +313,10 @@ void Renderer::Render(const Scene& scene)
 		typedef std::vector<Face>::iterator faces_it; 
 		typedef std::vector<glm::vec4>::iterator center_it;
 
-		/*
-					c.cPoints[0] = glm::vec4(c.left, c.bottom, c.front, 1);
-			c.cPoints[1] = glm::vec4(c.right, c.bottom, c.front, 1);
-			c.cPoints[2] = glm::vec4(c.left, c.top, c.front, 1);
-			c.cPoints[3] = glm::vec4(c.right, c.top, c.front, 1);
-			c.cPoints[4] = glm::vec4(c.left, c.bottom, c.back, 1);
-			c.cPoints[5] = glm::vec4(c.right, c.bottom, c.back, 1);
-			c.cPoints[6] = glm::vec4(c.left, c.top, c.back, 1);
-			c.cPoints[7] = glm::vec4(c.right, c.top, c.back, 1);
-		*/
 
 		for (std::vector<std::string>::iterator name_it = this->ExcludeModels.begin(); name_it != this->ExcludeModels.end(); name_it++)
 		{
-			//if (name_it::compare(currentModel->GetModelName())) break;
+			//if (name_it::compare(this->currentModel->GetModelName())) break;
 		}
 
 		//adjust cube coordinates
@@ -351,7 +345,7 @@ void Renderer::Render(const Scene& scene)
 		}
 		
 		//draw the cube
-		if (this->tooDrawaCube)
+		if (this->tooDrawaCube && (*model).getIsCurrentModel())
 		{
 			DrawLine(c.cPoints[0], c.cPoints[2], glm::vec3(1, 0, 0), true);
 			DrawLine(c.cPoints[1], c.cPoints[3], glm::vec3(1, 0, 0), true);
@@ -371,31 +365,6 @@ void Renderer::Render(const Scene& scene)
 		
 
 		//adjust face normals and faces centeroids positions
-		
-
-		//draw the face normals
-		//if (this->toDrawFaceNormals)
-		//{
-		//	float norm;
-		//	for (std::vector<Face>::iterator face_it = faces.begin(); face_it != faces.end(); face_it++) 
-		//	{
-		//		putPixel((int)(face_it->GetCenter().x), (int)(face_it->GetCenter().y), red_color);
-		//	}
-		//	for (std::pair<normal_it, faces_it> it(normals.begin(), faces.begin()); it.first != normals.end(); it.first++, it.second++)
-		//	{
-		//		glm::vec4 normal_vertex = glm::vec4((*it.first).x, (*it.first).y, (*it.first).z, 1);
-		//		glm::vec4 center_vertex = glm::vec4((*it.second).GetCenter().x, (*it.second).GetCenter().y, (*it.second).GetCenter().z, 1);
-		//		//draw a cross
-		//		putPixel(normal_vertex.x, normal_vertex.y, glm::vec3(0, 1, 0));
-		//		putPixel(normal_vertex.x + 1, normal_vertex.y, green_color);
-		//		putPixel(normal_vertex.x - 1, normal_vertex.y, green_color);
-		//		putPixel(normal_vertex.x, normal_vertex.y + 1, green_color);
-		//		putPixel(normal_vertex.x, normal_vertex.y - 1, green_color);
-		//		//draw the normal
-		//		DrawLine(center_vertex, glm::vec3(center_vertex.x + normal_vertex.x, center_vertex.y + normal_vertex.y, -(center_vertex.z + normal_vertex.z)), red_color, true);
-		//	}
-		//}
-
 		if (this->toDrawLineNormals)
 		{
 
@@ -468,7 +437,7 @@ void Renderer::Render(const Scene& scene)
 				//normals
 				glm::vec3 normal = glm::normalize(glm::cross(first - second, first - third));
 				normal.x *= -50; normal.y *= -50; normal.z *= -50;
-				if (this->toDrawFaceNormals)
+				if (this->toDrawFaceNormals && (*model).getIsCurrentModel())
 				{
 					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y, red_color);
 					putPixel(viewportWidth / 2 + centerv.x + 1, viewportHeight / 2 + centerv.y, red_color);
@@ -479,7 +448,6 @@ void Renderer::Render(const Scene& scene)
 				}
 			}
 		}
-
 	}
 
 	
