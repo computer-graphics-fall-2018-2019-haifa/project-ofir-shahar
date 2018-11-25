@@ -218,8 +218,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 				}
 				ImGui::EndMenu();
 			}
-			//load model
-			if (ImGui::BeginMenu("scene models"))
+			//active models list
+			if (ImGui::BeginMenu("Scene models"))
 			{
 				std::vector<std::shared_ptr<MeshModel>> models = scene.getModels(); 
 				std::vector<std::shared_ptr<MeshModel>>::iterator it;
@@ -235,6 +235,19 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 						(*it)->setIsCurrentModel(true);
 						std::cout << name << std::endl;
 					}
+				}
+				ImGui::EndMenu();
+			}
+			//active cameras
+			if (ImGui::BeginMenu("Scene cameras"))
+			{
+				int counter = 1;
+				for (std::vector<Camera>::iterator cam_it = scene.getCameras().begin(); cam_it != scene.getCameras().end(); cam_it++, counter++)
+				{	
+					if(counter == 1)
+						ImGui::MenuItem("(default) camera " + counter);
+					else
+						ImGui::MenuItem("camera " + counter);
 				}
 				ImGui::EndMenu();
 			}
