@@ -12,6 +12,7 @@
 #define PI 3.14159265358
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 
+//ctor
 Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int viewportY) :
 	colorBuffer(nullptr),
 	zBuffer(nullptr),

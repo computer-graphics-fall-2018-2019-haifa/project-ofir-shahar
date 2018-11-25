@@ -22,6 +22,7 @@ private:
 
 public:
 	Scene();
+	Scene(const Camera& camera);
 
 	void AddModel(const std::shared_ptr<MeshModel>& model);
 	const int GetModelCount() const;

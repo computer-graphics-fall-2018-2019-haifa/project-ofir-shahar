@@ -2,11 +2,17 @@
 #include "MeshModel.h"
 #include <string>
 
+//ctor
 Scene::Scene() :
 	activeCameraIndex(0),
 	activeModelIndex(0)
 {
 
+}
+
+Scene::Scene(const Camera & camera)
+{
+	this->AddCamera(camera);
 }
 
 void Scene::AddModel(const std::shared_ptr<MeshModel>& model)

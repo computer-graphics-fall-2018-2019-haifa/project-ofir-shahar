@@ -7,6 +7,7 @@
 
 #define PI 3.14159265358
 
+//ctor
 Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 	zoom(1.0)
 {

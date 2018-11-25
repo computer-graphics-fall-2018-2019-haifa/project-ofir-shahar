@@ -2,8 +2,10 @@
 
 #include <imgui/imgui.h>
 #include <stdio.h>
+#include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <windows.h>
 #include <cmath>
 
 #include "imgui_impl_glfw.h"
@@ -35,6 +37,12 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main(int argc, char **argv)
 {
+	//test dir
+
+	char buffer[MAX_PATH];
+	::GetCurrentDirectory(MAX_PATH, buffer);
+	std::cout << "Current directory: " << buffer << std::endl;
+
 	// Create GLFW window
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
@@ -55,7 +63,7 @@ int main(int argc, char **argv)
 	// Create the renderer and the scene
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
-	//glm::vec3 eye = glm::vec3(frameBufferWidth / 2, frameBufferHeight / 2, 400);
+	//create default camera
 	glm::vec3 eye = glm::vec3(0 ,0 , 400);
 	glm::vec3 at = glm::vec3(frameBufferWidth / 2, frameBufferHeight / 2, 0);
 	glm::vec3 up = glm::vec3(0,1,0);

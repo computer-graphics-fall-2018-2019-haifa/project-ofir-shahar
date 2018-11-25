@@ -1,5 +1,6 @@
 #pragma once
 #define _USE_MATH_DEFINES
+#define obj_path "..\Data\obj_examples" 
 
 #include "ImguiMenus.h"
 #include "MeshModel.h"
@@ -127,23 +128,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		if (ImGui::SliderFloat("Rotate world z", &rotateWorldZ, 0.0, 360.0f) && renderer.isHasModel()) {
 			renderer.rotateWorldZ(rotateLocalZ);
 		}
-		//left mouse down
-		if (ImGui::IsMouseDown(0) && renderer.isHasModel() ) {
-			ImVec2 c = ImGui::GetMousePos();
-			float x = c.x;
-			float y = c.y;
-			renderer.rotateLocalX(y);
-			renderer.rotateLocalY(x);
-			//renderer.rotat
-		}
-		if (ImGui::IsMouseDown(1) && renderer.isHasModel()) {
-			//IMPLEMENT HERE WHAT HAPPENS WHEN ------RIGHT MOUSE BUTTON ------- IS DOWN
-			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
-		}
-		if (ImGui::IsMouseDown(2) && renderer.isHasModel()) {
-			//IMPLEMENT HERE WHAT HAPPENS WHEN ------MIDDLE MOUSE BUTTON ------- IS DOWN
-			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
-		}
+
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 		//showboundering cube (toggle)
 		if (ImGui::Button("cube"))                            
@@ -174,6 +159,24 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End();
+
+		//left mouse down
+		if (ImGui::IsMouseDown(0) && renderer.isHasModel()) {
+			ImVec2 c = ImGui::GetMousePos();
+			float x = c.x;
+			float y = c.y;
+			renderer.rotateLocalX(y);
+			renderer.rotateLocalY(x);
+			//renderer.rotat
+		}
+		if (ImGui::IsMouseDown(1) && renderer.isHasModel()) {
+			//IMPLEMENT HERE WHAT HAPPENS WHEN ------RIGHT MOUSE BUTTON ------- IS DOWN
+			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
+		}
+		if (ImGui::IsMouseDown(2) && renderer.isHasModel()) {
+			//IMPLEMENT HERE WHAT HAPPENS WHEN ------MIDDLE MOUSE BUTTON ------- IS DOWN
+			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
+		}
 	}
 
 	// 3. Show another simple window.
@@ -242,6 +245,14 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 			if (ImGui::BeginMenu("Scene cameras"))
 			{
 				int counter = 1;
+				if (ImGui::MenuItem("add camera")) 
+				{
+					std::string path(obj_path);
+					path.append("/camera.obj");
+					scene.AddCamera(Camera( glm::vec3(0,-200,400),  glm::vec3(0,0,0),  glm::vec3(0,0,1)));   
+					scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(path)));
+				}
+				
 				for (std::vector<Camera>::iterator cam_it = scene.getCameras().begin(); cam_it != scene.getCameras().end(); cam_it++, counter++)
 				{	
 					if(counter == 1)
