@@ -21,7 +21,7 @@ const int Scene::GetModelCount() const
 
 void Scene::AddCamera(const Camera& camera)
 {
-	cameras.push_back(camera);
+	this->cameras.push_back(camera);
 }
 
 const int Scene::GetCameraCount() const

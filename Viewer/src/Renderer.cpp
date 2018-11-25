@@ -44,7 +44,7 @@ void Renderer::setEyeX(float eyex) {
 	eye = glm::vec3(1280 * sin(PI*eyex / 180), 0, cos(PI*eyex / 180) * 1280);
 	glm::vec3 at = glm::vec3(viewportWidth / 2, viewportHeight / 2, 0);
 	glm::vec3 up = glm::vec3(0, 1, 0);
-	camera.SetCameraLookAt(eye, at, up);
+	currentCamera.SetCameraLookAt(eye, at, up);
 }
 void Renderer::rotateLocalX(float x) {
 	this->currentModel->setRotationTransform(x, 1, 1);
@@ -75,7 +75,7 @@ void Renderer::translate(float xt, float yt, float zt) {
 		this->currentModel->setTranslationTransform(xt, yt, zt);
 }
 void Renderer::setPerspective(float f, float ar, float n, float fa) {
-	camera.SetPerspectiveProjection(f, ar, n, fa);
+	currentCamera.SetPerspectiveProjection(f, ar, n, fa);
 }
 void Renderer::setProjection(bool p)
 {
@@ -337,10 +337,10 @@ void Renderer::Render(const Scene& scene)
 			c.cPoints[i] = worldTranslate * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
-			c.cPoints[i] = camera.getViewTransformation() * c.cPoints[i];
+			c.cPoints[i] = currentCamera.getViewTransformation() * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
-			c.cPoints[i] = camera.getProjectionTformation() * c.cPoints[i]; 
+			c.cPoints[i] = currentCamera.getProjectionTformation() * c.cPoints[i]; 
 			c.cPoints[i].w = 0; 
 		}
 		
@@ -364,12 +364,6 @@ void Renderer::Render(const Scene& scene)
 		}
 		
 
-		//adjust face normals and faces centeroids positions
-		if (this->toDrawLineNormals)
-		{
-
-		}
-
 		// ############### IMPORTANT CODE HERE ##################
 		// in this for loop we iterate over all the vertices of the model 
 		// and multiply each vertex by view, projection and viewport transformation.
@@ -390,9 +384,9 @@ void Renderer::Render(const Scene& scene)
 			newVertex = worldTranslate * newVertex;
 			newVertex.w = 0;
 
-			newVertex = camera.getViewTransformation()*newVertex;
+			newVertex = currentCamera.getViewTransformation()*newVertex;
 			newVertex.w = 0;
-			newVertex = camera.getProjectionTformation()*newVertex;
+			newVertex = currentCamera.getProjectionTformation()*newVertex;
 			//normals per face
 
 			//set new cube faces

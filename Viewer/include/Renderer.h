@@ -23,7 +23,7 @@ private:
 	float scaleNumber;
 	float fov;
 	bool projection; 
-	Camera camera;
+	Camera currentCamera;
 	bool hasModel;
 	bool tooDrawaCube, toDrawFaceNormals, toDrawLineNormals;
 	std::shared_ptr<MeshModel> currentModel;
@@ -43,19 +43,20 @@ private:
 	std::vector<std::string> ExcludeModels;
 
 public:
+	//ctor,dtor
 	Renderer(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
 	~Renderer();
-	bool isHasModel();
 	
-
+	bool isHasModel();
 	void setHasModel();
 	void Render(const Scene& scene);
 	void SwapBuffers();
 	void ClearColorBuffer(const glm::vec3& color);
 	void SetViewport(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
+
 	
-	//getters\setters
-	//---------------
+	// getters setters
+	//----------------//
 	const std::vector<std::string> getExcludeModels() const { return this->ExcludeModels; }
 	void setExcludeModels(std::vector<std::string> v) { this->ExcludeModels = v; }
 
@@ -85,5 +86,6 @@ public:
 	bool getToDrawFaceNormals() const { return this->toDrawFaceNormals; }
 
 	void setCurrentModel(std::shared_ptr<MeshModel> m) { this->currentModel = m; }
+	Camera getCurentCamera() const { return this->currentCamera; }
 
 };

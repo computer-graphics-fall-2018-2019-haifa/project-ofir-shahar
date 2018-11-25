@@ -128,9 +128,13 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 			renderer.rotateWorldZ(rotateLocalZ);
 		}
 		//left mouse down
-		if (ImGui::IsMouseDown(0) /*&& renderer.isHasModel() */) {
-			//ImVec2 c = ImGui::GetMousePos();
-			//std::cout << "x= " << c.x << " y=" << c.y << std::endl; 
+		if (ImGui::IsMouseDown(0) && renderer.isHasModel() ) {
+			ImVec2 c = ImGui::GetMousePos();
+			float x = c.x;
+			float y = c.y;
+			renderer.rotateLocalX(x);
+			renderer.rotateLocalY(y);
+			//renderer.rotat
 		}
 		if (ImGui::IsMouseDown(1) && renderer.isHasModel()) {
 			//IMPLEMENT HERE WHAT HAPPENS WHEN ------RIGHT MOUSE BUTTON ------- IS DOWN
@@ -199,13 +203,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 						scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(outPath)));
 						//set renderer current model to the first model in the scene model list
 						renderer.setCurrentModel(scene.getModels().at(scene.GetModelCount() - 1));
-						/*renderer.setEyeX(0);
-						renderer.setScaleNumber(1800);
-						renderer.setFov(45);*/
 
 						renderer.setHasModel();
 						renderer.setEyeX(0);
-						//renderer.translate(640, 360, 0);
 						renderer.setPerspective(50,1,1,10);
 
 						free(outPath);
