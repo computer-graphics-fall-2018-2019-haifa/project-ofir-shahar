@@ -132,8 +132,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 			ImVec2 c = ImGui::GetMousePos();
 			float x = c.x;
 			float y = c.y;
-			renderer.rotateLocalX(x);
-			renderer.rotateLocalY(y);
+			renderer.rotateLocalX(y);
+			renderer.rotateLocalY(x);
 			//renderer.rotat
 		}
 		if (ImGui::IsMouseDown(1) && renderer.isHasModel()) {
