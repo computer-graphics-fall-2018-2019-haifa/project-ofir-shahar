@@ -161,7 +161,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		ImGui::End();
 
 		//left mouse down
-		if (ImGui::IsMouseDown(0) && renderer.isHasModel()) {
+		if (ImGui::IsMouseDown(0) && renderer.isHasModel() && ImGui::IsAnyItemActive() != true && ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow) != true) {
 			ImVec2 c = ImGui::GetMousePos();
 			float x = c.x;
 			float y = c.y;
