@@ -235,7 +235,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 
 					if (ImGui::MenuItem(name))
 					{	
-						(*it)->setIsCurrentModel(true);
+						renderer.setCurrentModel(*it);
 						std::cout << name << std::endl;
 					}
 				}
