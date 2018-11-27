@@ -70,6 +70,7 @@ int main(int argc, char **argv)
 	Camera camera = Camera(eye, at, up);
 	scene.AddCamera(camera); 
 	// Setup ImGui
+	std::cout << (scene.getCameras()).size() << std::endl;
 	ImGuiIO& io = SetupDearImgui(window);
 
 	// Register a mouse scroll-wheel callback

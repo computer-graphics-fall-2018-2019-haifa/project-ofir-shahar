@@ -236,7 +236,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					if (ImGui::MenuItem(name))
 					{	
 						renderer.setCurrentModel(*it);
-						std::cout << name << std::endl;
 					}
 				}
 				ImGui::EndMenu();
@@ -252,14 +251,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					scene.AddCamera(Camera( glm::vec3(0,-200,400),  glm::vec3(0,0,0),  glm::vec3(0,0,1)));   
 					scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(path)));
 				}
-				
-				for (std::vector<Camera>::iterator cam_it = scene.getCameras().begin(); cam_it != scene.getCameras().end(); cam_it++, counter++)
+
+				//find cameras
+				for (std::vector<Camera>::const_iterator cam_it = scene.getCameras().begin(); cam_it != scene.getCameras().end(); cam_it++, counter++)
 				{	
 					if(counter == 1)
 						ImGui::MenuItem("(default) camera " + counter);
 					else
 						ImGui::MenuItem("camera " + counter);
 				}
+				
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();

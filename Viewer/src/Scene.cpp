@@ -68,6 +68,6 @@ const std::vector<std::shared_ptr<MeshModel>> Scene::getModels() const{
 	return this->models;
 }
 
-std::vector<Camera> Scene::getCameras() const {
-	return this->cameras;
+const std::vector<Camera>& Scene::getCameras() const {
+	return (this->cameras);
 }
