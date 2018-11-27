@@ -87,5 +87,6 @@ public:
 
 	void setCurrentModel(std::shared_ptr<MeshModel> m) { this->currentModel = m; }
 	Camera getCurentCamera() const { return this->currentCamera; }
+	void setCurrentCamera(const Camera &c) { this -> currentCamera = c; }
 
 };

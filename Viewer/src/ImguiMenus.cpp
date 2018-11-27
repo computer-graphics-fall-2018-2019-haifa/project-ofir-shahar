@@ -246,19 +246,31 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 				int counter = 1;
 				if (ImGui::MenuItem("add camera")) 
 				{
-					std::string path(obj_path);
-					path.append("/camera.obj");
-					scene.AddCamera(Camera( glm::vec3(0,-200,400),  glm::vec3(0,0,0),  glm::vec3(0,0,1)));   
-					scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(path)));
+					//std::string path(obj_path);
+					//path.append("/camera.obj");
+					scene.AddCamera(Camera( glm::vec3(0,0,400),  glm::vec3(1280/2,720/2,0),  glm::vec3(0,1,0)));   
+					//scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(path)));
 				}
 
 				//find cameras
 				for (std::vector<Camera>::const_iterator cam_it = scene.getCameras().begin(); cam_it != scene.getCameras().end(); cam_it++, counter++)
 				{	
-					if(counter == 1)
-						ImGui::MenuItem("(default) camera " + counter);
-					else
-						ImGui::MenuItem("camera " + counter);
+					if (counter == 1) {
+						std::stringstream ss;
+						ss << "Default Camera " << counter;
+						std::string res = ss.str();
+						if (ImGui::MenuItem((char*)res.c_str())) {
+							renderer.setCurrentCamera(*(cam_it));
+						}
+					}
+					else {
+						std::stringstream ss;
+						ss << "Camera " << counter;
+						std::string res = ss.str();
+						if (ImGui::MenuItem((char*)res.c_str())) {
+							renderer.setCurrentCamera(*(cam_it));
+						}
+					}
 				}
 				
 				ImGui::EndMenu();
