@@ -252,14 +252,25 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(path)));
 				}
 
-				//find cameras
-				for (std::vector<Camera>::const_iterator cam_it = scene.getCameras().begin(); cam_it != scene.getCameras().end(); cam_it++, counter++)
-				{	
-					if(counter == 1)
-						ImGui::MenuItem("(default) camera " + counter);
-					else
-						ImGui::MenuItem("camera " + counter);
+				//find existing camera
+				if (ImGui::MenuItem("existing cameras"))
+				{
+					for (std::vector<Camera>::const_iterator cam_it = scene.getCameras().begin(); cam_it != scene.getCameras().end(); cam_it++, counter++)
+					{
+						if (counter == 1)
+						{
+							ImGui::MenuItem("(default) camera1");
+							renderer.setCurrentCamera(*cam_it);
+						}
+							
+						else
+							if (ImGui::MenuItem("camera " + counter))
+							{
+
+							}
+					}
 				}
+
 				
 				ImGui::EndMenu();
 			}
