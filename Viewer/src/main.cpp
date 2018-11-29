@@ -26,6 +26,8 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 void Cleanup(GLFWwindow* window);
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
+int main(int argc, char ** argv);
+
 
 
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
@@ -68,7 +70,9 @@ int main(int argc, char **argv)
 	glm::vec3 at = glm::vec3(frameBufferWidth / 2, frameBufferHeight / 2, 0);
 	glm::vec3 up = glm::vec3(0,1,0);
 	Camera camera = Camera(eye, at, up);
+	camera.SetModelName("cam1"); 
 	scene.AddCamera(camera); 
+	renderer.setCurrentCamera(scene.getCameras().at(0));   
 	// Setup ImGui
 	std::cout << (scene.getCameras()).size() << std::endl;
 	ImGuiIO& io = SetupDearImgui(window);

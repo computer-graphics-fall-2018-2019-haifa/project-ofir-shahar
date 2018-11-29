@@ -89,4 +89,7 @@ public:
 	Camera getCurentCamera() const { return this->currentCamera; }
 	void setCurrentCamera(const Camera& c) { this->currentCamera = c; } 
 
+	const int getViewPortWidth() const { return this->viewportWidth; }
+	const int getViewPortHeight() const { return this->viewportHeight; }
+
 };

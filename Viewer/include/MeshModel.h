@@ -99,5 +99,7 @@ public:
 	void setIsCurrentModel(const bool& b) { this->isCurrentModel = b; } 
 	
 	bool getIsCurrentModel() const { return this->isCurrentModel; }
+
+	void SetModelName(const std::string& s) { this->modelName = s; }
 	
 };

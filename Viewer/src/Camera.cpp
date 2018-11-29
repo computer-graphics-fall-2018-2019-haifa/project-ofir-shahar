@@ -15,7 +15,7 @@ Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 	oldeye = eye;
 	oldat = at;
 	SetCameraLookAt(eye, at, up);
-	SetPerspectiveProjection(45,0.5 , 100, 1000);
+	//SetPerspectiveProjection(45,0.5 , 100, 1000);
 	
 }
 

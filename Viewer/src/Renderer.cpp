@@ -45,7 +45,7 @@ void Renderer::setEyeX(float eyex) {
 	eye = glm::vec3(1280 * sin(PI*eyex / 180), 0, cos(PI*eyex / 180) * 1280);
 	glm::vec3 at = glm::vec3(viewportWidth / 2, viewportHeight / 2, 0);
 	glm::vec3 up = glm::vec3(0, 1, 0);
-	currentCamera.SetCameraLookAt(eye, at, up);
+	//currentCamera.SetCameraLookAt(eye, at, up);
 }
 void Renderer::rotateLocalX(float x) {
 	this->currentModel->setRotationTransform(x, 1, 1);
@@ -315,11 +315,6 @@ void Renderer::Render(const Scene& scene)
 		typedef std::vector<glm::vec4>::iterator center_it;
 
 
-		for (std::vector<std::string>::iterator name_it = this->ExcludeModels.begin(); name_it != this->ExcludeModels.end(); name_it++)
-		{
-			//if (name_it::compare(this->currentModel->GetModelName())) break;
-		}
-
 		//adjust cube coordinates
 		for (int i = 0; i < 8; i++)
 		{
@@ -338,11 +333,11 @@ void Renderer::Render(const Scene& scene)
 			c.cPoints[i] = worldTranslate * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
-			c.cPoints[i] = currentCamera.getViewTransformation() * c.cPoints[i];
+			/*c.cPoints[i] = currentCamera.getViewTransformation() * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
 			c.cPoints[i] = currentCamera.getProjectionTformation() * c.cPoints[i]; 
-			c.cPoints[i].w = 0; 
+			c.cPoints[i].w = 0; */
 		}
 		
 		//draw the cube
@@ -385,10 +380,6 @@ void Renderer::Render(const Scene& scene)
 			newVertex = worldTranslate * newVertex;
 			newVertex.w = 0;
 
-			newVertex = currentCamera.getViewTransformation()*newVertex;
-			newVertex.w = 0;
-			newVertex = currentCamera.getProjectionTformation()*newVertex;
-			//normals per face
 
 			//set new cube faces
 			if (c.back >= newVertex.z) c.back = newVertex.z; 
@@ -404,41 +395,78 @@ void Renderer::Render(const Scene& scene)
 		}
 		// ############## END OF IMPORTANT CODE #################
 		// ######################################################
-	
-
 		//iterate over the faces vector of the model
+		//this is the actual drawing of the object 
 		for (std::vector<Face>::iterator faceIndex = faces.begin(); faceIndex != faces.end(); faceIndex++) {
-			//draw normals
-			
 			//get the indices of the vertices for each face
 			std::vector<int> indices = (*faceIndex).GetVertices();
 			//iterate over the indices
 			for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) {
+
+				glm::vec4 first_v, second_v;
 				//here we draw a line between two successive pointes by the indexes from the indices vector
 				//if we are at the end of the indices vector we connect the vertex with this index
 				//with the vertex with the index from the start of the vector
 				if ((vindex+1) == indices.end()) {
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
-				} 
-				else //draw a line between the two vertices by their indices from the vector "indices"
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
+					first_v = glm::vec4(vertices.at(*(vindex)-1), 0);
+					second_v = glm::vec4(vertices.at(indices.at(0) - 1), 0);
 
+					first_v = currentCamera.getViewTransformation()*first_v;
+					first_v.w = 0;
+					first_v = currentCamera.getProjectionTformation()*first_v;
+
+					second_v = currentCamera.getViewTransformation()*second_v;
+					second_v.w = 0;
+					second_v = currentCamera.getProjectionTformation()*second_v;
+				} 
+				//draw a line between the two vertices by their indices from the vector "indices"
+				else 
+				{
+					first_v = glm::vec4(vertices.at(*(vindex)-1), 0);
+					second_v = glm::vec4(vertices.at(*(vindex + 1) - 1), 0);
+
+					first_v = currentCamera.getViewTransformation()*first_v;
+					first_v.w = 0;
+					first_v = currentCamera.getProjectionTformation()*first_v;
+
+					second_v = currentCamera.getViewTransformation()*second_v;
+					second_v.w = 0;
+					second_v = currentCamera.getProjectionTformation()*second_v;
+				}
+				//draw the object faces
+				DrawLine(first_v, second_v, glm::vec3(0, 0, 0), true);
+
+				//calculating the normal for each face
+				//1. claculate 3 lines for each face
+				glm::vec4 normal, centerv;
 				glm::vec3 first, second, third;
 				first = vertices.at((*faceIndex).GetVertexIndex(0) - 1);
 				second = vertices.at((*faceIndex).GetVertexIndex(1) - 1);
 				third = vertices.at((*faceIndex).GetVertexIndex(2) - 1);
-				glm::vec3 centerv = glm::vec3((first.x + second.x + third.x) / 3, (first.y + second.y + third.y) / 3, (first.z + second.z + third.z) / 3);
-
-				//normals
-				glm::vec3 normal = glm::normalize(glm::cross(first - second, first - third));
+				//2. the center of the face
+				centerv = glm::vec4((first.x + second.x + third.x) / 3, (first.y + second.y + third.y) / 3, (first.z + second.z + third.z) / 3, 1);
+				//3. claculate the actual face normal by cross product of 2 of the 3 face lines (and some scaling)
+				normal = glm::vec4(glm::normalize(glm::cross(first - second, first - third)), 1);
 				normal.x *= -50; normal.y *= -50; normal.z *= -50;
-				if (this->toDrawFaceNormals && (*model).getIsCurrentModel())
+
+				//4. draw the normals if needed for each model
+				if (this->toDrawFaceNormals/* && (*model).getIsCurrentModel()*/)
 				{
 					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y, red_color);
 					putPixel(viewportWidth / 2 + centerv.x + 1, viewportHeight / 2 + centerv.y, red_color);
 					putPixel(viewportWidth / 2 + centerv.x - 1, viewportHeight / 2 + centerv.y, red_color);
 					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y + 1, red_color);
 					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y - 1, red_color);
+
+					//adjust center face and normal for camera
+					centerv = currentCamera.getViewTransformation()*centerv;
+					centerv.w = 0;
+					centerv = currentCamera.getProjectionTformation()*centerv;
+
+					normal = currentCamera.getViewTransformation()*normal;
+					normal.w = 0;
+					normal = currentCamera.getProjectionTformation()*normal;
+
 					DrawLine( centerv, glm::vec3(centerv.x + normal.x, centerv.y + normal.y, -(centerv.z + normal.z)), red_color, true);
 				}
 			}

@@ -14,6 +14,7 @@
 class Camera : public MeshModel
 {
 private:
+	glm::vec3 eye, at, up;
 	glm::mat4x4 viewTransformation;
 	glm::mat4x4 projectionTransformation;
 	glm::mat4x4 orthographicTransformation;
@@ -45,4 +46,12 @@ public:
 	const glm::mat4 getViewTransformation();
 	const glm::mat4 getProjectionTformation();
 	const glm::mat4 getOrthographicTransformation(); 
+
+	void setCameraEye(const glm::vec3& v) { this->eye = v; }
+	void setCameraAt(const glm::vec3& v) { this->at = v; }
+	void setCameraUp(const glm::vec3& v) { this->up = v; }
+
+	const glm::vec3& getCameraEye() const { return this->eye; }
+	const glm::vec3& getCameraAt() const { return this->at; }
+	const glm::vec3& getCameraUp() const { return this->up; }
 };
