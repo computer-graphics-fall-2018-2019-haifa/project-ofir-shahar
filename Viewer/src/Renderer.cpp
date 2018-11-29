@@ -332,17 +332,21 @@ void Renderer::Render(const Scene& scene)
 
 			c.cPoints[i] = worldTranslate * c.cPoints[i];
 			c.cPoints[i].w = 0;
-
-			/*c.cPoints[i] = currentCamera.getViewTransformation() * c.cPoints[i];
-			c.cPoints[i].w = 0;
-
-			c.cPoints[i] = currentCamera.getProjectionTformation() * c.cPoints[i]; 
-			c.cPoints[i].w = 0; */
 		}
 		
 		//draw the cube
 		if (this->tooDrawaCube && (*model).getIsCurrentModel())
 		{
+			//adjust cube points to current camera
+			for (int i = 0; i < 8; i++)
+			{
+				c.cPoints[i] = currentCamera.getViewTransformation() * c.cPoints[i];
+				c.cPoints[i].w = 0;
+
+				c.cPoints[i] = currentCamera.getProjectionTformation() * c.cPoints[i];
+				c.cPoints[i].w = 0;
+			}
+
 			DrawLine(c.cPoints[0], c.cPoints[2], glm::vec3(1, 0, 0), true);
 			DrawLine(c.cPoints[1], c.cPoints[3], glm::vec3(1, 0, 0), true);
 			DrawLine(c.cPoints[0], c.cPoints[1], glm::vec3(1, 0, 0), true);
@@ -444,19 +448,21 @@ void Renderer::Render(const Scene& scene)
 				second = vertices.at((*faceIndex).GetVertexIndex(1) - 1);
 				third = vertices.at((*faceIndex).GetVertexIndex(2) - 1);
 				//2. the center of the face
-				centerv = glm::vec4((first.x + second.x + third.x) / 3, (first.y + second.y + third.y) / 3, (first.z + second.z + third.z) / 3, 1);
+				centerv = glm::vec4((first.x + second.x + third.x) / 3, (first.y + second.y + third.y) / 3, (first.z + second.z + third.z) / 3, 0);
 				//3. claculate the actual face normal by cross product of 2 of the 3 face lines (and some scaling)
-				normal = glm::vec4(glm::normalize(glm::cross(first - second, first - third)), 1);
-				normal.x *= -50; normal.y *= -50; normal.z *= -50;
+				normal = glm::vec4(glm::normalize(glm::cross(first - second, first - third)), 0);
+				normal.x *= 50; normal.y *= 50; normal.z *= 50;
 
 				//4. draw the normals if needed for each model
-				if (this->toDrawFaceNormals/* && (*model).getIsCurrentModel()*/)
+				if (this->toDrawFaceNormals && (*model).getIsCurrentModel())
 				{
+					/*
 					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y, red_color);
 					putPixel(viewportWidth / 2 + centerv.x + 1, viewportHeight / 2 + centerv.y, red_color);
 					putPixel(viewportWidth / 2 + centerv.x - 1, viewportHeight / 2 + centerv.y, red_color);
 					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y + 1, red_color);
 					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y - 1, red_color);
+					*/
 
 					//adjust center face and normal for camera
 					centerv = currentCamera.getViewTransformation()*centerv;

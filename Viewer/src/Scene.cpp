@@ -20,6 +20,15 @@ void Scene::AddModel(const std::shared_ptr<MeshModel>& model)
 	models.push_back(model);
 }
 
+void Scene::resetModelView()
+{
+	for (std::vector<std::shared_ptr<MeshModel>>::iterator it = models.begin(); it != models.end(); it++) {
+		//&(*it)->setIsCurrentModel(false); 
+		(*it)->setIsCurrentModel(false);
+	}
+	
+}
+
 const int Scene::GetModelCount() const
 {
 	return models.size();
