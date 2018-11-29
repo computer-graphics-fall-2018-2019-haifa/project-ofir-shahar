@@ -11,7 +11,7 @@
 Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 	zoom(1.0)
 {
-	SetPerspectiveProjection(45, 1, 200, 500);
+	SetPerspectiveProjection(50, 1, 200, 500);
 	oldeye = eye;
 	oldat = at;
 	SetCameraLookAt(eye, at, up);
@@ -42,9 +42,9 @@ const glm::mat4 Camera::getOrthographicTransformation()
 void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {
 	//make the vectors be homogenous
-	glm::vec4 eye4 = glm::vec4(eye.x, eye.y, eye.z, 0);
-	glm::vec4 at4 = glm::vec4(at.x, at.y, at.z, 0);
-	glm::vec4 up4 = glm::vec4(up.x, up.y, up.z, 0);
+	glm::vec4 eye4 = glm::vec4(eye.x, eye.y, eye.z, 1);
+	glm::vec4 at4 = glm::vec4(at.x, at.y, at.z, 1);
+	glm::vec4 up4 = glm::vec4(up.x, up.y, up.z, 1);
 	//calculate vector n which is the new z axis
 	glm::vec4 n = glm::normalize(eye4 - at4);
 	//calculate u by cross product n with our "up" vector u will be the x axis
