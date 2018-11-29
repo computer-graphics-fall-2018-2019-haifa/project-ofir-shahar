@@ -237,6 +237,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					if (ImGui::MenuItem(name))
 					{	
 						renderer.setCurrentModel(*it);
+						(*it)->setIsCurrentModel(true);
 					}
 				}
 				ImGui::EndMenu();
