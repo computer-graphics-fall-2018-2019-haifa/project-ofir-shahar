@@ -19,6 +19,7 @@ private:
 
 	int activeCameraIndex;
 	int activeModelIndex;
+	void createGrid();
 
 public:
 	Scene();

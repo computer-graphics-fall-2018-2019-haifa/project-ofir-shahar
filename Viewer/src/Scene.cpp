@@ -1,12 +1,24 @@
 #include "Scene.h"
 #include "MeshModel.h"
 #include <string>
+#include <iostream>
+#include <fstream>
 
 //ctor
 Scene::Scene() :
 	activeCameraIndex(0),
 	activeModelIndex(0)
 {
+
+}
+
+void Scene::createGrid()
+{
+	std::string path = "../Data/obj_examples";
+
+	std::ofstream file(path.append("grid.obj")); 
+	file << "grid" << std::endl;
+	file.close();
 
 }
 
