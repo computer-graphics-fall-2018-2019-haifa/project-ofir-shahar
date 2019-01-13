@@ -342,7 +342,8 @@ void Renderer::Render(const Scene& scene)
 		//get the faces from the pointer to the model
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
-		std::vector<glm::vec3> vertices = (*model).GetVertices();
+		std::vector<Vertex> vertexs = (*model).getVertexs();
+		//std::vector<glm::vec3> vertices = (*model).getVertexs();
 		std::vector<glm::vec3> normals = (*model).GetNormals(); 
 		typedef std::vector<glm::vec3>::iterator normal_it;
 		typedef std::vector<Face>::iterator faces_it; 
@@ -409,9 +410,9 @@ void Renderer::Render(const Scene& scene)
 		// in this for loop we iterate over all the vertices of the model 
 		// and multiply each vertex by view, projection and viewport transformation.
 		// ######################################################
-		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
+		for (std::vector<Vertex>::iterator vertex = vertexs.begin(); vertex != vertexs.end(); vertex++) {
 
-			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 1);
+			glm::vec4 newVertex = glm::vec4((*vertex).getPoint().x, (*vertex).getPoint().y, (*vertex).getPoint().z, 1);
 			// set LOCAL tranformations first.
 			newVertex = scaleTransform * newVertex;
 			newVertex.w = 1;
@@ -440,7 +441,7 @@ void Renderer::Render(const Scene& scene)
 			if (c.bottom >= newVertex.y) c.top = newVertex.y;
 			if (c.top < newVertex.y) c.top = newVertex.y;
 
-			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);
+			(*vertex).setPoint(glm::vec3(newVertex.x, newVertex.y, newVertex.z)); 
 		}
 		// ############## END OF IMPORTANT CODE #################
 		// ######################################################
@@ -458,16 +459,16 @@ void Renderer::Render(const Scene& scene)
 				//with the vertex with the index from the start of the vector
 				if ((vindex+1) == indices.end()) {
 					//DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0) - 1), glm::vec3(0, 0, 0), true);
+					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(indices.at(0) - 1).getPoint(), glm::vec3(0, 0, 0), true);
 				} 
 				else //draw a line between the two vertices by their indices from the vector "indices"
 					//DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1) - 1), glm::vec3(0, 0, 0), true);
+					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(*(vindex + 1) - 1).getPoint(), glm::vec3(0, 0, 0), true);
 
 				glm::vec3 first, second, third;
-				first = vertices.at((*face).GetVertexIndex(0) - 1);
-				second = vertices.at((*face).GetVertexIndex(1) - 1);
-				third = vertices.at((*face).GetVertexIndex(2) - 1);
+				first = vertexs.at((*face).GetVertexIndex(0) - 1).getPoint();
+				second = vertexs.at((*face).GetVertexIndex(1) - 1).getPoint();
+				third = vertexs.at((*face).GetVertexIndex(2) - 1).getPoint();
 				glm::vec3 centerv = glm::vec3((first.x + second.x + third.x) / 3, (first.y + second.y + third.y) / 3, (first.z + second.z + third.z) / 3);
 
 				//normals

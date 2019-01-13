@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "Face.h"
+#include "Vertex.h"
 
 typedef struct Cube {
 	float front, back, right, left, top, bottom;
@@ -21,6 +22,7 @@ class MeshModel
 private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;
+	std::vector<Vertex> vertexs;
 	std::vector<glm::vec3> normals;
 	std::vector<glm::vec4> centerLine; 
 
@@ -43,10 +45,11 @@ private:
 	void createCenterLines();
 	bool isCurrentModel;
 	Cube cube; 
-
+	void setDepth();
 
 public:
 	MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName = "");
+	MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName);
 	virtual ~MeshModel();
 	MeshModel();
 	void SetWorldTransformation(const glm::mat4& worldTransform);
@@ -99,5 +102,8 @@ public:
 	void setIsCurrentModel(const bool& b) { this->isCurrentModel = b; } 
 	
 	bool getIsCurrentModel() const { return this->isCurrentModel; }
+
+	std::vector<Vertex> getVertexs() const { return this->vertexs; }
+	const void setVertexs(const std::vector<Vertex> &v) { this->vertexs = v; } 
 	
 };

@@ -8,6 +8,32 @@
 #define PI 3.14159265358
 
 
+//augmented ctor
+MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName) :
+	modelName(modelName),
+	localTransform(glm::mat4(1)),
+	worldTransform(glm::mat4(1)),
+	worldTranslation(glm::mat4(1)),
+	worldRotation(glm::mat4(1)),
+	scaleTransform(glm::mat4(1500)),
+	rotationTransform(glm::mat4(1)),
+	xRotation(glm::mat4(1)),
+	yRotation(glm::mat4(1)),
+	zRotation(glm::mat4(1)),
+	xRotationWorld(glm::mat4(1)),
+	yRotationWorld(glm::mat4(1)),
+	zRotationWorld(glm::mat4(1)),
+	translationTransform(glm::mat4(1)),
+	faces(faces),
+	vertexs(vertices),
+	normals(normals)
+{
+	this->drawCube = false;
+	this->isCurrentModel = false;
+	this->createCube();
+	this->createCenterLines();
+	setScaleTransform(1500, 1500, 1500);
+}
 //ctor
 MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName) :
 	modelName(modelName),
@@ -44,9 +70,9 @@ void MeshModel::createCenterLines()
 {
 	for (std::vector<Face>::iterator f = this->faces.begin(); f != this->faces.end(); f++)
 	{ 
-		glm::vec3 point1 = this->vertices.at((*f).GetVertexIndex(0) - 1); 
-		glm::vec3 point2 = this->vertices.at((*f).GetVertexIndex(1) - 1);
-		glm::vec3 point3 = this->vertices.at((*f).GetVertexIndex(2) - 1);
+		glm::vec3 point1 = this->vertexs.at((*f).GetVertexIndex(0) - 1).getPoint(); 
+		glm::vec3 point2 = this->vertexs.at((*f).GetVertexIndex(1) - 1).getPoint();
+		glm::vec3 point3 = this->vertexs.at((*f).GetVertexIndex(2) - 1).getPoint();
 		glm::vec3 center = glm::vec3((point1.x + point2.x + point3.x)/3, (point1.y + point2.y + point3.y)/3, (point1.z + point2.z + point3.z)/3); 
 			
 		f->SetCenter(center);
