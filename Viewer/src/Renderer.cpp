@@ -286,7 +286,7 @@ void Renderer::fillTriangle(Face &face, glm::vec3 color)
 
 void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
 {
-	float alpha_1, alpha_2, alpha_3;
+	float alpha_1 = 0, alpha_2 = 0, alpha_3 = 0;
 	glm::vec2 z, z1, z2, z3, z4, z5;
 	glm::vec2 x_left, y_top;
 	z1 = points.at(0);
