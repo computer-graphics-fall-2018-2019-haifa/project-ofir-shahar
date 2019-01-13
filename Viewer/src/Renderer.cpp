@@ -5,6 +5,7 @@
 #include "MeshModel.h"
 #include <imgui/imgui.h>
 #include <vector>
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include "Camera.h"
@@ -268,7 +269,9 @@ void Renderer::drawCube()
 
 void Renderer::fillTriangle(Face &face, glm::vec3 color)
 {
+	
 	glm::vec3 high, low;
+	glm::vec2 P0, P1, P2;
 	//get the vertices indexes from the face
 	std::vector<int> indices = face.GetVertices();
 	
@@ -281,24 +284,59 @@ void Renderer::fillTriangle(Face &face, glm::vec3 color)
 	}
 }
 
-void Renderer::fillTriangle(std::vector<glm::vec3> face, glm::vec3 color)
+void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
 {
-	glm::vec3 max = glm::vec3(INT32_MIN); 
+	float alpha_1, alpha_2, alpha_3;
+	glm::vec2 z, z1, z2, z3, z4, z5;
+	glm::vec2 x_left, y_top;
+	z1 = points.at(0);
+	z2 = points.at(1);
+	z3 = points.at(2);
+	z4 = alpha_1 * z1 + (1 - alpha_1) * z2; 
+	z5 = alpha_2 * z1 + (1 - alpha_2) * z3;
+	z = alpha_3 * z4 + (1 - alpha_3) * z5;
+		
+
+	//sort points by the x-coordinate
+	std::sort(points.begin(), points.end(), sort_dec_x); 
+	x_left = glm::vec2(points.at(0).x, points.at(0).y); 
+	std::sort(points.begin(), points.end(), sort_asc_y); 
+	y_top = glm::vec2(points.at(0).x, points.at(0).y); 
+
+	//x_left is the highiest point
+	if (x_left.y == y_top.y)
+	{
+
+	}
+	//x_left is somewhere in between
+	else
+	{
+
+	}
+
+	//find the highest and lowest verices of the face
+	//for (std::vector<glm::vec3>::iterator vindex = points.begin(); vindex != points.end(); vindex++) {
+	//	if ((*vindex).y <= min.y) min = (*vindex);
+	//	if ((*vindex).y >= max.y) max = (*vindex);
+	//	if ((*vindex).x >= right.x) right = (*vindex);
+	//	if ((*vindex).x <= left.x) left = (*vindex);
+	//}
+
+
+}
+
+void Renderer::fillTriangle(glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec3 color)
+{
+	glm::vec3 max = glm::vec3(INT32_MIN);
 	glm::vec3 min = glm::vec3(INT32_MAX);
 	glm::vec3 right = glm::vec3(INT32_MIN);
 	glm::vec3 left = glm::vec3(INT32_MAX);
 
 	//find the highest and lowest verices of the face
-	for (std::vector<glm::vec3>::iterator vindex = face.begin(); vindex != face.end(); vindex++) {
-		if ((*vindex).y <= min.y) min = (*vindex);
-		if ((*vindex).y >= max.y) max = (*vindex);
-		if ((*vindex).x >= right.x) right = (*vindex);
-		if ((*vindex).x <= left.x) left = (*vindex);
-	}
+
 
 
 }
-
 
 void Renderer::Render(const Scene& scene)
 {
@@ -448,8 +486,11 @@ void Renderer::Render(const Scene& scene)
 	
 
 		//iterate over the faces vector of the model
-		for (std::vector<Face>::iterator face = faces.begin(); face != faces.end(); face++) {
-			
+		for (std::vector<Face>::iterator face = faces.begin(); face != faces.end(); face++) 
+		{
+			//face vertices for fill triangles purpose
+			glm::vec3 first, second, third;
+
 			//get the indices of the vertices for each face
 			std::vector<int> indices = (*face).GetVertices();
 			//iterate over the indices
@@ -465,7 +506,7 @@ void Renderer::Render(const Scene& scene)
 					//DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
 					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(*(vindex + 1) - 1).getPoint(), glm::vec3(0, 0, 0), true);
 
-				glm::vec3 first, second, third;
+				
 				first = vertexs.at((*face).GetVertexIndex(0) - 1).getPoint();
 				second = vertexs.at((*face).GetVertexIndex(1) - 1).getPoint();
 				third = vertexs.at((*face).GetVertexIndex(2) - 1).getPoint();
@@ -484,8 +525,11 @@ void Renderer::Render(const Scene& scene)
 					DrawLine( centerv, glm::vec3(centerv.x + normal.x, centerv.y + normal.y, -(centerv.z + normal.z)), red_color, true);
 				}
 			}
-
-			fillTriangle(*face, red_color); 
+			std::vector<glm::vec3> points;
+			points.push_back(first);
+			points.push_back(second);
+			points.push_back(third);
+			fillTriangle(points, green_color); 
 		}
 	}
 

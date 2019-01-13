@@ -40,9 +40,12 @@ private:
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
 	void drawCube(); 
 	void fillTriangle( Face &face, glm::vec3 color); 
-	void fillTriangle(std::vector<glm::vec3> face, glm::vec3 color);
+	void fillTriangle(std::vector<glm::vec3> points, glm::vec3 color);
+	void fillTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);
 
 	std::vector<std::string> ExcludeModels;
+	static bool sort_dec_x(const glm::vec3 &x, const glm::vec3 &y) { return x.x < y.x; }
+	static bool sort_asc_y(const glm::vec3 &x, const glm::vec3 &y) { return x.y > y.y; }
 
 public:
 	Renderer(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
