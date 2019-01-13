@@ -38,16 +38,11 @@ private:
 
 	//drawing routings
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
-<<<<<<< HEAD
-	void drawCube();
-	void drawGrid(std::shared_ptr<MeshModel> m);
-
-=======
 	void drawCube(); 
 	void fillTriangle( Face &face, glm::vec3 color); 
 	void fillTriangle(std::vector<glm::vec3> points, glm::vec3 color);
 	void fillTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);
->>>>>>> f0010b1aa32d91e887a4527e29f2f6d9fb54796e
+
 
 	std::vector<std::string> ExcludeModels;
 	static bool sort_dec_x(const glm::vec3 &x, const glm::vec3 &y) { return x.x < y.x; }
@@ -97,13 +92,13 @@ public:
 
 	void setCurrentModel(std::shared_ptr<MeshModel> m) { this->currentModel = m; }
 	
-<<<<<<< HEAD
+
 	void setViewPortWidth(const int& w) { this->viewportWidth = w; }
 	void setViewPortHeight(const int& h) { this->viewportHeight = h; }
-=======
+
 	void setViewPortWidth( int w) { this->viewportWidth = w; }
 	void setViewPortHeight( int h) { this->viewportHeight = h; }
->>>>>>> f0010b1aa32d91e887a4527e29f2f6d9fb54796e
+
 	
 	const int& setViewPortWidth() const { return this->viewportWidth; }
 	const int& setViewPortHeight() const { return this->viewportHeight; }

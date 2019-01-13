@@ -5,6 +5,7 @@
 #include "MeshModel.h"
 #include <imgui/imgui.h>
 #include <vector>
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include "Camera.h"
@@ -12,6 +13,7 @@
 #define PI 3.14159265358
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 
+//ctor
 Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int viewportY) :
 	colorBuffer(nullptr),
 	zBuffer(nullptr),
@@ -41,10 +43,15 @@ void Renderer::setHasModel() {
 }
 void Renderer::setEyeX(float eyex) {
 	glm::vec3 eye;
-	eye = glm::vec3(1280 * sin(PI*eyex / 180), 0, cos(PI*eyex / 180) * 1280);
+	//eye = glm::vec3(1280 * sin(PI*eyex / 180), 0, cos(PI*eyex / 180) * 1280);
+	//eye = glm::vec3(1280 * sin(PI*eyex / 180), 0, cos(PI*eyex / 180) * 1280);
 	glm::vec3 at = glm::vec3(0, 0, -1);
+
+	//glm::vec3 at = glm::vec3(viewportWidth / 2, viewportHeight / 2, 0);
+	//glm::vec3 at = glm::vec3(0, 0, 0);
+
 	glm::vec3 up = glm::vec3(0, 1, 0);
-	camera.SetCameraLookAt(eye, at, up);
+	currentCamera.SetCameraLookAt(eye, at, up);
 }
 void Renderer::rotateLocalX(float x) {
 	this->currentModel->setRotationTransform(x, 1, 1);
@@ -75,7 +82,7 @@ void Renderer::translate(float xt, float yt, float zt) {
 		this->currentModel->setTranslationTransform(xt, yt, zt);
 }
 void Renderer::setPerspective(float f, float ar, float n, float fa) {
-	camera.SetPerspectiveProjection(f, ar, n, fa);
+	currentCamera.SetPerspectiveProjection(f, ar, n, fa);
 }
 void Renderer::setProjection(bool p)
 {
@@ -263,18 +270,91 @@ void Renderer::drawCube()
 	DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);
 }
 
-void Renderer::drawGrid(std::shared_ptr<MeshModel> m)
+
+//void Renderer::drawGrid(std::shared_ptr<MeshModel> m)
+//{
+//	std::vector<glm::vec3> ver = (*m).GetVertices();
+//	for (int it = 0; it <= 10; it++)
+//	{
+//		if (it + 1 == 10)
+//			break;
+//		DrawLine(ver.at(it), ver.at(it + 1), glm::vec3(0, 0, 0), true);
+//	}
+//}
+
+
+void Renderer::fillTriangle(Face &face, glm::vec3 color)
 {
-	std::vector<glm::vec3> ver = (*m).GetVertices();
-	for (int it = 0; it <= 10; it++)
+	
+	glm::vec3 high, low;
+	glm::vec2 P0, P1, P2;
+	//get the vertices indexes from the face
+	std::vector<int> indices = face.GetVertices();
+	
+	//iterate thru all 
+	for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) 
 	{
-		if (it + 1 == 10)
-			break;
-		DrawLine(ver.at(it), ver.at(it + 1), glm::vec3(0, 0, 0), true);
+
+
+		if ((vindex + 1) == indices.end()) {
+			
+		}
 	}
 }
 
+void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
+{
+	float alpha_1 = 0, alpha_2 = 0, alpha_3 = 0;
+	glm::vec2 z, z1, z2, z3, z4, z5;
+	glm::vec2 x_left, y_top;
+	z1 = points.at(0);
+	z2 = points.at(1);
+	z3 = points.at(2);
+	z4 = alpha_1 * z1 + (1 - alpha_1) * z2; 
+	z5 = alpha_2 * z1 + (1 - alpha_2) * z3;
+	z = alpha_3 * z4 + (1 - alpha_3) * z5;
+		
 
+	//sort points by the x-coordinate
+	std::sort(points.begin(), points.end(), sort_dec_x); 
+	x_left = glm::vec2(points.at(0).x, points.at(0).y); 
+	std::sort(points.begin(), points.end(), sort_asc_y); 
+	y_top = glm::vec2(points.at(0).x, points.at(0).y); 
+
+	//x_left is the highiest point
+	if (x_left.y == y_top.y)
+	{
+
+	}
+	//x_left is somewhere in between
+	else
+	{
+
+	}
+
+	//find the highest and lowest verices of the face
+	//for (std::vector<glm::vec3>::iterator vindex = points.begin(); vindex != points.end(); vindex++) {
+	//	if ((*vindex).y <= min.y) min = (*vindex);
+	//	if ((*vindex).y >= max.y) max = (*vindex);
+	//	if ((*vindex).x >= right.x) right = (*vindex);
+	//	if ((*vindex).x <= left.x) left = (*vindex);
+	//}
+
+
+}
+
+void Renderer::fillTriangle(glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec3 color)
+{
+	glm::vec3 max = glm::vec3(INT32_MIN);
+	glm::vec3 min = glm::vec3(INT32_MAX);
+	glm::vec3 right = glm::vec3(INT32_MIN);
+	glm::vec3 left = glm::vec3(INT32_MAX);
+
+	//find the highest and lowest verices of the face
+
+
+
+}
 
 void Renderer::Render(const Scene& scene)
 {
@@ -318,15 +398,16 @@ void Renderer::Render(const Scene& scene)
 		//get the faces from the pointer to the model
 		std::vector<Face> faces = (*model).GetFaces();
 		//get the vertices from the pointer to the model
-		std::vector<glm::vec3> vertices = (*model).GetVertices();
+		std::vector<Vertex> vertexs = (*model).getVertexs();
+		//std::vector<glm::vec3> vertices = (*model).getVertexs();
 		std::vector<glm::vec3> normals = (*model).GetNormals(); 
 		typedef std::vector<glm::vec3>::iterator normal_it;
 		typedef std::vector<Face>::iterator faces_it; 
 		typedef std::vector<glm::vec4>::iterator center_it;
 
 
-		if (model->GetModelName() == "grid.obj")
-			drawGrid(model); 
+		/*if (model->GetModelName() == "grid.obj")
+			drawGrid(model); */
 
 		//adjust cube coordinates
 		for (int i = 0; i < 8; i++)
@@ -346,10 +427,10 @@ void Renderer::Render(const Scene& scene)
 			c.cPoints[i] = worldTranslate * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
-			c.cPoints[i] = camera.getViewTransformation() * c.cPoints[i];
+			c.cPoints[i] = currentCamera.getViewTransformation() * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
-			c.cPoints[i] = camera.getProjectionTformation() * c.cPoints[i]; 
+			c.cPoints[i] = currentCamera.getProjectionTformation() * c.cPoints[i];
 			c.cPoints[i].w = 0; 
 		}
 		
@@ -383,9 +464,10 @@ void Renderer::Render(const Scene& scene)
 		// in this for loop we iterate over all the vertices of the model 
 		// and multiply each vertex by view, projection and viewport transformation.
 		// ######################################################
-		for (std::vector<glm::vec3>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++) {
+		for (std::vector<Vertex>::iterator vertex = vertexs.begin(); vertex != vertexs.end(); vertex++) 
+		{
 
-			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 1);
+			glm::vec4 newVertex = glm::vec4((*vertex).getPoint().x, (*vertex).getPoint().y, (*vertex).getPoint().z, 1);
 			// set LOCAL tranformations first.
 			newVertex = scaleTransform * newVertex;
 			//newVertex.w = 1;
@@ -399,10 +481,16 @@ void Renderer::Render(const Scene& scene)
 			newVertex = worldTranslate * newVertex;
 			//newVertex.w = 0;
 
+
 			/* right now the  problem is with this transformation !!*/
-			newVertex = camera.getViewTransformation() * newVertex;
+			//newVertex = camera.getViewTransformation() * newVertex;
 			//newVertex.w = 1 ;
 			//newVertex = camera.getProjectionTformation()*newVertex;
+
+			newVertex = currentCamera.getViewTransformation() * newVertex;
+			newVertex.w = 0;
+			newVertex = currentCamera.getProjectionTformation() * newVertex;
+
 			//normals per face
 
 			//set new cube faces
@@ -415,35 +503,46 @@ void Renderer::Render(const Scene& scene)
 			if (c.bottom >= newVertex.y) c.top = newVertex.y;
 			if (c.top < newVertex.y) c.top = newVertex.y;
 
-			(*vertex) = glm::vec3(newVertex.x, newVertex.y, newVertex.z);
+			(*vertex).setPoint(glm::vec3(newVertex.x, newVertex.y, newVertex.z)); 
 		}
 		// ############## END OF IMPORTANT CODE #################
 		// ######################################################
 	
 
 		//iterate over the faces vector of the model
-		for (std::vector<Face>::iterator faceIndex = faces.begin(); faceIndex != faces.end(); faceIndex++) {
-			//draw normals
-			
+		for (std::vector<Face>::iterator face = faces.begin(); face != faces.end(); face++) 
+		{
+			//face vertices for fill triangles purpose
+			glm::vec3 first, second, third;
+
 			//get the indices of the vertices for each face
-			std::vector<int> indices = (*faceIndex).GetVertices();
+			std::vector<int> indices = (*face).GetVertices();
 			//iterate over the indices
-			for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) {
+			for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) 
+			{
 				//here we draw a line between two successive pointes by the indexes from the indices vector
 				//if we are at the end of the indices vector we connect the vertex with this index
 				//with the vertex with the index from the start of the vector
 				if ((vindex+1) == indices.end()) {
 					//DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0) - 1), glm::vec3(0, 0, 0), false);
+
+					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(indices.at(0) - 1).getPoint(), glm::vec3(0, 0, 0), true);
 				} 
 				else //draw a line between the two vertices by their indices from the vector "indices"
 					//DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1) - 1), glm::vec3(0, 0, 0), false);
+					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(*(vindex + 1) - 1).getPoint(), glm::vec3(0, 0, 0), true);
 
-				glm::vec3 first, second, third;
-				first = vertices.at((*faceIndex).GetVertexIndex(0) - 1);
-				second = vertices.at((*faceIndex).GetVertexIndex(1) - 1);
-				third = vertices.at((*faceIndex).GetVertexIndex(2) - 1);
+					//DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(indices.at(0) - 1).getPoint(), glm::vec3(0, 0, 0), true);
+				//} 
+				//else //draw a line between the two vertices by their indices from the vector "indices"
+					//DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
+					//DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(*(vindex + 1) - 1).getPoint(), glm::vec3(0, 0, 0), true);
+
+
+				
+				first = vertexs.at((*face).GetVertexIndex(0) - 1).getPoint();
+				second = vertexs.at((*face).GetVertexIndex(1) - 1).getPoint();
+				third = vertexs.at((*face).GetVertexIndex(2) - 1).getPoint();
 				glm::vec3 centerv = glm::vec3((first.x + second.x + third.x) / 3, (first.y + second.y + third.y) / 3, (first.z + second.z + third.z) / 3);
 
 				//normals
@@ -459,6 +558,11 @@ void Renderer::Render(const Scene& scene)
 					DrawLine( centerv, glm::vec3(centerv.x + normal.x, centerv.y + normal.y, -(centerv.z + normal.z)), red_color, true);
 				}
 			}
+			std::vector<glm::vec3> points;
+			points.push_back(first);
+			points.push_back(second);
+			points.push_back(third);
+			fillTriangle(points, green_color); 
 		}
 	}
 

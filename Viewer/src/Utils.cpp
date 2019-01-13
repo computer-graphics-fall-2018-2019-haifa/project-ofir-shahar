@@ -5,11 +5,24 @@
 #include <fstream>
 #include <sstream>
 
+Vertex Utils::VertexFromStream(std::istream& issLine)
+{
+	int depth = INT32_MAX;
+	float x, y, z;
+	issLine >> x >> std::ws >> y >> std::ws >> z;
+	//return glm::vec3(x, y, z);
+	glm::vec3 vertex(x, y, z);
+	glm::vec3 color(0, 0, 0);
+	return Vertex(vertex, color, depth);
+}
+
 glm::vec3 Utils::Vec3fFromStream(std::istream& issLine)
 {
+	int depth = INT32_MAX;
 	float x, y, z;
 	issLine >> x >> std::ws >> y >> std::ws >> z;
 	return glm::vec3(x, y, z);
+
 }
 
 glm::vec2 Utils::Vec2fFromStream(std::istream& issLine)
@@ -22,7 +35,8 @@ glm::vec2 Utils::Vec2fFromStream(std::istream& issLine)
 MeshModel Utils::LoadMeshModel(const std::string& filePath)
 {
 	std::vector<Face> faces;
-	std::vector<glm::vec3> vertices;
+	//std::vector<glm::vec3> vertices;
+	std::vector<Vertex> vertices;
 	std::vector<glm::vec3> normals;
 	std::ifstream ifile(filePath.c_str());
 
@@ -42,7 +56,7 @@ MeshModel Utils::LoadMeshModel(const std::string& filePath)
 		// based on the type parse data
 		if (lineType == "v")
 		{
-			vertices.push_back(Utils::Vec3fFromStream(issLine));
+			vertices.push_back(Utils::VertexFromStream(issLine));
 		}
 		else if (lineType == "vn")
 		{

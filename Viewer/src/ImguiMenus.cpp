@@ -107,7 +107,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		if (ImGui::SliderFloat("scale", &f, 0.0f, 2000.0f) && renderer.isHasModel()) {
 			renderer.setScaleNumber(f);
 		}
-		ImGui::Text("Object to World Translations");
+		ImGui::Text("World Translations");
 		if (ImGui::SliderFloat("X:", &worldX, 0.0f, 1280.0f)) {
 			renderer.setWorldTranslation(worldX, worldY, worldZ);
 		}

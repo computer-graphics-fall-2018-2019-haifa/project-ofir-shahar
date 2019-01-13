@@ -21,6 +21,7 @@ private:
 	glm::vec3 oldeye;
 	glm::vec3 oldat;
 	float zoom;
+	bool isCurrent;
 
 public:
 	Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
@@ -42,6 +43,8 @@ public:
 		const float far);
 
 	void SetZoom(const float zoom);
+	void setCurrent(const bool &b) { this->isCurrent = b; }
+	bool getCurrent() const { return this->isCurrent; } 
 	const glm::mat4 getViewTransformation();
 	const glm::mat4 getProjectionTformation();
 	const glm::mat4 getOrthographicTransformation(); 
