@@ -12,6 +12,7 @@
 #define PI 3.14159265358
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 
+//ctor
 Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int viewportY) :
 	colorBuffer(nullptr),
 	zBuffer(nullptr),
@@ -41,10 +42,12 @@ void Renderer::setHasModel() {
 }
 void Renderer::setEyeX(float eyex) {
 	glm::vec3 eye;
+	//eye = glm::vec3(1280 * sin(PI*eyex / 180), 0, cos(PI*eyex / 180) * 1280);
 	eye = glm::vec3(1280 * sin(PI*eyex / 180), 0, cos(PI*eyex / 180) * 1280);
-	glm::vec3 at = glm::vec3(viewportWidth / 2, viewportHeight / 2, 0);
+	//glm::vec3 at = glm::vec3(viewportWidth / 2, viewportHeight / 2, 0);
+	glm::vec3 at = glm::vec3(0, 0, 0);
 	glm::vec3 up = glm::vec3(0, 1, 0);
-	camera.SetCameraLookAt(eye, at, up);
+	currentCamera.SetCameraLookAt(eye, at, up);
 }
 void Renderer::rotateLocalX(float x) {
 	this->currentModel->setRotationTransform(x, 1, 1);
@@ -75,7 +78,7 @@ void Renderer::translate(float xt, float yt, float zt) {
 		this->currentModel->setTranslationTransform(xt, yt, zt);
 }
 void Renderer::setPerspective(float f, float ar, float n, float fa) {
-	camera.SetPerspectiveProjection(f, ar, n, fa);
+	currentCamera.SetPerspectiveProjection(f, ar, n, fa);
 }
 void Renderer::setProjection(bool p)
 {
@@ -263,6 +266,38 @@ void Renderer::drawCube()
 	DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);
 }
 
+void Renderer::fillTriangle(Face &face, glm::vec3 color)
+{
+	glm::vec3 high, low;
+	//get the vertices indexes from the face
+	std::vector<int> indices = face.GetVertices();
+	
+	//iterate thru all 
+	for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) {
+
+		if ((vindex + 1) == indices.end()) {
+			
+		}
+	}
+}
+
+void Renderer::fillTriangle(std::vector<glm::vec3> face, glm::vec3 color)
+{
+	glm::vec3 max = glm::vec3(INT32_MIN); 
+	glm::vec3 min = glm::vec3(INT32_MAX);
+	glm::vec3 right = glm::vec3(INT32_MIN);
+	glm::vec3 left = glm::vec3(INT32_MAX);
+
+	//find the highest and lowest verices of the face
+	for (std::vector<glm::vec3>::iterator vindex = face.begin(); vindex != face.end(); vindex++) {
+		if ((*vindex).y <= min.y) min = (*vindex);
+		if ((*vindex).y >= max.y) max = (*vindex);
+		if ((*vindex).x >= right.x) right = (*vindex);
+		if ((*vindex).x <= left.x) left = (*vindex);
+	}
+
+
+}
 
 
 void Renderer::Render(const Scene& scene)
@@ -337,10 +372,10 @@ void Renderer::Render(const Scene& scene)
 			c.cPoints[i] = worldTranslate * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
-			c.cPoints[i] = camera.getViewTransformation() * c.cPoints[i];
+			c.cPoints[i] = currentCamera.getViewTransformation() * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
-			c.cPoints[i] = camera.getProjectionTformation() * c.cPoints[i]; 
+			c.cPoints[i] = currentCamera.getProjectionTformation() * c.cPoints[i];
 			c.cPoints[i].w = 0; 
 		}
 		
@@ -388,11 +423,11 @@ void Renderer::Render(const Scene& scene)
 			newVertex = worldRotate * newVertex;
 			newVertex.w = 1;
 			newVertex = worldTranslate * newVertex;
-			newVertex.w = 0;
+			//newVertex.w = 0;
 
-			newVertex = camera.getViewTransformation()*newVertex;
+			newVertex = currentCamera.getViewTransformation() * newVertex;
 			newVertex.w = 0;
-			newVertex = camera.getProjectionTformation()*newVertex;
+			newVertex = currentCamera.getProjectionTformation() * newVertex;
 			//normals per face
 
 			//set new cube faces
@@ -412,26 +447,27 @@ void Renderer::Render(const Scene& scene)
 	
 
 		//iterate over the faces vector of the model
-		for (std::vector<Face>::iterator faceIndex = faces.begin(); faceIndex != faces.end(); faceIndex++) {
-			//draw normals
+		for (std::vector<Face>::iterator face = faces.begin(); face != faces.end(); face++) {
 			
 			//get the indices of the vertices for each face
-			std::vector<int> indices = (*faceIndex).GetVertices();
+			std::vector<int> indices = (*face).GetVertices();
 			//iterate over the indices
 			for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) {
 				//here we draw a line between two successive pointes by the indexes from the indices vector
 				//if we are at the end of the indices vector we connect the vertex with this index
 				//with the vertex with the index from the start of the vector
 				if ((vindex+1) == indices.end()) {
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
+					//DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
+					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0) - 1), glm::vec3(0, 0, 0), true);
 				} 
 				else //draw a line between the two vertices by their indices from the vector "indices"
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
+					//DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
+					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1) - 1), glm::vec3(0, 0, 0), true);
 
 				glm::vec3 first, second, third;
-				first = vertices.at((*faceIndex).GetVertexIndex(0) - 1);
-				second = vertices.at((*faceIndex).GetVertexIndex(1) - 1);
-				third = vertices.at((*faceIndex).GetVertexIndex(2) - 1);
+				first = vertices.at((*face).GetVertexIndex(0) - 1);
+				second = vertices.at((*face).GetVertexIndex(1) - 1);
+				third = vertices.at((*face).GetVertexIndex(2) - 1);
 				glm::vec3 centerv = glm::vec3((first.x + second.x + third.x) / 3, (first.y + second.y + third.y) / 3, (first.z + second.z + third.z) / 3);
 
 				//normals
@@ -447,6 +483,8 @@ void Renderer::Render(const Scene& scene)
 					DrawLine( centerv, glm::vec3(centerv.x + normal.x, centerv.y + normal.y, -(centerv.z + normal.z)), red_color, true);
 				}
 			}
+
+			fillTriangle(*face, red_color); 
 		}
 	}
 

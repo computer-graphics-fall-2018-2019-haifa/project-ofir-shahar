@@ -10,7 +10,7 @@
 Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 	zoom(1.0)
 {
-	SetPerspectiveProjection(45, 1, 200, 500);
+	//SetPerspectiveProjection(45, 1, 200, 500);
 	oldeye = eye;
 	oldat = at;
 	SetCameraLookAt(eye, at, up);
@@ -40,30 +40,50 @@ const glm::mat4 Camera::getOrthographicTransformation()
 }
 void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {
-	//make the vectors be homogenous
-	glm::vec4 eye4 = glm::vec4(eye.x, eye.y, eye.z, 0);
-	glm::vec4 at4 = glm::vec4(at.x, at.y, at.z, 0);
-	glm::vec4 up4 = glm::vec4(up.x, up.y, up.z, 0);
-	//calculate vector n which is the new z axis
-	glm::vec4 n = glm::normalize(eye4 - at4);
-	//calculate u by cross product n with our "up" vector u will be the x axis
-	glm::vec3 crossVecUpN = glm::cross(up, glm::vec3(n.x, n.y, n.z));
-	glm::vec4 cvun = glm::vec4(crossVecUpN.x, crossVecUpN.y, crossVecUpN.z, 0);
-	glm::vec4 u = glm::normalize(cvun);
-	//calculate v by cross product n with u. v will be the new y axis. all vectors are normalized
-	glm::vec3 crossVecNU = glm::cross(glm::vec3(n.x, n.y, n.z), glm::vec3(u.x, u.y, u.z));
-	glm::vec4 cvnu = glm::vec4(crossVecNU.x, crossVecNU.y, crossVecNU.z, 0);
-	glm::vec4 v = glm::normalize(cvnu);
-	glm::vec4 t = glm::vec4(0.0, 0.0, 0.0, 1.0);
-	//this creates our c matrix which actually rotated our camera to how it is.
-	//we transpose it to turn it back.
-	glm::mat4 c = glm::mat4(u, v, n, t);
-	c = glm::transpose(c);
-	//then we create translation matrix to move camera to origin.
-	glm::mat4 IdenMinusEye = glm::mat4(1);
-	IdenMinusEye[3] = IdenMinusEye[3] - eye4;
-	//multiply matrices and return the output as viewTransformation
-	this->viewTransformation = c * IdenMinusEye;
+	//calculate the normalized camera view
+	glm::vec3 z = glm::vec3(glm::normalize(eye - at)); 
+	glm::vec3 x = glm::vec3(glm::normalize(glm::cross(up, z)));
+	glm::vec3 y = glm::vec3(glm::normalize(glm::cross(z, x)));
+
+	//expand to 4 coordinates vectors
+	glm::vec4 t = glm::vec4(-glm::dot(eye, x), -glm::dot(eye, y), -glm::dot(eye, z), 1.0);
+	glm::vec4 x4 = glm::vec4(x, 0.0);
+	glm::vec4 y4 = glm::vec4(y, 0.0);
+	glm::vec4 z4 = glm::vec4(z, 0.0);
+
+	//create the c matrix
+	glm::mat4 c(x4, y4, z4, t);  
+	c = glm::transpose(c); 
+
+	//glm::mat4 iden(1);
+	//iden[3] = iden[3] - glm::vec4(eye.x, eye.y, eye.z, 1);
+
+	//this->viewTransformation = c * iden; 
+	this->viewTransformation = c;
+	////make the vectors be homogenous
+	//glm::vec4 eye4 = glm::vec4(eye.x, eye.y, eye.z, 0);
+	//glm::vec4 at4 = glm::vec4(at.x, at.y, at.z, 0);
+	//glm::vec4 up4 = glm::vec4(up.x, up.y, up.z, 0);
+	////calculate vector n which is the new z axis
+	//glm::vec4 n = glm::normalize(eye4 - at4);
+	////calculate u by cross product n with our "up" vector u will be the x axis
+	//glm::vec3 crossVecUpN = glm::cross(up, glm::vec3(n.x, n.y, n.z));
+	//glm::vec4 cvun = glm::vec4(crossVecUpN.x, crossVecUpN.y, crossVecUpN.z, 0);
+	//glm::vec4 u = glm::normalize(cvun);
+	////calculate v by cross product n with u. v will be the new y axis. all vectors are normalized
+	//glm::vec3 crossVecNU = glm::cross(glm::vec3(n.x, n.y, n.z), glm::vec3(u.x, u.y, u.z));
+	//glm::vec4 cvnu = glm::vec4(crossVecNU.x, crossVecNU.y, crossVecNU.z, 0);
+	//glm::vec4 v = glm::normalize(cvnu);
+	//glm::vec4 t = glm::vec4(0.0, 0.0, 0.0, 1.0);
+	////this creates our c matrix which actually rotated our camera to how it is.
+	////we transpose it to turn it back.
+	//glm::mat4 c = glm::mat4(u, v, n, t);
+	//c = glm::transpose(c);
+	////then we create translation matrix to move camera to origin.
+	//glm::mat4 IdenMinusEye = glm::mat4(1);
+	//IdenMinusEye[3] = IdenMinusEye[3] - eye4;
+	////multiply matrices and return the output as viewTransformation
+	//this->viewTransformation = c * IdenMinusEye;
 
 }
 

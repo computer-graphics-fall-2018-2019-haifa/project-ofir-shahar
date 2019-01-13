@@ -23,7 +23,7 @@ private:
 	float scaleNumber;
 	float fov;
 	bool projection; 
-	Camera camera;
+	Camera currentCamera;
 	bool hasModel;
 	bool tooDrawaCube, toDrawFaceNormals, toDrawLineNormals;
 	std::shared_ptr<MeshModel> currentModel;
@@ -39,6 +39,8 @@ private:
 	//drawing routings
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
 	void drawCube(); 
+	void fillTriangle( Face &face, glm::vec3 color); 
+	void fillTriangle(std::vector<glm::vec3> face, glm::vec3 color);
 
 	std::vector<std::string> ExcludeModels;
 
@@ -86,10 +88,12 @@ public:
 
 	void setCurrentModel(std::shared_ptr<MeshModel> m) { this->currentModel = m; }
 	
-	void setViewPortWidth(const &int w) { this->viewportWidth = w; }
-	void setViewPortHeight(const &int h) { this->viewportHeight = h; }
+	void setViewPortWidth( int w) { this->viewportWidth = w; }
+	void setViewPortHeight( int h) { this->viewportHeight = h; }
 	
 	const int& setViewPortWidth() const { return this->viewportWidth; }
 	const int& setViewPortHeight() const { return this->viewportHeight; }
+
+
 
 };
