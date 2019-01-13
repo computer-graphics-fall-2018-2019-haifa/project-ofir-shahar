@@ -10,6 +10,7 @@
 #include "imgui_impl_opengl3.h"
 
 #include "Renderer.h"
+#include "Utils.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "ImguiMenus.h"
@@ -57,9 +58,16 @@ int main(int argc, char **argv)
 	Scene scene = Scene();
 	//glm::vec3 eye = glm::vec3(frameBufferWidth / 2, frameBufferHeight / 2, 400);
 	glm::vec3 eye = glm::vec3(0 ,0 , 400);
-	glm::vec3 at = glm::vec3(frameBufferWidth / 2, frameBufferHeight / 2, 0);
+	glm::vec3 at = glm::vec3(0, 0, -1);
+	//glm::vec3 at = glm::vec3(frameBufferWidth / 2, frameBufferHeight / 2, 0);
 	glm::vec3 up = glm::vec3(0,1,0);
 	Camera camera = Camera(eye, at, up);
+
+	//################ debugging: delete afterwards #######################//
+	scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel("../Data/obj_examples/banana.obj")));
+	renderer.setCurrentModel(scene.getModels().at(scene.GetModelCount() - 1));
+	renderer.setHasModel();
+
 	scene.AddCamera(camera);
 	// Setup ImGui
 	ImGuiIO& io = SetupDearImgui(window);

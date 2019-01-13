@@ -38,7 +38,9 @@ private:
 
 	//drawing routings
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
-	void drawCube(); 
+	void drawCube();
+	void drawGrid(std::shared_ptr<MeshModel> m);
+
 
 	std::vector<std::string> ExcludeModels;
 
@@ -86,8 +88,8 @@ public:
 
 	void setCurrentModel(std::shared_ptr<MeshModel> m) { this->currentModel = m; }
 	
-	void setViewPortWidth(const &int w) { this->viewportWidth = w; }
-	void setViewPortHeight(const &int h) { this->viewportHeight = h; }
+	void setViewPortWidth(const int& w) { this->viewportWidth = w; }
+	void setViewPortHeight(const int& h) { this->viewportHeight = h; }
 	
 	const int& setViewPortWidth() const { return this->viewportWidth; }
 	const int& setViewPortHeight() const { return this->viewportHeight; }

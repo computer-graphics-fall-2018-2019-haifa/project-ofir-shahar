@@ -42,7 +42,7 @@ void Renderer::setHasModel() {
 void Renderer::setEyeX(float eyex) {
 	glm::vec3 eye;
 	eye = glm::vec3(1280 * sin(PI*eyex / 180), 0, cos(PI*eyex / 180) * 1280);
-	glm::vec3 at = glm::vec3(viewportWidth / 2, viewportHeight / 2, 0);
+	glm::vec3 at = glm::vec3(0, 0, -1);
 	glm::vec3 up = glm::vec3(0, 1, 0);
 	camera.SetCameraLookAt(eye, at, up);
 }
@@ -263,6 +263,17 @@ void Renderer::drawCube()
 	DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);
 }
 
+void Renderer::drawGrid(std::shared_ptr<MeshModel> m)
+{
+	std::vector<glm::vec3> ver = (*m).GetVertices();
+	for (int it = 0; it <= 10; it++)
+	{
+		if (it + 1 == 10)
+			break;
+		DrawLine(ver.at(it), ver.at(it + 1), glm::vec3(0, 0, 0), true);
+	}
+}
+
 
 
 void Renderer::Render(const Scene& scene)
@@ -314,10 +325,8 @@ void Renderer::Render(const Scene& scene)
 		typedef std::vector<glm::vec4>::iterator center_it;
 
 
-		for (std::vector<std::string>::iterator name_it = this->ExcludeModels.begin(); name_it != this->ExcludeModels.end(); name_it++)
-		{
-			//if (name_it::compare(this->currentModel->GetModelName())) break;
-		}
+		if (model->GetModelName() == "grid.obj")
+			drawGrid(model); 
 
 		//adjust cube coordinates
 		for (int i = 0; i < 8; i++)
@@ -379,20 +388,21 @@ void Renderer::Render(const Scene& scene)
 			glm::vec4 newVertex = glm::vec4((*vertex).x, (*vertex).y, (*vertex).z, 1);
 			// set LOCAL tranformations first.
 			newVertex = scaleTransform * newVertex;
-			newVertex.w = 1;
+			//newVertex.w = 1;
 			newVertex = rotationTransform * newVertex;
-			newVertex.w = 1;
+			//newVertex.w = 1;
 			newVertex = translateTransform * newVertex;
 			// new set WORLD transformations.
-			newVertex.w = 1;
+			//newVertex.w = 1;
 			newVertex = worldRotate * newVertex;
-			newVertex.w = 1;
+			//newVertex.w = 1;
 			newVertex = worldTranslate * newVertex;
-			newVertex.w = 0;
+			//newVertex.w = 0;
 
-			newVertex = camera.getViewTransformation()*newVertex;
-			newVertex.w = 0;
-			newVertex = camera.getProjectionTformation()*newVertex;
+			/* right now the  problem is with this transformation !!*/
+			newVertex = camera.getViewTransformation() * newVertex;
+			//newVertex.w = 1 ;
+			//newVertex = camera.getProjectionTformation()*newVertex;
 			//normals per face
 
 			//set new cube faces
@@ -423,10 +433,12 @@ void Renderer::Render(const Scene& scene)
 				//if we are at the end of the indices vector we connect the vertex with this index
 				//with the vertex with the index from the start of the vector
 				if ((vindex+1) == indices.end()) {
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
+					//DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
+					DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0) - 1), glm::vec3(0, 0, 0), false);
 				} 
 				else //draw a line between the two vertices by their indices from the vector "indices"
-					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
+					//DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
+					DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1) - 1), glm::vec3(0, 0, 0), false);
 
 				glm::vec3 first, second, third;
 				first = vertices.at((*faceIndex).GetVertexIndex(0) - 1);

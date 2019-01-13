@@ -69,6 +69,53 @@ MeshModel Utils::LoadMeshModel(const std::string& filePath)
 	return MeshModel(faces, vertices, normals, Utils::GetFileName(filePath));
 }
 
+void Utils::createGrid()
+{
+	std::string path = "../Data/obj_examples/grid.obj";
+	//FILE* file;
+
+	//if ((file = fopen(path.c_str(), "w")) != nullptr)
+	//{
+	//	for (float z = -0.050; z <= 0.050; z = z + 0.01)
+	//	{
+	//		fprintf(file, "v -0.05 0 %f\n", z);
+	//		fprintf(file, "v 0.05 0 %f\n", z);
+	//	}
+
+	//	for (float x = 0.050; x >= 0; x = x - 0.01)
+	//	{
+	//		fprintf(file, "v %f 0 -0.05\n", x);
+	//		fprintf(file, "v %f 0 0.05\n", x);
+	//	}
+
+	//	
+	//}
+
+	std::ofstream file;
+
+	file.open(path);
+
+
+	if (file)
+	{
+		file << "grid" << std::endl;
+
+		for (float z = -0.05; z <= 0.05; z = (float)(z + 0.01))
+		{
+			file << "v " << -0.50 << " 0 " << z << std::endl;
+			file << "v " << 0.50 << " 0 " << z << std::endl;
+		}
+
+		for (float x = 0.05; x >= 0; x = (float)(x - 0.01))
+		{
+			file << "v " << x << " 0 " << -0.50 << std::endl;
+			file << "v " << x << " 0 " << 0.50 << std::endl;
+		}
+
+		file.close();
+	}
+}
+
 glm::vec4 Utils::Centeroid(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3)
 {
 	glm::vec4 result;
