@@ -17,6 +17,7 @@ public:
 	static MeshModel LoadMeshModel(const std::string& filePath);
 
 	static glm::vec4 Centeroid(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3); 
+	static glm::vec3 interpolate(glm::vec3 p1, glm::vec3 p2, float param) { return param * p1 + (1 - param) * p2; } 
 
 private:
 	static std::string GetFileName(const std::string& filePath);

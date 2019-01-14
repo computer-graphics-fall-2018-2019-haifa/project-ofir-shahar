@@ -10,8 +10,10 @@
 #include <iostream>
 #include "Camera.h"
 
+
 #define PI 3.14159265358
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
+#define INTERPOLATE(z1,z2,alpha) z1*alpha + (1-alpha)*z2 
 
 //ctor
 Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int viewportY) :
@@ -286,42 +288,40 @@ void Renderer::fillTriangle(Face &face, glm::vec3 color)
 
 void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
 {
+	int height = 0;
 	float alpha_1 = 0, alpha_2 = 0, alpha_3 = 0;
 	glm::vec2 z, z1, z2, z3, z4, z5;
-	glm::vec2 x_left, y_top;
+	glm::vec2 x_left, y_top, y_down;
 	z1 = points.at(0);
 	z2 = points.at(1);
 	z3 = points.at(2);
-	z4 = alpha_1 * z1 + (1 - alpha_1) * z2; 
-	z5 = alpha_2 * z1 + (1 - alpha_2) * z3;
-	z = alpha_3 * z4 + (1 - alpha_3) * z5;
 		
 
 	//sort points by the x-coordinate
-	std::sort(points.begin(), points.end(), sort_dec_x); 
+	std::sort(points.begin(), points.end(), sort_asc_x); 
 	x_left = glm::vec2(points.at(0).x, points.at(0).y); 
-	std::sort(points.begin(), points.end(), sort_asc_y); 
-	y_top = glm::vec2(points.at(0).x, points.at(0).y); 
+	//sort points by the y-coordinate
+	std::sort(points.begin(), points.end(), sort_dec_y); 
+	y_top = points.at(0); 
+	y_down = points.at(2);
+	height = y_top.y - y_down.y;
 
-	//x_left is the highiest point
-	if (x_left.y == y_top.y)
+	for (int h = 0; h < height; h++)
 	{
+		glm::vec2 v1 = glm::normalize((z1 - z2));
+		glm::vec2 v2 = glm::normalize((z1 - z3));
+		glm::vec2 ver(0, -1);
 
+		z4 = INTERPOLATE(z1, z2, alpha_1); 
+		z5 = INTERPOLATE(z1, z3, alpha_2);
+		z = INTERPOLATE(z4, z5, alpha_3);
+		alpha_1 = glm::dot(v1, ver);
+		alpha_2 = glm::dot(v2, ver);
+
+		for (int x = z4.x; x <= z5.x; x++)
+			putPixel(z.x, z.y, glm::vec3(0, 1, 0)); 
+		
 	}
-	//x_left is somewhere in between
-	else
-	{
-
-	}
-
-	//find the highest and lowest verices of the face
-	//for (std::vector<glm::vec3>::iterator vindex = points.begin(); vindex != points.end(); vindex++) {
-	//	if ((*vindex).y <= min.y) min = (*vindex);
-	//	if ((*vindex).y >= max.y) max = (*vindex);
-	//	if ((*vindex).x >= right.x) right = (*vindex);
-	//	if ((*vindex).x <= left.x) left = (*vindex);
-	//}
-
 
 }
 
