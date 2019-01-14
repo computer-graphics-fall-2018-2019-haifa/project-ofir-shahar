@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <string>
 #include "MeshModel.h"
+#include "Vertex.h"
 
 /*
  * Utils class.
@@ -10,6 +11,7 @@
 class Utils
 {
 public:
+	static Vertex VertexFromStream(std::istream& issLine);
 	static glm::vec3 Vec3fFromStream(std::istream& issLine);
 	static glm::vec2 Vec2fFromStream(std::istream& issLine);
 	static MeshModel LoadMeshModel(const std::string& filePath);
