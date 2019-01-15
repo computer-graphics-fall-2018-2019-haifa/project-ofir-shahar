@@ -302,8 +302,8 @@ void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
 	x_left = glm::vec2(points.at(0).x, points.at(0).y); 
 	//sort points by the y-coordinate
 	std::sort(points.begin(), points.end(), sort_dec_y); 
-	y_top = points.at(0); 
-	y_down = points.at(2);
+-	y_top = glm::vec2(points.at(0)); 
+	y_down = glm::vec2(points.at(2));
 	height = y_top.y - y_down.y;
 
 	for (int h = 0; h < height; h++)
