@@ -42,10 +42,12 @@ private:
 	void fillTriangle( Face &face, glm::vec3 color); 
 	void fillTriangle(std::vector<glm::vec3> points, glm::vec3 color);
 	void fillTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);
+	static inline glm::vec2 interpolate(glm::vec2 p1, glm::vec2 p2, float alpha) { return alpha * p1 + (1 - alpha)*p2; }
 
 	std::vector<std::string> ExcludeModels;
-	static bool sort_asc_x(const glm::vec3 &x, const glm::vec3 &y) { return x.x < y.x; }
-	static bool sort_dec_y(const glm::vec3 &x, const glm::vec3 &y) { return x.y > y.y; }
+	static bool sort_asc_x(const glm::vec2 &x, const glm::vec2 &y) { return x.x < y.x; }
+	static bool sort_dec_y(const glm::vec2 &x, const glm::vec2 &y) { return x.y > y.y; }
+	//static bool sort(const glm::vec3 &x, const glm::vec3 &y) { return x.y > y.y; }
 
 public:
 	Renderer(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
