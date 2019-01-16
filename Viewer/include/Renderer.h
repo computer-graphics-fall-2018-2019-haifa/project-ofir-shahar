@@ -39,6 +39,7 @@ private:
 	//drawing routings
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
 	void drawCube(); 
+	void drawPolygon(std::vector<Vertex>)
 	void fillTriangle( Face &face, glm::vec3 color); 
 	void fillTriangle(std::vector<glm::vec3> points, glm::vec3 color);
 	void fillTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);
