@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
 #include "Camera.h"
+#include "Edge.h"
+#include "Definitions.h"
 
 
 /*
@@ -39,7 +41,10 @@ private:
 	//drawing routings
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
 	void drawCube(); 
-	void drawPolygon(std::vector<Vertex>)
+	void drawBetween2Line(Edge &e1, Edge &e2);
+	void scanLine(int &e1, int &e2, int &y);
+	void drawPolygon(std::shared_ptr<MeshModel>, Face&);
+	glm::vec4 transform(std::shared_ptr<MeshModel>, glm::vec3);
 	void fillTriangle( Face &face, glm::vec3 color); 
 	void fillTriangle(std::vector<glm::vec3> points, glm::vec3 color);
 	void fillTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);

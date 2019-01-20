@@ -23,6 +23,7 @@ private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;
 	std::vector<Vertex> vertexs;
+	std::vector<Vertex> *vertexsptr;
 	std::vector<glm::vec3> normals;
 	std::vector<glm::vec4> centerLine; 
 
@@ -104,6 +105,7 @@ public:
 	bool getIsCurrentModel() const { return this->isCurrentModel; }
 
 	std::vector<Vertex> getVertexs() const { return this->vertexs; }
+	std::vector<Vertex>* getVertexsptr() const { return this->vertexsptr; }
 	const void setVertexs(const std::vector<Vertex> &v) { this->vertexs = v; } 
 	
 };

@@ -32,6 +32,7 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& 
 	this->isCurrentModel = false;
 	this->createCube();
 	this->createCenterLines();
+	this->vertexsptr = &(this->vertexs); 
 	setScaleTransform(1500, 1500, 1500);
 }
 //ctor
