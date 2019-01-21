@@ -270,32 +270,35 @@ void Renderer::drawCube()
 	DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);
 }
 
+void Renderer::fillTriangle(Face &face, glm::vec3 color) {}
+
 void Renderer::drawBetween2Line(Edge & e1, Edge & e2)
 {
-
+	int  dy;
+	float ratio = 0.0f;
 	float edge1ydiff = (float)((e1.getP2().y - e1.getP1().y));
-	if (edge1ydiff == 0) return;
 	float edge2ydiff = (float)((e2.getP2().y - e2.getP1().y));
-	if (edge2ydiff == 0) return;
+
+	//check for zero height
+	if (edge1ydiff == 0 || edge2ydiff == 0) return;
 
 	float edge1xdiff = (float)((e1.getP1().x - e1.getP2().x));
-	float edge2xdiff = (float)((e1.getP1().x - e1.getP2().x));
+	float edge2xdiff = (float)((e2.getP1().x - e2.getP2().x));
 
 	//calc factors
 	float alpha_1 = (float)((e2.getP1().y - e1.getP1().y) / edge1ydiff);
 	float alpha_2 = 0;
 	float factorStep1 = 1.0f / edge1ydiff;
 	float factorStep2 = 1.0f / edge2ydiff;
-	for (int y = e2.getP1().y; y < e2.getP2().y; y++)
+	for (int y = e2.getP1().y, dy = 0; y < e2.getP2().y; y++, dy++)
 	{
-		int ex1 = e1.getP1().x + (int)(edge1xdiff * alpha_1);
-		int ex2 = e2.getP1().x + (int)(edge2xdiff * alpha_2);
-		int xdiff = ex2 - ex1;
-		if (xdiff == 0) return;
+		ratio = (float)(edge2xdiff / edge2ydiff);
+		int ex1 = e1.getP1().x - (int)(edge1xdiff * alpha_1);
+		int ex2 = e2.getP1().x - (int)( (ratio) * dy );
+
 		scanLine(ex1, ex2, y);
 
 		alpha_1 += factorStep1;
-		alpha_2 += factorStep2;
 	}
 
 }
@@ -303,38 +306,28 @@ void Renderer::drawBetween2Line(Edge & e1, Edge & e2)
 
 void Renderer::scanLine(int &e1, int &e2, int &y)
 {
-	int width = 0;
+	int x1 = e1, x2 = e2;
 	float factor = 0.0f;
 	float factorStep = 0.0f;
 	int xdiff;
 
-	if ((xdiff = e2 - e1) == 0) return;
+	if (e1 > e2)
+	{
+		x1 = e2;
+		x2 = e1;
+	}
+	
+	if ((xdiff = x2 - x1) == 0) return;
+
 	factorStep = 1.0f / (float)xdiff;
 
-	for (int x = e1; x < e2; x++)
+	for (int x = x1; x < x2; x++)
 	{
 		putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, GREEN);
 		factor += factorStep; 
 	}
 }
 
-
-void Renderer::fillTriangle(Face &face, glm::vec3 color)
-{
-	
-	glm::vec3 high, low;
-	glm::vec2 P0, P1, P2;
-	//get the vertices indexes from the face
-	std::vector<int> indices = face.GetVertices();
-	
-	//iterate thru all 
-	for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) {
-
-		if ((vindex + 1) == indices.end()) {
-			
-		}
-	}
-}
 
 void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
 {
@@ -354,52 +347,11 @@ void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
 
 	drawBetween2Line(longEdge, shortEdge1);
 	drawBetween2Line(longEdge, shortEdge2);
-	//longEdge[0] = z1;
-	//longEdge[1] = z3;
-	//shortEdge1[0] = z1;
-	//shortEdge1[1] = z2;
-	//shortEdge2[0] = z3;
-	//shortEdge2[1] = z2;
-
-
-
-	//auto height = abs(points.at(0).y - points.at(2).y);
-	/*std::sort(points.begin(), points.end(), sort_asc_x);
-	auto width = abs(points.at(0).x - points.at(2).x);*/ 
-
-	//for (int h = 0; h < height; h++)
-	//{
-	//	glm::vec2 v1 = glm::normalize((z1 - z2));
-	//	glm::vec2 v2 = glm::normalize((z1 - z3));
-	//	glm::vec2 ver(0, 1);
-
-	//	alpha_1 = h * glm::dot(v1, ver);
-	//	//alpha_2 = h * glm::dot(v2, ver);
-	//	
-	//	z4 = interpolate(z1, z2, alpha_1); 
-	//	//alpha_2 = (glm::vec2(0, z4.y) - z3) / (z1 - z3); 
-	//	z5 = interpolate(z1, z3, alpha_2);
-	//	//z = interpolate(z4, z5, alpha_3); 
-
-	//	for (int x = z4.x; x <= z5.x; x++)
-	//		putPixel(x, height, glm::vec3(0, 1, 0));
-	//	
-	//}
-
-}
-
-void Renderer::fillTriangle(glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec3 color)
-{
-	glm::vec3 max = glm::vec3(INT32_MIN);
-	glm::vec3 min = glm::vec3(INT32_MAX);
-	glm::vec3 right = glm::vec3(INT32_MIN);
-	glm::vec3 left = glm::vec3(INT32_MAX);
-
-	//find the highest and lowest verices of the face
-
 
 
 }
+
+void Renderer::fillTriangle(glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec3 color) {}
 
 glm::vec4 Renderer::transform(std::shared_ptr<MeshModel> model, glm::vec3 v)
 {
@@ -734,8 +686,17 @@ void Renderer::Render(const Scene& scene)
 			
 			fillTriangle(points, green_color); 
 		}
-	}
 
+
+	}
+	/*std::vector<glm::vec3> points;
+	points.push_back(glm::vec3(200, 100, 300));
+	points.push_back(glm::vec3(300, 200, 300));
+	points.push_back(glm::vec3(50, 50, 300));
+	fillTriangle(points, GREEN);
+	putPixel(this->viewportWidth / 2 + 200, this->viewportHeight / 2 + 100, BLACK);
+	putPixel(this->viewportWidth / 2 + 300, this->viewportHeight / 2 + 200, BLACK);
+	putPixel(this->viewportWidth / 2 + 50, this->viewportHeight / 2 + 50, BLACK);*/
 	
 	DrawLine(p1, p2, glm::vec3(0,0,0),false);
 	DrawLine(glm::vec3(viewportWidth / 2, 0, 0), glm::vec3(viewportWidth / 2, viewportHeight, 0), glm::vec3(0, 0, 0),false);
