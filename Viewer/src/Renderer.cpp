@@ -483,13 +483,13 @@ void Renderer::Render(const Scene& scene)
 
 
 			/* right now the  problem is with this transformation !!*/
-			//newVertex = camera.getViewTransformation() * newVertex;
+			newVertex = this->currentCamera.getViewTransformation() * newVertex;
 			//newVertex.w = 1 ;
-			//newVertex = camera.getProjectionTformation()*newVertex;
+			//newVertex = this->currentCamera.getProjectionTformation()*newVertex;
 
-			newVertex = currentCamera.getViewTransformation() * newVertex;
-			newVertex.w = 0;
-			newVertex = currentCamera.getProjectionTformation() * newVertex;
+			//newVertex = this->currentCamera.getViewTransformation() * newVertex;
+			//newVertex.w = 0;
+			//newVertex = this->currentCamera.getProjectionTformation() * newVertex;
 
 			//normals per face
 
@@ -562,7 +562,7 @@ void Renderer::Render(const Scene& scene)
 			points.push_back(first);
 			points.push_back(second);
 			points.push_back(third);
-			fillTriangle(points, green_color); 
+			//fillTriangle(points, green_color); 
 		}
 	}
 
