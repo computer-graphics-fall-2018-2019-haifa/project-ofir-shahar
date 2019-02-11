@@ -199,7 +199,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 						scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(outPath)));
 						//scene.AddModel((Utils::LoadMeshModelPtr(outPath)));
 						//set renderer current model to the first model in the scene model list
-						renderer.setCurrentModel(scene.getModels().at(scene.GetModelCount() - 1));
+						//renderer.setCurrentModel(scene.getModels().at(scene.GetModelCount() - 1));
 						/*renderer.setEyeX(0);
 						renderer.setScaleNumber(1800);
 						renderer.setFov(45);*/

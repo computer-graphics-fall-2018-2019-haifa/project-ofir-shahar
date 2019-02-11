@@ -30,7 +30,6 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& 
 	isCurrentModel(current)
 {
 	this->drawCube = false;
-	this->isCurrentModel = false;
 	this->createCube();
 	this->createCenterLines();
 	this->vertexsptr = &(this->vertexs); 

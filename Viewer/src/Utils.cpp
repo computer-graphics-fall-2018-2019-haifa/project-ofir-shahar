@@ -84,15 +84,15 @@ MeshModel Utils::LoadMeshModel(const std::string& filePath)
 		}
 	}
 	//iterate over the faces vector of the model
-	for (std::vector<Face>::iterator face = faces.begin(); face != faces.end(); face++)
-	{
-		std::vector<int> indices = (*face).GetVertices();
-		//iterate over the face's indices
-		for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) 
-		{
+	//for (std::vector<Face>::iterator face = faces.begin(); face != faces.end(); face++)
+	//{
+	//	std::vector<int> indices = (*face).GetVertices();
+	//	//iterate over the face's indices
+	//	for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) 
+	//	{
 
-		}
-	}
+	//	}
+	//}
 	return MeshModel(faces, vertices, normals, true, name);
 	
 }
