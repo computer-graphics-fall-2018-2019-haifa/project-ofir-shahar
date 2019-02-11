@@ -27,14 +27,40 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int vie
 	this->toDrawFaceNormals = false;
 	this->toDrawLineNormals = false;
 	this->tooDrawaCube = false;
-	//setScaleNumber(50);
+	initViewport(); 
 }
 
+//dtor
 Renderer::~Renderer()
 {
 	if (colorBuffer)
 	{
 		delete[] colorBuffer;
+	}
+	for (size_t i = 0; i < this->viewportHeight; i++)
+	{
+		delete[] this->viewport[i];
+	}
+	delete[] this->viewport; 
+}
+
+//init the viewport
+void Renderer::initViewport()
+{
+	//create and initialize
+	this->viewport = new int*[this->viewportHeight]; 
+	for (int i = 0; i < this->viewportHeight; i++)
+	{
+		this->viewport[i] = new int[this->viewportWidth];
+	}
+
+	//populate with max int_32
+	for (int i = 0; i < this->viewportHeight; i++)
+	{
+		for (int j = 0; j < this->viewportWidth; j++)
+		{
+			this->viewport[i][j] = INT32_MAX; 
+		}
 	}
 }
 
@@ -321,7 +347,7 @@ void Renderer::scanLine(int &e1, int &e2, int &y)
 
 	factorStep = 1.0f / (float)xdiff;
 
-	for (int x = x1; x < x2; x++)
+	for (int x = x1 + 1; x < x2; x++)
 	{
 		putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, GREEN);
 		factor += factorStep; 
@@ -501,9 +527,9 @@ void Renderer::Render(const Scene& scene)
 		std::vector<Vertex> *vertexsptr = (*model).getVertexsptr();
 		//TODO: connect vertexptr to vertex
 		//std::vector<glm::vec3> vertices = (*model).getVertexs();
-		std::vector<glm::vec3> normals = (*model).GetNormals(); 
+		std::vector<glm::vec3> normals = (*model).GetNormals();
 		typedef std::vector<glm::vec3>::iterator normal_it;
-		typedef std::vector<Face>::iterator faces_it; 
+		typedef std::vector<Face>::iterator faces_it;
 		typedef std::vector<glm::vec4>::iterator center_it;
 
 
@@ -537,7 +563,7 @@ void Renderer::Render(const Scene& scene)
 			c.cPoints[i] = currentCamera.getProjectionTformation() * c.cPoints[i];
 			c.cPoints[i].w = 0; */
 		}
-		
+
 		//draw the cube
 		if (this->tooDrawaCube && (*model).getIsCurrentModel())
 		{
@@ -556,7 +582,7 @@ void Renderer::Render(const Scene& scene)
 			DrawLine(c.cPoints[2], c.cPoints[6], glm::vec3(0, 0, 1), true);
 			DrawLine(c.cPoints[3], c.cPoints[7], glm::vec3(0, 0, 1), true);
 		}
-		
+
 
 		//adjust face normals and faces centeroids positions
 		if (this->toDrawLineNormals)
@@ -571,7 +597,7 @@ void Renderer::Render(const Scene& scene)
 		unsigned int counter = 0;
 		for (std::vector<Vertex>::iterator vertex = vertexs.begin(); vertex != vertexs.end(); vertex++) {
 
-			glm::vec4 temp = glm::vec4(vertex->getPoint().x, vertex->getPoint().y, vertex->getPoint().z, 0); 
+			glm::vec4 temp = glm::vec4(vertex->getPoint().x, vertex->getPoint().y, vertex->getPoint().z, 0);
 			//glm::vec4 temp;// = transform(model, (*vertex).getPoint());
 			/*vertex->setPoint(glm::vec3(temp.x, temp.y, temp.z)); */
 			//glm::vec4 newVertex = glm::vec4((*vertex).getPoint().x, (*vertex).getPoint().y, (*vertex).getPoint().z, 1);
@@ -605,7 +631,7 @@ void Renderer::Render(const Scene& scene)
 			//std::cout << "temp x:" << temp.x << " y:" << temp.y << " z:" << temp.z << std::endl;
 			//
 			//
-			
+
 
 			//std::cout << "after transform transform" << std::endl;
 			temp = transform(model, temp);
@@ -624,8 +650,8 @@ void Renderer::Render(const Scene& scene)
 			*/
 			//vertex->setPoint(glm::vec3(temp.x, temp.y, temp.z));
 			//(*vertexsptr).at(counter++).setPoint(glm::vec3(temp.x, temp.y, temp.z)); 
-			
-			
+
+
 			//(*vertexsptr).
 			vertex->setPoint(glm::vec3(temp.x, temp.y, temp.z));
 		}
@@ -634,7 +660,6 @@ void Renderer::Render(const Scene& scene)
 		//(*model).setVertexs(vertexs); 
 		// ############## END OF IMPORTANT CODE #################
 		// ######################################################
-	
 
 		//iterate over the faces vector of the model
 		for (std::vector<Face>::iterator face = faces.begin(); face != faces.end(); face++) 
@@ -642,7 +667,7 @@ void Renderer::Render(const Scene& scene)
 
 			//drawPolygon(model, *face); 
 			//face vertices for fill triangles purpose
-			glm::vec3 first, second, third;
+			Vertex first, second, third;
 
 			//get the indices of the vertices for each face
 			std::vector<int> indices = (*face).GetVertices();
@@ -659,14 +684,19 @@ void Renderer::Render(const Scene& scene)
 					//DrawLine(vertices.at(*(vindex)-1), vertices.at(*(vindex + 1)-1), glm::vec3(0, 0, 0),true);
 					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(*(vindex + 1) - 1).getPoint(), glm::vec3(0, 0, 0), true);
 
-				
-				first = vertexs.at((*face).GetVertexIndex(0) - 1).getPoint();
-				second = vertexs.at((*face).GetVertexIndex(1) - 1).getPoint();
-				third = vertexs.at((*face).GetVertexIndex(2) - 1).getPoint();
-				glm::vec3 centerv = glm::vec3((first.x + second.x + third.x) / 3, (first.y + second.y + third.y) / 3, (first.z + second.z + third.z) / 3);
+				//calculate face normal and centeroid
+				first = vertexs.at((*face).GetVertexIndex(0) - 1);
+				second = vertexs.at((*face).GetVertexIndex(1) - 1);
+				third = vertexs.at((*face).GetVertexIndex(2) - 1);
+				glm::vec3 centerv = glm::vec3((first.getPoint().x + second.getPoint().x + third.getPoint().x) / 3, 
+											  (first.getPoint().y + second.getPoint().y + third.getPoint().y) / 3, 
+											  (first.getPoint().z + second.getPoint().z + third.getPoint().z) / 3);
 
-				//normals
-				glm::vec3 normal = glm::normalize(glm::cross(first - second, first - third));
+				//add the normals to each vertex
+				glm::vec3 normal = glm::normalize(glm::cross(first.getPoint() - second.getPoint(), first.getPoint() - third.getPoint()));
+				first.addNormal(normal);
+				second.addNormal(normal);
+				third.addNormal(normal); 
 				normal.x *= -50; normal.y *= -50; normal.z *= -50;
 				if (this->toDrawFaceNormals && (*model).getIsCurrentModel())
 				{
@@ -680,9 +710,9 @@ void Renderer::Render(const Scene& scene)
 			}
 			std::vector<glm::vec3> points;
 			
-			points.push_back(first); 
-			points.push_back(second);
-			points.push_back(third);
+			points.push_back(first.getPoint());
+			points.push_back(second.getPoint());
+			points.push_back(third.getPoint());
 			
 			fillTriangle(points, green_color); 
 		}

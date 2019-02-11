@@ -36,11 +36,13 @@ glm::vec2 Utils::Vec2fFromStream(std::istream& issLine)
 
 MeshModel Utils::LoadMeshModel(const std::string& filePath)
 {
+	MeshModel *result_ptr = new MeshModel();
+	MeshModel result;
 	std::vector<Face> faces;
-	//std::vector<glm::vec3> vertices;
 	std::vector<Vertex> vertices;
 	std::vector<glm::vec3> normals;
 	std::ifstream ifile(filePath.c_str());
+	std::string name = Utils::GetFileName(filePath);
 
 	// while not end of file
 	while (!ifile.eof())
@@ -81,8 +83,79 @@ MeshModel Utils::LoadMeshModel(const std::string& filePath)
 			std::cout << "Found unknown line Type \"" << lineType << "\"";
 		}
 	}
+	//iterate over the faces vector of the model
+	for (std::vector<Face>::iterator face = faces.begin(); face != faces.end(); face++)
+	{
+		std::vector<int> indices = (*face).GetVertices();
+		//iterate over the face's indices
+		for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) 
+		{
 
-	return MeshModel(faces, vertices, normals, Utils::GetFileName(filePath));
+		}
+	}
+	return MeshModel(faces, vertices, normals, true, name);
+	
+}
+
+const std::shared_ptr<MeshModel> Utils::LoadMeshModelPtr(const std::string& filePath)
+{
+	//MeshModel *result_ptr = new MeshModel();
+	std::vector<Face> faces;
+	std::vector<Vertex> vertices;
+	std::vector<glm::vec3> normals;
+	std::ifstream ifile(filePath.c_str());
+	std::string name = Utils::GetFileName(filePath);
+	MeshModel *result_ptr = new MeshModel(faces, vertices, normals, true, name);
+
+	// while not end of file
+	while (!ifile.eof())
+	{
+		// get line
+		std::string curLine;
+		std::getline(ifile, curLine);
+
+		// read the type of the line
+		std::istringstream issLine(curLine);
+		std::string lineType;
+
+		issLine >> std::ws >> lineType;
+
+		// based on the type parse data
+		if (lineType == "v")
+		{
+			result_ptr->addVertex(Utils::VertexFromStream(issLine));
+			//vertices.push_back(Utils::VertexFromStream(issLine));
+		}
+		else if (lineType == "vn")
+		{
+			//normals.push_back(Utils::Vec3fFromStream(issLine));
+			result_ptr->addNormal(Utils::Vec3fFromStream(issLine));
+		}
+		else if (lineType == "vt")
+		{
+			// Texture coordinates
+		}
+		else if (lineType == "f")
+		{
+			//faces.push_back(Face(issLine));
+			result_ptr->addFace(Face(issLine));
+		}
+		else if (lineType == "#" || lineType == "")
+		{
+			// comment / empty line
+		}
+		else
+		{
+			std::cout << "Found unknown line Type \"" << lineType << "\"";
+		}
+	}
+	/*result_ptr->setFaces(faces);
+	result_ptr->setVertexs(vertices);
+	result_ptr->setNormals(normals);*/
+	result_ptr->setIsCurrentModel(true);
+	//return result_ptr;
+	return std::make_shared<MeshModel>(*result_ptr);
+
 }
 
 glm::vec4 Utils::Centeroid(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3)

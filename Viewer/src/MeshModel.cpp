@@ -9,7 +9,7 @@
 
 
 //augmented ctor
-MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName) :
+MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& vertices, const std::vector<glm::vec3>& normals, const bool current, const std::string& modelName) :
 	modelName(modelName),
 	localTransform(glm::mat4(1)),
 	worldTransform(glm::mat4(1)),
@@ -26,7 +26,8 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& 
 	translationTransform(glm::mat4(1)),
 	faces(faces),
 	vertexs(vertices),
-	normals(normals)
+	normals(normals),
+	isCurrentModel(current)
 {
 	this->drawCube = false;
 	this->isCurrentModel = false;
@@ -61,6 +62,7 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3
 	this->createCenterLines();
 	setScaleTransform(1500, 1500, 1500);
 }
+
 
 MeshModel::~MeshModel()
 {

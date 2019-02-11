@@ -197,6 +197,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 					nfdresult_t result = NFD_OpenDialog("obj;png,jpg", NULL, &outPath);
 					if (result == NFD_OKAY) {
 						scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(outPath)));
+						//scene.AddModel((Utils::LoadMeshModelPtr(outPath)));
 						//set renderer current model to the first model in the scene model list
 						renderer.setCurrentModel(scene.getModels().at(scene.GetModelCount() - 1));
 						/*renderer.setEyeX(0);

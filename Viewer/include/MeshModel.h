@@ -51,8 +51,13 @@ private:
 public:
 	MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName = "");
 	MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName);
+	MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& vertices, const std::vector<glm::vec3>& normals, const bool current, const std::string& modelName); 
 	virtual ~MeshModel();
 	MeshModel();
+
+	void addVertex(const Vertex &v) { this->vertexs.push_back(v); }
+	void addFace(const Face& f) { this->faces.push_back(f); }
+	void addNormal(const glm::vec3 &n) { this->normals.push_back(n); }
 	void SetWorldTransformation(const glm::mat4& worldTransform);
 	const glm::mat4& GetWorldTransformation() const;
 	const glm::mat4& GetLocalTransform() const;
@@ -62,50 +67,36 @@ public:
 	const glm::mat4& GetWorldTranslate() const;
 	const glm::mat4& GetWorldRotation() const;
 	const glm::vec4& GetColor() const;
+
+	//setters
 	void SetColor(const glm::vec4& color);
-
 	void setDraw(const bool b) { this->draw = b; }
-
-	const bool& getDraw() { return this->draw; }
-
-	const std::string& GetModelName();
-
-	const std::vector<Face>& GetFaces();
-
-	const std::vector<glm::vec3>& GetVertices();
-
-	const std::vector<glm::vec3>& GetNormals();
-
 	void setScaleTransform(float xFactor, float yFactor, float zFactor);
-
 	void setRotationTransform(float xDegree, float yDegree, float zDegree);
-
 	void setTranslationTransform(float x, float y, float z);
-
 	void setWorldTranslation(float x, float y, float z);
-
 	void setWorldRotation(float xDegree, float yDegree, float zDegree);
-
-	const glm::mat4& getTranslationTransform() const;
-	
-	const Cube getCube() const { return this->cube; }
-
 	void setCube(const Cube c) { this->cube = c; }
-
-	const bool getDrawCube() { return this->drawCube; }
-
-	void setDrawCube(const bool b) { this->drawCube = b; }
-
-	const std::vector<glm::vec4> getCenteLines() const { return this->centerLine; }
-
 	void setCenteLines(const std::vector<glm::vec4> c) { this->centerLine = c; }
+	void setIsCurrentModel(const bool& b) { this->isCurrentModel = b; }
+	void setVertexs(const std::vector<Vertex> &v) { this->vertexs = v; }
+	void setDrawCube(const bool b) { this->drawCube = b; }
+	void setFaces(const std::vector<Face> f) { this->faces = f; }
+	void setNormals(const std::vector<glm::vec3> n) { this->normals = n; }
 
-	void setIsCurrentModel(const bool& b) { this->isCurrentModel = b; } 
-	
-	bool getIsCurrentModel() const { return this->isCurrentModel; }
-
-	std::vector<Vertex> getVertexs() const { return this->vertexs; }
+	//getters
+	const bool& getDraw() { return this->draw; }
+	const std::string& GetModelName();
+	const std::vector<Face>& GetFaces();
+	const std::vector<glm::vec3>& GetVertices();
+	const std::vector<glm::vec3>& GetNormals();
+	const glm::mat4& getTranslationTransform() const;	
+	const Cube getCube() const { return this->cube; }
+	const bool getDrawCube() { return this->drawCube; }
+	const std::vector<glm::vec4> getCenteLines() const { return this->centerLine; }
+	const bool getIsCurrentModel() const { return this->isCurrentModel; }
+	const std::vector<Vertex> getVertexs() const { return this->vertexs; }
 	std::vector<Vertex>* getVertexsptr() const { return this->vertexsptr; }
-	const void setVertexs(const std::vector<Vertex> &v) { this->vertexs = v; } 
+	
 	
 };
