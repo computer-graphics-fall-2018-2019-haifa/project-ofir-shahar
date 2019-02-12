@@ -35,6 +35,26 @@ Renderer::~Renderer()
 	}
 }
 
+//init the viewport
+void Renderer::initViewport()
+{
+	//create and initialize
+	this->viewport = new int*[this->viewportHeight];
+	for (int i = 0; i < this->viewportHeight; i++)
+	{
+		this->viewport[i] = new int[this->viewportWidth];
+	}
+
+	//populate with max int_32
+	for (int i = 0; i < this->viewportHeight; i++)
+	{
+		for (int j = 0; j < this->viewportWidth; j++)
+		{
+			this->viewport[i][j] = INT32_MAX;
+		}
+	}
+}
+
 bool Renderer::isHasModel() {
 	return hasModel;
 }
@@ -283,64 +303,82 @@ void Renderer::drawCube()
 //}
 
 
-void Renderer::fillTriangle(Face &face, glm::vec3 color)
+void Renderer::fillTriangle(Face &face, glm::vec3 color) {}
+
+void Renderer::drawBetween2Line(Edge & e1, Edge & e2)
 {
-	
-	glm::vec3 high, low;
-	glm::vec2 P0, P1, P2;
-	//get the vertices indexes from the face
-	std::vector<int> indices = face.GetVertices();
-	
-	//iterate thru all 
-	for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++) 
+	int  dy;
+	float ratio = 0.0f;
+	float edge1ydiff = (float)((e1.getP2().y - e1.getP1().y));
+	float edge2ydiff = (float)((e2.getP2().y - e2.getP1().y));
+
+	//check for zero height
+	if (edge1ydiff == 0 || edge2ydiff == 0) return;
+
+	float edge1xdiff = (float)((e1.getP1().x - e1.getP2().x));
+	float edge2xdiff = (float)((e2.getP1().x - e2.getP2().x));
+
+	//calc factors
+	float alpha_1 = (float)((e2.getP1().y - e1.getP1().y) / edge1ydiff);
+	float alpha_2 = 0;
+	float factorStep1 = 1.0f / edge1ydiff;
+	float factorStep2 = 1.0f / edge2ydiff;
+	for (int y = e2.getP1().y, dy = 0; y < e2.getP2().y; y++, dy++)
 	{
+		ratio = (float)(edge2xdiff / edge2ydiff);
+		int ex1 = e1.getP1().x - (int)(edge1xdiff * alpha_1);
+		int ex2 = e2.getP1().x - (int)((ratio)* dy);
 
+		scanLine(ex1, ex2, y);
 
-		if ((vindex + 1) == indices.end()) {
-			
-		}
+		alpha_1 += factorStep1;
+	}
+
+}
+
+void Renderer::scanLine(int &e1, int &e2, int &y)
+{
+	int x1 = e1, x2 = e2;
+	float factor = 0.0f;
+	float factorStep = 0.0f;
+	int xdiff;
+
+	if (e1 > e2)
+	{
+		x1 = e2;
+		x2 = e1;
+	}
+
+	if ((xdiff = x2 - x1) == 0) return;
+
+	factorStep = 1.0f / (float)xdiff;
+
+	for (int x = x1 + 1; x < x2; x++)
+	{
+		putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, GREEN);
+		factor += factorStep;
 	}
 }
+
 
 void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
 {
 	float alpha_1 = 0, alpha_2 = 0, alpha_3 = 0;
+	float edge1ydiff, edge2ydiff, edge3ydiff;
 	glm::vec2 z, z1, z2, z3, z4, z5;
-	glm::vec2 x_left, y_top;
+	glm::vec2 x_left, y_top, y_down;
+
+	std::sort(points.begin(), points.end(), sort_dec_y);
 	z1 = points.at(0);
 	z2 = points.at(1);
 	z3 = points.at(2);
-	z4 = alpha_1 * z1 + (1 - alpha_1) * z2; 
-	z5 = alpha_2 * z1 + (1 - alpha_2) * z3;
-	z = alpha_3 * z4 + (1 - alpha_3) * z5;
-		
 
-	//sort points by the x-coordinate
-	std::sort(points.begin(), points.end(), sort_dec_x); 
-	x_left = glm::vec2(points.at(0).x, points.at(0).y); 
-	std::sort(points.begin(), points.end(), sort_asc_y); 
-	y_top = glm::vec2(points.at(0).x, points.at(0).y); 
+	Edge longEdge(z1, z3, GREEN);
+	Edge shortEdge1(z1, z2, GREEN);
+	Edge shortEdge2(z2, z3, GREEN);
 
-	//x_left is the highiest point
-	if (x_left.y == y_top.y)
-	{
-
-	}
-	//x_left is somewhere in between
-	else
-	{
-
-	}
-
-	//find the highest and lowest verices of the face
-	//for (std::vector<glm::vec3>::iterator vindex = points.begin(); vindex != points.end(); vindex++) {
-	//	if ((*vindex).y <= min.y) min = (*vindex);
-	//	if ((*vindex).y >= max.y) max = (*vindex);
-	//	if ((*vindex).x >= right.x) right = (*vindex);
-	//	if ((*vindex).x <= left.x) left = (*vindex);
-	//}
-
-
+	drawBetween2Line(longEdge, shortEdge1);
+	drawBetween2Line(longEdge, shortEdge2);
 }
 
 void Renderer::fillTriangle(glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec3 color)
@@ -407,10 +445,6 @@ void Renderer::Render(const Scene& scene)
 		typedef std::vector<Face>::iterator faces_it; 
 		typedef std::vector<glm::vec4>::iterator center_it;
 
-		if (name.compare("banana.obj") == 0)
-		{
-			std::vector<Vertex> vertexs = model->getVertexs();
-		}
 		/*if (model->GetModelName() == "grid.obj")
 			drawGrid(model); */
 
@@ -518,7 +552,7 @@ void Renderer::Render(const Scene& scene)
 		for (std::vector<Face>::iterator face = faces.begin(); face != faces.end(); face++) 
 		{
 			//face vertices for fill triangles purpose
-			glm::vec3 first, second, third;
+			Vertex first, second, third;
 
 			//get the indices of the vertices for each face
 			std::vector<int> indices = (*face).GetVertices();
@@ -545,13 +579,19 @@ void Renderer::Render(const Scene& scene)
 
 
 				
-				first = vertexs.at((*face).GetVertexIndex(0) - 1).getPoint();
-				second = vertexs.at((*face).GetVertexIndex(1) - 1).getPoint();
-				third = vertexs.at((*face).GetVertexIndex(2) - 1).getPoint();
-				glm::vec3 centerv = glm::vec3((first.x + second.x + third.x) / 3, (first.y + second.y + third.y) / 3, (first.z + second.z + third.z) / 3);
+				//calculate face normal and centeroid
+				first = vertexs.at((*face).GetVertexIndex(0) - 1);
+				second = vertexs.at((*face).GetVertexIndex(1) - 1);
+				third = vertexs.at((*face).GetVertexIndex(2) - 1);
+				glm::vec3 centerv = glm::vec3((first.getPoint().x + second.getPoint().x + third.getPoint().x) / 3,
+					(first.getPoint().y + second.getPoint().y + third.getPoint().y) / 3,
+					(first.getPoint().z + second.getPoint().z + third.getPoint().z) / 3);
 
 				//normals
-				glm::vec3 normal = glm::normalize(glm::cross(first - second, first - third));
+				glm::vec3 normal = glm::normalize(glm::cross(first.getPoint() - second.getPoint(), first.getPoint() - third.getPoint()));
+				first.addNormal(normal);
+				second.addNormal(normal);
+				third.addNormal(normal);
 				normal.x *= -50; normal.y *= -50; normal.z *= -50;
 				if (this->toDrawFaceNormals && (*model).getIsCurrentModel())
 				{
@@ -564,10 +604,10 @@ void Renderer::Render(const Scene& scene)
 				}
 			}
 			std::vector<glm::vec3> points;
-			points.push_back(first);
-			points.push_back(second);
-			points.push_back(third);
-			//fillTriangle(points, green_color); 
+			points.push_back(first.getPoint());
+			points.push_back(second.getPoint());
+			points.push_back(third.getPoint());
+			fillTriangle(points, green_color); 
 		}
 	}
 

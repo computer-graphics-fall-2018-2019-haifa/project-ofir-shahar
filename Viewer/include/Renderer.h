@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
 #include "Camera.h"
+#include "Edge.h"
+#include "Definitions.h"
 
 
 /*
@@ -16,6 +18,7 @@ class Renderer
 private:
 	float *colorBuffer;
 	float *zBuffer;
+	int **viewport;
 	int viewportWidth;
 	int viewportHeight;
 	int viewportX;
@@ -39,21 +42,23 @@ private:
 	//drawing routings
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
 	void drawCube(); 
+	void drawBetween2Line(Edge &e1, Edge &e2);
+	void scanLine(int &e1, int &e2, int &y);
 	void fillTriangle( Face &face, glm::vec3 color); 
 	void fillTriangle(std::vector<glm::vec3> points, glm::vec3 color);
 	void fillTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);
 
 
 	std::vector<std::string> ExcludeModels;
-	static bool sort_dec_x(const glm::vec3 &x, const glm::vec3 &y) { return x.x < y.x; }
-	static bool sort_asc_y(const glm::vec3 &x, const glm::vec3 &y) { return x.y > y.y; }
+	static bool sort_asc_x(const glm::vec2 &x, const glm::vec2 &y) { return x.x < y.x; }
+	static bool sort_dec_y(const glm::vec2 &x, const glm::vec2 &y) { return x.y > y.y; }
 
 public:
 	Renderer(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
 	~Renderer();
 	bool isHasModel();
 	
-
+	void initViewport();
 	void setHasModel();
 	void Render(const Scene& scene);
 	void SwapBuffers();

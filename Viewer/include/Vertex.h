@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <vector>
 
 class Vertex
 {
@@ -8,6 +9,7 @@ private:
 	glm::vec3 point;
 	glm::vec3 color;
 	int depth;
+	std::vector<glm::vec3> normals;
 public:
 	Vertex();
 	Vertex(glm::vec3 p, glm::vec3 c, int d);
@@ -20,4 +22,6 @@ public:
 
 	int getDepth() const { return this->depth; }
 	void setPoint(const int &d) { this->depth = d; }
+
+	void addNormal(glm::vec3 &v) { this->normals.push_back(v); }
 };
