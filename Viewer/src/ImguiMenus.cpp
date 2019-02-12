@@ -203,7 +203,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 						renderer.setScaleNumber(1800);
 						renderer.setFov(45);*/
 
-						renderer.setHasModel();
+						//renderer.setHasModel();
 						renderer.setEyeX(0);
 						//renderer.translate(640, 360, 0);
 						renderer.setPerspective(50,1,1,10);

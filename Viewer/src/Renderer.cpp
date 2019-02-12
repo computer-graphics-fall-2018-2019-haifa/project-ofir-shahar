@@ -337,10 +337,10 @@ void Renderer::Render(const Scene& scene)
 			c.cPoints[i] = worldTranslate * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
-			c.cPoints[i] = camera.getViewTransformation() * c.cPoints[i];
+			//c.cPoints[i] = camera.getViewTransformation() * c.cPoints[i];
 			c.cPoints[i].w = 0;
 
-			c.cPoints[i] = camera.getProjectionTformation() * c.cPoints[i]; 
+			//c.cPoints[i] = camera.getProjectionTformation() * c.cPoints[i]; 
 			c.cPoints[i].w = 0; 
 		}
 		
