@@ -75,6 +75,7 @@ int main(int argc, char **argv)
 	//Camera camera = Camera(eye, at, up);
 	camera.setCurrent(true);
 	scene.AddCamera(camera); 
+	
 
 	// Setup ImGui
 	ImGuiIO& io = SetupDearImgui(window);

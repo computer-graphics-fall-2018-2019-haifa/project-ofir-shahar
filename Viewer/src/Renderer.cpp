@@ -376,6 +376,7 @@ void Renderer::Render(const Scene& scene)
 	//models = vector of pointers (pointing to a MeshModel) representing this list.
 	std::vector<std::shared_ptr<MeshModel>> models = scene.getModels();
 	std::shared_ptr<MeshModel> model; 
+	this->currentCamera = scene.getCameras().at(0);
 	
 	//we iterate over models vector with an iterator
 	for (std::vector<std::shared_ptr<MeshModel>>::iterator it = models.begin(); it != models.end(); it++) {
@@ -397,15 +398,19 @@ void Renderer::Render(const Scene& scene)
 		glm::vec4 normal_vertex;
 		//get the faces from the pointer to the model
 		std::vector<Face> faces = (*model).GetFaces();
+		std::string name = model->GetModelName(); 
 		//get the vertices from the pointer to the model
-		std::vector<Vertex> vertexs = (*model).getVertexs();
+		std::vector<Vertex> vertexs = model->getVertexs();
 		//std::vector<glm::vec3> vertices = (*model).getVertexs();
 		std::vector<glm::vec3> normals = (*model).GetNormals(); 
 		typedef std::vector<glm::vec3>::iterator normal_it;
 		typedef std::vector<Face>::iterator faces_it; 
 		typedef std::vector<glm::vec4>::iterator center_it;
 
-
+		if (name.compare("banana.obj") == 0)
+		{
+			std::vector<Vertex> vertexs = model->getVertexs();
+		}
 		/*if (model->GetModelName() == "grid.obj")
 			drawGrid(model); */
 
