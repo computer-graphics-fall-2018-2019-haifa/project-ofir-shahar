@@ -34,6 +34,32 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& 
 	this->createCenterLines();
 	setScaleTransform(1500, 1500, 1500);
 }
+MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& vertices, const std::vector<glm::vec3>& normals, const std::string & modelName, const bool & isCurrent) : 
+	modelName(modelName),
+	localTransform(glm::mat4(1)),
+	worldTransform(glm::mat4(1)),
+	worldTranslation(glm::mat4(1)),
+	worldRotation(glm::mat4(1)),
+	scaleTransform(glm::mat4(1500)),
+	rotationTransform(glm::mat4(1)),
+	xRotation(glm::mat4(1)),
+	yRotation(glm::mat4(1)),
+	zRotation(glm::mat4(1)),
+	xRotationWorld(glm::mat4(1)),
+	yRotationWorld(glm::mat4(1)),
+	zRotationWorld(glm::mat4(1)),
+	translationTransform(glm::mat4(1)),
+	faces(faces),
+	vertexs(vertices),
+	normals(normals),
+	isCurrentModel(isCurrent)
+{
+	this->drawCube = false;
+	this->isCurrentModel = false;
+	this->createCube();
+	this->createCenterLines();
+	setScaleTransform(1500, 1500, 1500);
+}
 //ctor
 MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName) :
 	modelName(modelName),
@@ -60,6 +86,33 @@ MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3
 	this->createCenterLines();
 	setScaleTransform(1500, 1500, 1500);
 }
+
+//MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::string& modelName, const bool &isCurrent) :
+//	modelName(modelName),
+//	localTransform(glm::mat4(1)),
+//	worldTransform(glm::mat4(1)),
+//	worldTranslation(glm::mat4(1)),
+//	worldRotation(glm::mat4(1)),
+//	scaleTransform(glm::mat4(1500)),
+//	rotationTransform(glm::mat4(1)),
+//	xRotation(glm::mat4(1)),
+//	yRotation(glm::mat4(1)),
+//	zRotation(glm::mat4(1)),
+//	xRotationWorld(glm::mat4(1)),
+//	yRotationWorld(glm::mat4(1)),
+//	zRotationWorld(glm::mat4(1)),
+//	translationTransform(glm::mat4(1)),
+//	faces(faces),
+//	vertices(vertices),
+//	normals(normals),
+//	isCurrentModel(isCurrent)
+//{
+//	this->drawCube = false;
+//	this->isCurrentModel = false;
+//	this->createCube();
+//	this->createCenterLines();
+//	setScaleTransform(1500, 1500, 1500);
+//}
 
 MeshModel::~MeshModel()
 {

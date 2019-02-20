@@ -60,7 +60,7 @@ MeshModel Utils::LoadMeshModel(const std::string& filePath)
 		}
 		else if (lineType == "vn")
 		{
-			normals.push_back(Utils::Vec3fFromStream(issLine));
+			//normals.push_back(Utils::Vec3fFromStream(issLine));
 		}
 		else if (lineType == "vt")
 		{
@@ -79,8 +79,39 @@ MeshModel Utils::LoadMeshModel(const std::string& filePath)
 			std::cout << "Found unknown line Type \"" << lineType << "\"";
 		}
 	}
+	//iterate over the faces vector of the model, and calculate the face normals
+	for (std::vector<Face>::iterator face = faces.begin(); face != faces.end(); face++)
+	{
+		//face vertices for fill triangles purpose
+		Vertex first, second, third;
+		glm::vec3 normal;
 
-	return MeshModel(faces, vertices, normals, Utils::GetFileName(filePath));
+		//get the indices of the vertices for each face
+		std::vector<int> indices = (*face).GetVertices();
+		//iterate over the indices
+		for (std::vector<int>::iterator vindex = indices.begin(); vindex != indices.end(); vindex++)
+		{
+			first = vertices.at((*face).GetVertexIndex(0) - 1);
+			second = vertices.at((*face).GetVertexIndex(1) - 1);
+			third = vertices.at((*face).GetVertexIndex(2) - 1);
+			normal = glm::normalize(glm::cross(first.getPoint() - second.getPoint(), first.getPoint() - third.getPoint()));
+
+			//add newly created normal to each face vertex
+			vertices.at((*face).GetVertexIndex(0) - 1).addNormal(normal);
+			vertices.at((*face).GetVertexIndex(1) - 1).addNormal(normal);
+			vertices.at((*face).GetVertexIndex(2) - 1).addNormal(normal);
+		}		
+		//add normal to normal vector
+		normals.push_back(normal);
+	}
+	//normalize all vertex's normals
+	for (std::vector<Vertex>::iterator vertex = vertices.begin(); vertex != vertices.end(); vertex++)
+	{
+		glm::vec3 norm = glm::normalize(vertex->getNormal());
+		(*vertex).setNormal(norm);
+	}
+
+	return MeshModel(faces, vertices, normals, Utils::GetFileName(filePath), true);
 }
 
 void Utils::createGrid()

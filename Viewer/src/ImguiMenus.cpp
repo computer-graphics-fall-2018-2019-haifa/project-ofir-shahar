@@ -18,8 +18,10 @@
 
 bool showDemoWindow = false;
 bool showAnotherWindow = false;
+bool showLightWindow = false;
 
 glm::vec4 clearColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
+glm::vec3 lightColor;
 
 const glm::vec4& GetClearColor()
 {
@@ -159,6 +161,12 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 			renderer.setToDrawFaceNormals(!renderer.getToDrawFaceNormals());
 			std::cout << "lines normals" << renderer.getToDrawFaceNormals() << std::endl;
 		}
+		//show vertices normals (toggle)
+		if (ImGui::Button("vertices normals"))
+		{
+			renderer.setToDrawVertexNormals(!renderer.getToDrawVertexNormals());
+			std::cout << "vertex normals" << renderer.getToDrawVertexNormals() << std::endl;
+		}
 		//projection
 		if (ImGui::Button("Projection"))
 		{
@@ -184,6 +192,35 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		ImGui::End();
 	}
 
+	// 3.1 Show add light window.
+	if (showLightWindow)
+	{
+		static int x_pos = 0;
+		static int y_pos = 0;
+		static int z_pos = 0;
+		float clearColor;
+		Light light;
+		ImGui::Begin("Light", &showLightWindow);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::BeginChild("light_win", ImVec2(200, 200));
+		if (ImGui::SliderInt("light x position", (int*)&x_pos, -5000, 5000) && renderer.isHasModel()) { }
+		if (ImGui::SliderInt("light y position", (int*)&y_pos, -5000, 5000) && renderer.isHasModel()) { }
+		if (ImGui::SliderInt("light z position", (int*)&z_pos, -5000, 5000) && renderer.isHasModel()) { }
+		ImGui::ColorEdit3("clear color", (float*)&lightColor);
+
+		if (ImGui::Button("add"))
+		{
+			light.setPosition(glm::vec3(x_pos, y_pos, z_pos));
+			light.setColor(lightColor);
+			light.setActive(true);
+			scene.addLight(light);
+		}
+		/*if (ImGui::Button("Close Me"))
+		{
+			showLightWindow = false;
+		}*/
+		ImGui::EndChild();
+		ImGui::End();
+	}
 	// 4. Demonstrate creating a fullscreen menu bar and populating it.
 	{
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoFocusOnAppearing;
@@ -199,9 +236,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 						scene.AddModel(std::make_shared<MeshModel>(Utils::LoadMeshModel(outPath)));
 						//set renderer current model to the first model in the scene model list
 						renderer.setCurrentModel(scene.getModels().at(scene.GetModelCount() - 1));
-						/*renderer.setEyeX(0);
-						renderer.setScaleNumber(1800);
-						renderer.setFov(45);*/
 
 						renderer.setHasModel();
 						renderer.setEyeX(0);
@@ -238,6 +272,32 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 				}
 				ImGui::EndMenu();
 			}
+
+			//lighting
+			if (ImGui::BeginMenu("Lights"))
+			{
+				std::vector<Light> lights = scene.getLights();
+				std::vector<Light>::iterator light;
+				const char *name;
+
+				if (ImGui::MenuItem("add light"))
+				{
+					showLightWindow = true;
+				}
+
+				for (light = lights.begin(); light != lights.end(); light++)
+				{
+					
+
+					/*if (ImGui::MenuItem(name))
+					{
+						(*it)->setIsCurrentModel(true);
+						std::cout << name << std::endl;
+					}*/
+				}
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMainMenuBar();
 		}
 	}

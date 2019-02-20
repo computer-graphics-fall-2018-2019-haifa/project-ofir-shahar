@@ -14,6 +14,7 @@
 class Camera
 {
 private:
+	glm::mat4x4 viewWorldTransform;
 	glm::mat4x4 viewTransformation;
 	glm::mat4x4 projectionTransformation;
 	glm::mat4x4 orthographicTransformation;
@@ -23,12 +24,12 @@ private:
 	float zoom;
 	bool isCurrent;
 
+
 public:
 	Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
 	~Camera();
 	Camera();
 	void SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
-	glm::mat4x4 getProjectionTransformation(); 
 	void scaleTransform(glm::vec3& vect);
 	void SetOrthographicProjection(
 		const float height,
@@ -46,6 +47,8 @@ public:
 	void setCurrent(const bool &b) { this->isCurrent = b; }
 	bool getCurrent() const { return this->isCurrent; } 
 	const glm::mat4 getViewTransformation();
-	const glm::mat4 getProjectionTformation();
+	const glm::mat4 getProjectionTransformation();
 	const glm::mat4 getOrthographicTransformation(); 
+	const glm::mat4x4 getViewWorldTransform() const { return this->viewWorldTransform; }
+	void setCameraViewWorldTransform(glm::vec4&);
 };

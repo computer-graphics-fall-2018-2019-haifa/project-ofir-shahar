@@ -64,6 +64,7 @@ int main(int argc, char **argv)
 	//glm::vec3 at = glm::vec3(frameBufferWidth / 2, frameBufferHeight / 2, 0);
 	
 	Camera camera = Camera(eye, at, up);
+	camera.setCameraViewWorldTransform(glm::vec4(frameBufferWidth / 2, frameBufferHeight / 2, 0, 1)); 
 
 	//scene.AddCamera(camera);
 

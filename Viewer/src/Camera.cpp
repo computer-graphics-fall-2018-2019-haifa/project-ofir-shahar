@@ -7,6 +7,7 @@
 
 #define PI 3.14159265358
 
+//ctor
 Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 	zoom(1.0)
 {
@@ -15,7 +16,7 @@ Camera::Camera(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up) :
 	oldat = at;
 	SetCameraLookAt(eye, at, up);
 	SetPerspectiveProjection(45,0.5 , 100, 1000);
-
+	setCameraViewWorldTransform(glm::vec4(0, 0, 0, 1)); 
 }
 
 Camera::~Camera()
@@ -30,7 +31,7 @@ Camera::Camera()
 const glm::mat4 Camera::getViewTransformation() {
 	return viewTransformation;
 }
-const glm::mat4 Camera::getProjectionTformation()
+const glm::mat4 Camera::getProjectionTransformation()
 {
 	return this->projectionTransformation;
 }
@@ -38,6 +39,11 @@ const glm::mat4 Camera::getOrthographicTransformation()
 {
 	return this->orthographicTransformation;
 }
+void Camera::setCameraViewWorldTransform(glm::vec4 &v)
+{
+	this->viewWorldTransform = glm::mat4x4(glm::vec4(1, 0, 0, 0), glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), v); 
+}
+
 void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {
 	glm::vec3 z = glm::normalize(eye - at);
@@ -168,6 +174,3 @@ void Camera::scaleTransform(glm::vec3& vect) {
 	vect.x = vect.y * 50;
 }
 
-glm::mat4x4 Camera::getProjectionTransformation() {
-	return this->projectionTransformation;
-}
