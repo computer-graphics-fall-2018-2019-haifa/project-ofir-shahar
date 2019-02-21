@@ -19,6 +19,7 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int vie
 	this->toDrawLineNormals = false;
 	this->toDrawVertexNormals = false;
 	this->tooDrawaCube = false;
+	this->ambient = 0.5f;
 	this->worldToCameraTransformation = glm::mat4x4(glm::vec4(1, 0, 0, 0), glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), glm::vec4(viewportWidth / 2, viewportHeight / 2, 0, 1));
 }
 
@@ -158,14 +159,9 @@ float Renderer::zDepth(glm::vec3 p, std::vector<glm::vec3> points)
 
 	else
 	{
-		/*d1 = _CMATH_::sqrtf(pow(points.at(0).x - p.x, 2) + pow(points.at(0).y - p.y, 2));
-		d2 = _CMATH_::sqrtf(pow(points.at(1).x - p.x, 2) + pow(points.at(1).y - p.y, 2));
-		d3 = _CMATH_::sqrtf(pow(points.at(2).x - p.x, 2) + pow(points.at(2).y - p.y, 2));*/
-
 		baryZ = baryCentric(points, p); 
 	}
 
-	//result = (z1 / (1 +d1) + z2 / (1 + d2) + z3 / (1 + d3));
 	result = z1*baryZ.x + z2*baryZ.y + z3*baryZ.z;
 	return result;
 
@@ -205,6 +201,13 @@ void Renderer::SetViewport(int viewportWidth, int viewportHeight, int viewportX,
 	this->viewportHeight = viewportHeight;
 	createBuffers(viewportWidth, viewportHeight);
 	createOpenGLBuffer();
+}
+
+float Renderer::CalculateColor()
+{
+	float ambient, diffusive, specular;
+	std::vector<Light> lights = this->scene.getLights();
+	return 0.0f;
 }
 
 //Draw a  line between 2 vertices, represented by p1, p2 which are 2 glm:vec3 vectors
@@ -417,16 +420,10 @@ void Renderer::scanLine(std::vector<glm::vec3> &points, int &e1, int &e2, int &y
 
 	for (int x = x1 + 1; x < x2; x++)
 	{
-		//newx = x + this->viewportHeight / 2 + this->viewportX;
-		//newy = y + this->viewportHeight / 2 + this->viewportY;
-		//oldz = this->viewport[newx][newy];
-		//if ((z = zDepth(glm::vec3(x, y, z), points)) <= oldz)
 		{
 			z = zDepth(glm::vec3(x, y, z), points);
-			putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, GREEN, z);
-			//this->viewport[newx][newy] = z;
+			putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, this->ambient * GREEN, z);
 		}
-		//std::cout << "this->viewport[x][y] = " << this->viewport[x][y] << std::endl;
 		factor += factorStep;
 	}
 }

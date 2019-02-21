@@ -32,10 +32,14 @@ private:
 	int viewportX;
 	int viewportY;
 	float scaleNumber;
+	float ambient;
+	float ambientIntensity;
+	float ambientK;
 	float fov;
 	bool projection; 
 	bool hasModel;
 	bool tooDrawaCube, toDrawFaceNormals, toDrawLineNormals, toDrawVertexNormals;
+	glm::vec3 ambientColor;
 	glm::mat4x4 worldToCameraTransformation;
 	std::shared_ptr<MeshModel> currentModel;
 	void putPixel(int i, int j, const glm::vec3 & color);
@@ -45,7 +49,7 @@ private:
 	glm::vec3 baryCentric(std::vector<glm::vec3> &polygon, glm::vec3 &point);
 	float Fab(glm::vec3 &a, glm::vec3 &b, glm::vec3 &point);
 	Camera currentCamera;
-
+	Scene scene;
 	GLuint glScreenTex;
 	GLuint glScreenVtc;
 
@@ -53,6 +57,7 @@ private:
 	void initOpenGLRendering();
 
 	//drawing routings
+	float CalculateColor();
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
 	void drawCube(); 
 	void drawBetween2Line(std::vector<glm::vec3> &points, Edge &e1, Edge &e2);
@@ -110,4 +115,6 @@ public:
 	void setViewPortHeight(const int& h) { this->viewportHeight = h; }
 	void setViewPortWidth( int w) { this->viewportWidth = w; }
 	void setViewPortHeight( int h) { this->viewportHeight = h; }
+	void setAmbientIntensity(const float &c) { this->ambient = this->ambientK  * c; }
+	void setAmbientCoefficient(const float &c) { this->ambient = this->ambientIntensity * c; }
 };

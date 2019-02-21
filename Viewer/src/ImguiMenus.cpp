@@ -19,6 +19,7 @@
 bool showDemoWindow = false;
 bool showAnotherWindow = false;
 bool showLightWindow = false;
+bool showAddLightWindow = false;
 
 glm::vec4 clearColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
 glm::vec3 lightColor;
@@ -193,14 +194,14 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 	}
 
 	// 3.1 Show add light window.
-	if (showLightWindow)
+	if (showAddLightWindow)
 	{
 		static int x_pos = 0;
 		static int y_pos = 0;
 		static int z_pos = 0;
 		float clearColor;
 		Light light;
-		ImGui::Begin("Light", &showLightWindow);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::Begin("Light", &showAddLightWindow);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
 		ImGui::BeginChild("light_win", ImVec2(200, 200));
 		if (ImGui::SliderInt("light x position", (int*)&x_pos, -5000, 5000) && renderer.isHasModel()) { }
 		if (ImGui::SliderInt("light y position", (int*)&y_pos, -5000, 5000) && renderer.isHasModel()) { }
@@ -214,9 +215,28 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 			light.setActive(true);
 			scene.addLight(light);
 		}
-		/*if (ImGui::Button("Close Me"))
+		ImGui::EndChild();
+		ImGui::End();
+	}
+	// 3.2 Show lights window.
+	if (showLightWindow)
+	{
+		static float Intensity = 0.5f, factor = 0.5f;
+		float clearColor;
+		Light light;
+		ImGui::Begin("Lights", &showLightWindow);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::BeginChild("light_win", ImVec2(200, 200));
+		ImGui::Text("Ambient light");
+		if (ImGui::SliderFloat("intensity", (float*)&Intensity, 0.0f, 1.0f) && renderer.isHasModel()) { renderer.setAmbientIntensity(Intensity); }
+		if (ImGui::SliderFloat("factor", (float*)&factor, 0.0f, 1.0f) && renderer.isHasModel()) { renderer.setAmbientCoefficient(factor); }
+		if (ImGui::ColorEdit3("ambient color", (float*)&lightColor) ) {}
+
+		/*if (ImGui::Button("add"))
 		{
-			showLightWindow = false;
+			light.setPosition(glm::vec3(x_pos, y_pos, z_pos));
+			light.setColor(lightColor);
+			light.setActive(true);
+			scene.addLight(light);
 		}*/
 		ImGui::EndChild();
 		ImGui::End();
@@ -281,6 +301,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 				const char *name;
 
 				if (ImGui::MenuItem("add light"))
+				{
+					showAddLightWindow = true;
+				}
+
+				if (ImGui::MenuItem("lights"))
 				{
 					showLightWindow = true;
 				}
