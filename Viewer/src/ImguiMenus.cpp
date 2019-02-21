@@ -225,11 +225,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		float clearColor;
 		Light light;
 		ImGui::Begin("Lights", &showLightWindow);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui::BeginChild("light_win", ImVec2(200, 200));
+		ImGui::BeginChild("light_win", ImVec2(220, 150));
 		ImGui::Text("Ambient light");
-		if (ImGui::SliderFloat("intensity", (float*)&Intensity, 0.0f, 1.0f) && renderer.isHasModel()) { renderer.setAmbientIntensity(Intensity); }
+		//if (ImGui::SliderFloat("intensity", (float*)&Intensity, 0.0f, 1.0f) && renderer.isHasModel()) { renderer.setAmbientIntensity(Intensity); }
 		if (ImGui::SliderFloat("factor", (float*)&factor, 0.0f, 1.0f) && renderer.isHasModel()) { renderer.setAmbientCoefficient(factor); }
-		if (ImGui::ColorEdit3("ambient color", (float*)&lightColor) ) {}
+		if (ImGui::ColorEdit3("ambient color", (float*)&lightColor)) { renderer.setAmbientColor(lightColor); }
 
 		/*if (ImGui::Button("add"))
 		{

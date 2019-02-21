@@ -116,5 +116,6 @@ public:
 	void setViewPortWidth( int w) { this->viewportWidth = w; }
 	void setViewPortHeight( int h) { this->viewportHeight = h; }
 	void setAmbientIntensity(const float &c) { this->ambient = this->ambientK  * c; }
-	void setAmbientCoefficient(const float &c) { this->ambient = this->ambientIntensity * c; }
+	void setAmbientCoefficient(const float &c) { this->ambient = this->ambientIntensity * c; std::cout << "ambient " << this->ambient << std::endl; }
+	void setAmbientColor(const glm::vec3 &color) { this->ambientColor = color; }
 };

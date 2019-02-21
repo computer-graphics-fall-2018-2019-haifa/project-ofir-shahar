@@ -20,6 +20,8 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int vie
 	this->toDrawVertexNormals = false;
 	this->tooDrawaCube = false;
 	this->ambient = 0.5f;
+	this->ambientColor = GREEN;
+	this->ambientIntensity = 1;
 	this->worldToCameraTransformation = glm::mat4x4(glm::vec4(1, 0, 0, 0), glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), glm::vec4(viewportWidth / 2, viewportHeight / 2, 0, 1));
 }
 
@@ -422,7 +424,7 @@ void Renderer::scanLine(std::vector<glm::vec3> &points, int &e1, int &e2, int &y
 	{
 		{
 			z = zDepth(glm::vec3(x, y, z), points);
-			putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, this->ambient * GREEN, z);
+			putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, this->ambient * this->ambientColor, z);
 		}
 		factor += factorStep;
 	}
