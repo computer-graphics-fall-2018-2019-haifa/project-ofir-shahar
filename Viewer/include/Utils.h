@@ -11,6 +11,8 @@
 class Utils
 {
 public:
+	static glm::vec3 barycentric(glm::vec3 &point, std::vector<glm::vec3> &triangle); 
+	static float zDepth(glm::vec3 &point, std::vector<glm::vec3> &face);
 	static Vertex VertexFromStream(std::istream& issLine);
 	static glm::vec3 Vec3fFromStream(std::istream& issLine);
 	static glm::vec2 Vec2fFromStream(std::istream& issLine);

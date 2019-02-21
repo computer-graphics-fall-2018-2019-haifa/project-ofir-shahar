@@ -9,6 +9,8 @@
 
 
 //augmented ctor
+MeshModel::MeshModel() {}
+
 MeshModel::MeshModel(const std::vector<Face>& faces, const std::vector<Vertex>& vertices, const std::vector<glm::vec3>& normals, const bool current, const std::string& modelName) :
 	modelName(modelName),
 	localTransform(glm::mat4(1)),
@@ -280,6 +282,4 @@ void MeshModel::setWorldRotation(float xDegree, float yDegree, float zDegree) {
 }
 const glm::mat4& MeshModel::GetScaleTransform() const {
 	return this->scaleTransform;
-}
-MeshModel::MeshModel() {
 }

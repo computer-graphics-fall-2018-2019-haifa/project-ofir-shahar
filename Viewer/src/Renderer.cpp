@@ -27,7 +27,7 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int vie
 	this->toDrawFaceNormals = false;
 	this->toDrawLineNormals = false;
 	this->tooDrawaCube = false;
-	initViewport(); 
+	//initViewport(); 
 }
 
 //dtor
@@ -133,6 +133,22 @@ void Renderer::setScaleNumber(float f) {
 }
 void Renderer::createBuffers(int viewportWidth, int viewportHeight)
 {
+	//create and initialize z-buffer
+	this->viewport = new int*[viewportHeight];
+	for (int i = 0; i < viewportHeight; i++)
+	{
+		this->viewport[i] = new int[viewportWidth];
+	}
+
+	//populate with max int_32
+	for (int i = 0; i < this->viewportHeight; i++)
+	{
+		for (int j = 0; j < this->viewportWidth; j++)
+		{
+			this->viewport[i][j] = INT32_MAX;
+		}
+	}
+
 	if (colorBuffer)
 	{
 		delete[] colorBuffer;

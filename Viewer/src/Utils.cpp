@@ -5,6 +5,28 @@
 #include <fstream>
 #include <sstream>
 
+glm::vec3 Utils::barycentric(glm::vec3 & point, std::vector<glm::vec3>& triangle)
+{
+	float alpha = 0.0f, beta = 0.0f, gama = 0.0f, area, area0, area1, area2;
+	glm::vec3 V02 = triangle.at(2) - triangle.at(0);	//A
+	glm::vec3 V01 = triangle.at(1) - triangle.at(0);	//B
+	glm::vec3 V12 = triangle.at(2) - triangle.at(1);	//C
+	glm::vec3 V0P = triangle.at(0) - point;
+	glm::vec3 V1P = triangle.at(1) - point;
+	glm::vec3 V2P = triangle.at(2) - point;
+	float area = 0.5 * (V02.x * V01.y - V02.y * V01.x);		//area = 0.5 * A x B
+	float area0 = 0.5 * (V1P.x * V2P).y - V1P.y * V2P.x);	//area = 0.5 * A x B
+	float area1 = 0.5 * (V0P.x * V2P.y - V0P.y * V2P.x);	//area = 0.5 * A x B
+	float area2 = 0.5 * (V1P.x * V0P.y - V1P.y * V0P.x);	//area = 0.5 * A x B
+	return glm::vec3(area0 / area, area1 / area, area2 / area);
+}
+
+float Utils::zDepth(glm::vec3 &point, std::vector<glm::vec3> &face)
+{
+	glm::vec3 bary = barycentric(point, face);
+	return bary.z*face.at(0).z + bary.z*face.at(1).z + bary.z*face.at(2).z;
+}
+
 Vertex Utils::VertexFromStream(std::istream& issLine)
 {
 	int depth = INT32_MAX;
