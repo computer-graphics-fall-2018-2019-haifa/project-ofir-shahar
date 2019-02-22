@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <math.h>
 
-typedef enum LightTYpe { ambient, specular, spot };
+typedef enum LightType { ambient, specular, spot };
 
 class Light
 {
@@ -25,6 +25,7 @@ public:
 	void setPosition(const glm::vec3 &p) { this->pos = p; }
 	void setColor(const glm::vec3 &c) { this->color = c; }
 	void setActive(const bool &b) { this->isActive = b; }
+	void setType(const int &i) { this->type = i; }
 
 	float Ambient(const float &AmbientLightIntensity, const float &AmbientFraction)  { return AmbientLightIntensity * AmbientFraction; }
 	float Difusive(const float &Kd, const float &Ld, glm::vec3 &l, glm::vec3 &n)  ;

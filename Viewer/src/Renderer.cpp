@@ -19,6 +19,7 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int vie
 	this->toDrawLineNormals = false;
 	this->toDrawVertexNormals = false;
 	this->tooDrawaCube = false;
+	this->diffusive = 0.5;
 	this->ambient = 0.5f;
 	this->ambientColor = GREEN;
 	this->ambientIntensity = 1;
@@ -145,23 +146,29 @@ void Renderer::createBuffers(int viewportWidth, int viewportHeight)
 	}
 }
 
-float Renderer::zDepth(glm::vec3 p, std::vector<glm::vec3> points)
+float Renderer::zDepth(glm::vec3 p, std::vector<Vertex> points)
 {
 	float result = 0;
 	float z1, z2, z3;
 	float d1 = 1.0f, d2 = 1.0f, d3 = 1.0f;
 	glm::vec3 baryZ = glm::vec3(0);
-	z1 = points.at(0).z;
-	z2 = points.at(1).z;
-	z3 = points.at(2).z;
+	std::vector<glm::vec3> pointsb;
+
+	z1 = points.at(0).getPoint().z;
+	z2 = points.at(1).getPoint().z;
+	z3 = points.at(2).getPoint().z;
+
+	pointsb.push_back(points.at(0).getPoint());
+	pointsb.push_back(points.at(1).getPoint());
+	pointsb.push_back(points.at(2).getPoint());
 	
-	if (glm::all(glm::equal(p, points.at(0))) ) result = points.at(0).z;
-	else if (glm::all(glm::equal(p, points.at(0)))) result = points.at(1).z;
-	else if (glm::all(glm::equal(p, points.at(0)))) result = points.at(2).z;
+	if (glm::all(glm::equal(p, points.at(0).getPoint())) ) result = points.at(0).getPoint().z;
+	else if (glm::all(glm::equal(p, points.at(0).getPoint()))) result = points.at(1).getPoint().z;
+	else if (glm::all(glm::equal(p, points.at(0).getPoint()))) result = points.at(2).getPoint().z;
 
 	else
 	{
-		baryZ = baryCentric(points, p); 
+		baryZ = baryCentric(pointsb, p); 
 	}
 
 	result = z1*baryZ.x + z2*baryZ.y + z3*baryZ.z;
@@ -177,6 +184,7 @@ glm::vec3 Renderer::baryCentric(std::vector<glm::vec3> &polygon, glm::vec3 &poin
 	gama = Fab(polygon.at(0), polygon.at(1), point) / Fab(polygon.at(0), polygon.at(1), glm::vec3(polygon.at(2).x, polygon.at(2).y, 0));
 	//gama = 1 - alpha - beta;
 	return glm::vec3(alpha, beta, gama);
+	
 }
 
 float Renderer::Fab(glm::vec3 & a, glm::vec3 & b, glm::vec3 & point)
@@ -205,7 +213,7 @@ void Renderer::SetViewport(int viewportWidth, int viewportHeight, int viewportX,
 	createOpenGLBuffer();
 }
 
-float Renderer::CalculateColor()
+float Renderer::CalculateColor(glm::vec3 &n1, glm::vec3 &n2, glm::vec3 &n)
 {
 	float ambient, diffusive, specular;
 	std::vector<Light> lights = this->scene.getLights();
@@ -214,25 +222,27 @@ float Renderer::CalculateColor()
 
 //Draw a  line between 2 vertices, represented by p1, p2 which are 2 glm:vec3 vectors
 //baesd on the Bresenham algorithem
-void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale) 
+void Renderer::DrawLine(Vertex p1, Vertex p2, glm::vec3 color, bool scale) 
 {
 	float x1, x2, y1, y2, z = 0;
 	float dx = 0, dy = 0;
-	double x_theta = (glm::dot(glm::normalize(p2 - p1), glm::vec3(1, 0, 0)));	//cosine between p1-p2 and x axis
-	double y_theta = (glm::dot(glm::normalize(p2 - p1), glm::vec3(0, 1, 0)));	//cosine between p1-p2 and y axis
+	double x_theta = (glm::dot(glm::normalize(p2.getPoint() - p1.getPoint()), glm::vec3(1, 0, 0)));	//cosine between p1-p2 and x axis
+	double y_theta = (glm::dot(glm::normalize(p2.getPoint() - p1.getPoint()), glm::vec3(0, 1, 0)));	//cosine between p1-p2 and y axis
+	glm::vec3 normal1 = p1.getNormal(); 
+	glm::vec3 normal2 = p2.getNormal();
 	
 	// order the points so one is left and one is right depending on x1 and x2 values.
 	if (scale) {
-		x1 = viewportWidth/2 + (p1.x);
-		x2 = viewportWidth/2 + (p2.x);
-		y1 = viewportHeight/2 + (p1.y);
-		y2 = viewportHeight/2 + (p2.y);
+		x1 = viewportWidth/2 + (p1.getPoint().x);
+		x2 = viewportWidth/2 + (p2.getPoint().x);
+		y1 = viewportHeight/2 + (p1.getPoint().y);
+		y2 = viewportHeight/2 + (p2.getPoint().y);
 	}
 	else {
-		x1 = p1.x;
-		x2 = p2.x;
-		y1 = p1.y;
-		y2 = p2.y;
+		x1 = p1.getPoint().x;
+		x2 = p2.getPoint().x;
+		y1 = p1.getPoint().y;
+		y2 = p2.getPoint().y;
 	}
 
 	float xLeft = x1 >= x2 ? x2 : x1;
@@ -335,6 +345,127 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 		}
 	}
 }
+void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
+{
+	float x1, x2, y1, y2, z = 0;
+	float dx = 0, dy = 0;
+	double x_theta = (glm::dot(glm::normalize(p2 - p1), glm::vec3(1, 0, 0)));	//cosine between p1-p2 and x axis
+	double y_theta = (glm::dot(glm::normalize(p2 - p1), glm::vec3(0, 1, 0)));	//cosine between p1-p2 and y axis
+
+	// order the points so one is left and one is right depending on x1 and x2 values.
+	if (scale) {
+		x1 = viewportWidth / 2 + (p1.x);
+		x2 = viewportWidth / 2 + (p2.x);
+		y1 = viewportHeight / 2 + (p1.y);
+		y2 = viewportHeight / 2 + (p2.y);
+	}
+	else {
+		x1 = p1.x;
+		x2 = p2.x;
+		y1 = p1.y;
+		y2 = p2.y;
+	}
+
+	float xLeft = x1 >= x2 ? x2 : x1;
+	float xRight = x1 >= x2 ? x1 : x2;
+	// set the y accordingly
+	float yLeft = 0;
+	float yRight = 0;
+	if (x1 >= x2) {
+		yLeft = y2;
+		yRight = y1;
+	}
+	else {
+		yLeft = y1;
+		yRight = y2;
+	}
+	float a = (y2 - y1) / (x2 - x1);
+	float c = yLeft + a * xLeft;
+
+	if (yLeft == yRight) {
+		dx = 0;
+		while (xLeft <= xRight) {
+			putPixel((int)xLeft, (int)yLeft, color, dx * x_theta);
+			xLeft = xLeft + 1;
+			dx++;
+		}
+	}
+	else if (xLeft == xRight) {
+		dy = 0;
+		if (yLeft <= yRight)
+			while (yLeft <= yRight) {
+				putPixel((int)xLeft, (int)yLeft, color, dy * y_theta);
+				yLeft = yLeft + 1;
+				dy++;
+			}
+		else
+			while (yLeft >= yRight) {
+				putPixel((int)xLeft, (int)yLeft, color, dy * y_theta);
+				yLeft = yLeft - 1;
+				dy++;
+			}
+	}
+	else if (a > 0 && a <= 1) {
+		float e = 0 - 2 * (xRight - xLeft);
+		dx = 0;
+		while (xLeft <= xRight) {
+			if (e > 0) {
+				yLeft = yLeft + 1;
+				e = e - 2 * (xRight - xLeft);
+			}
+			// turn on pixel at point (x,y) with a black color
+			putPixel((int)xLeft, (int)yLeft, color/*, dx * x_theta*/);
+			xLeft = xLeft + 1;
+			dx++;
+			e = e + 2 * (yRight - yLeft);
+		}
+	}
+	else if (a > 1) {
+		float e = 0 - 2 * (yRight - yLeft);
+		dy = 0;
+		while (yLeft <= yRight) {
+			if (e > 0) {
+				xLeft = xLeft + 1;
+				e = e - 2 * (yRight - yLeft);
+			}
+			// turn on pixel at point (x,y) with a black color
+			putPixel((int)xLeft, (int)yLeft, color/*, dy * y_theta*/);
+			yLeft = yLeft + 1;
+			dy++;
+			e = e + 2 * (xRight - xLeft);
+		}
+	}
+	else if (a >= -1 && a < 0) {
+		float e = 0 - 2 * (xRight - xLeft);
+		dx = 0;
+		while (xLeft <= xRight) {
+			if (e > 0) {
+				yLeft = yLeft - 1;
+				e = e - 2 * (xRight - xLeft);
+			}
+			// turn on pixel at point (x,y) with a black color
+			putPixel((int)xLeft, (int)yLeft, color/*, dx * x_theta*/);
+			xLeft = xLeft + 1;
+			dx++;
+			e = e - 2 * (yRight - yLeft);
+		}
+	}
+	else if (a < -1) {
+		float e = 2 * (yRight - yLeft);
+		dy = 0;
+		while (yLeft >= yRight) {
+			if (e > 0) {
+				xLeft = xLeft + 1;
+				e = e + 2 * (yRight - yLeft);
+			}
+			// turn on pixel at point (x,y) with a black color
+			putPixel((int)xLeft, (int)yLeft, color/*, dy * y_theta*/);
+			yLeft = yLeft - 1;
+			dy++;
+			e = e + 2 * (xRight - xLeft);
+		}
+	}
+}
 
 void Renderer::drawCube()
 {
@@ -371,12 +502,13 @@ void Renderer::drawCube()
 
 void Renderer::fillTriangle(Face &face, glm::vec3 color) {}
 
-void Renderer::drawBetween2Line(std::vector<glm::vec3> &points, Edge & e1, Edge & e2)
+void Renderer::drawBetween2Line(std::vector<Vertex> &points, Edge & e1, Edge & e2)
 {
 	int  dy;
 	float ratio = 0.0f;
 	float edge1ydiff = (float)((e1.getP2().y - e1.getP1().y));
 	float edge2ydiff = (float)((e2.getP2().y - e2.getP1().y));
+	
 
 	//check for zero height
 	if (edge1ydiff == 0 || edge2ydiff == 0) return;
@@ -389,7 +521,7 @@ void Renderer::drawBetween2Line(std::vector<glm::vec3> &points, Edge & e1, Edge 
 	float alpha_2 = 0;
 	float factorStep1 = 1.0f / edge1ydiff;
 	float factorStep2 = 1.0f / edge2ydiff;
-	for (int y = e2.getP1().y, dy = 0; y < e2.getP2().y; y++, dy++)
+	for (int y = e2.getP1().y, dy = 0; y <= e2.getP2().y; y++, dy++)
 	{
 		ratio = (float)(edge2xdiff / edge2ydiff);
 		int ex1 = e1.getP1().x - (int)(edge1xdiff * alpha_1);
@@ -402,13 +534,19 @@ void Renderer::drawBetween2Line(std::vector<glm::vec3> &points, Edge & e1, Edge 
 
 }
 
-void Renderer::scanLine(std::vector<glm::vec3> &points, int &e1, int &e2, int &y)
+void Renderer::scanLine(std::vector<Vertex> &points, int &e1, int &e2, int &y)
 {
 	int xdiff, x1 = e1, x2 = e2;
 	int newx = 0, newy = 0;
 	float factor = 0.0f;
 	float factorStep = 0.0f;
 	float z = 1.0f, oldz = 0.0f;
+	float color = 0.0f;
+	glm::vec3 baryCoor, normal;
+	std::vector<glm::vec3> _points;
+	_points.push_back(points.at(0).getPoint());
+	_points.push_back(points.at(1).getPoint());
+	_points.push_back(points.at(2).getPoint());
 
 	if (e1 > e2)
 	{
@@ -416,22 +554,27 @@ void Renderer::scanLine(std::vector<glm::vec3> &points, int &e1, int &e2, int &y
 		x2 = e1;
 	}
 
-	if ((xdiff = x2 - x1) == 0) return;
+	if ((xdiff = abs(x2 - x1)) == 0) return;
 
 	factorStep = 1.0f / (float)xdiff;
 
-	for (int x = x1 + 1; x < x2; x++)
+	for (int x = x1; x <= x2; x++)
 	{
 		{
 			z = zDepth(glm::vec3(x, y, z), points);
-			putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, this->ambient * this->ambientColor, z);
+			baryCoor = baryCentric(_points, glm::vec3(x, y, z)); 
+			normal.x = (points.at(0).getNormal().x * baryCoor.x + points.at(1).getNormal().x * baryCoor.x + points.at(2).getNormal().x * baryCoor.x);
+			normal.y = (points.at(0).getNormal().y * baryCoor.y + points.at(1).getNormal().y * baryCoor.y + points.at(2).getNormal().y * baryCoor.y);
+			normal.z = (points.at(0).getNormal().z * baryCoor.z + points.at(1).getNormal().z * baryCoor.z + points.at(2).getNormal().z * baryCoor.z);
+			color = this->ambient * this->diffusive * glm::dot(glm::normalize(this->diffusivePos),normal);
+			putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, color * this->ambientColor, z);
 		}
 		factor += factorStep;
 	}
 }
 
 
-void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
+void Renderer::fillTriangle(std::vector<Vertex> points, glm::vec3 color)
 {
 	float alpha_1 = 0, alpha_2 = 0, alpha_3 = 0;
 	float edge1ydiff, edge2ydiff, edge3ydiff;
@@ -439,9 +582,9 @@ void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
 	glm::vec2 x_left, y_top, y_down;
 
 	std::sort(points.begin(), points.end(), sort_dec_y);
-	z1 = points.at(0);
-	z2 = points.at(1);
-	z3 = points.at(2);
+	z1 = glm::vec2(points.at(0).getPoint().x, points.at(0).getPoint().y);
+	z2 = glm::vec2(points.at(1).getPoint().x, points.at(1).getPoint().y);
+	z3 = glm::vec2(points.at(2).getPoint().x, points.at(2).getPoint().y);
 
 	Edge longEdge(z1, z3, GREEN);
 	Edge shortEdge1(z1, z2, GREEN);
@@ -451,18 +594,8 @@ void Renderer::fillTriangle(std::vector<glm::vec3> points, glm::vec3 color)
 	drawBetween2Line(points, longEdge, shortEdge2);
 }
 
-void Renderer::fillTriangle(glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec3 color)
-{
-	glm::vec3 max = glm::vec3(INT32_MIN);
-	glm::vec3 min = glm::vec3(INT32_MAX);
-	glm::vec3 right = glm::vec3(INT32_MIN);
-	glm::vec3 left = glm::vec3(INT32_MAX);
-
-	//find the highest and lowest verices of the face
-
-
-
-}
+//no implementation
+void Renderer::fillTriangle(glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec3 color) {}
 
 void Renderer::Render(const Scene& scene)
 {
@@ -643,10 +776,10 @@ void Renderer::Render(const Scene& scene)
 				//with the vertex with the index from the start of the vector
 				if ((vindex+1) == indices.end()) {
 					//DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
-					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(indices.at(0) - 1).getPoint(), glm::vec3(0, 0, 0), true);
+					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(indices.at(0) - 1).getPoint(), this->ambient * this->ambientColor, true);
 				} 
 				else //draw a line between the two vertices by their indices from the vector "indices"
-					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(*(vindex + 1) - 1).getPoint(), glm::vec3(0, 0, 0), true);
+					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(*(vindex + 1) - 1).getPoint(), this->ambient * this->ambientColor, true);
 
 
 
@@ -677,10 +810,10 @@ void Renderer::Render(const Scene& scene)
 				}
 
 			}
-			std::vector<glm::vec3> points;
-			points.push_back(first.getPoint());
-			points.push_back(second.getPoint());
-			points.push_back(third.getPoint());
+			std::vector<Vertex> points;
+			points.push_back(first);
+			points.push_back(second);
+			points.push_back(third);
 			fillTriangle(points, green_color); 
 		}
 	}

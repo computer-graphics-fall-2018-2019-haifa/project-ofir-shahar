@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "Vertex.h"
 #include <vector>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -32,6 +33,7 @@ private:
 	int viewportX;
 	int viewportY;
 	float scaleNumber;
+	float diffusive;
 	float ambient;
 	float ambientIntensity;
 	float ambientK;
@@ -40,12 +42,13 @@ private:
 	bool hasModel;
 	bool tooDrawaCube, toDrawFaceNormals, toDrawLineNormals, toDrawVertexNormals;
 	glm::vec3 ambientColor;
+	glm::vec3 diffusivePos;
 	glm::mat4x4 worldToCameraTransformation;
 	std::shared_ptr<MeshModel> currentModel;
 	void putPixel(int i, int j, const glm::vec3 & color);
 	void putPixel(int x, int y, const glm::vec3& color, const float &z);
 	void createBuffers(int viewportWidth, int viewportHeight);
-	float zDepth(glm::vec3, std::vector<glm::vec3>);
+	float zDepth(glm::vec3, std::vector<Vertex>);
 	glm::vec3 baryCentric(std::vector<glm::vec3> &polygon, glm::vec3 &point);
 	float Fab(glm::vec3 &a, glm::vec3 &b, glm::vec3 &point);
 	Camera currentCamera;
@@ -57,19 +60,20 @@ private:
 	void initOpenGLRendering();
 
 	//drawing routings
-	float CalculateColor();
+	float CalculateColor(glm::vec3 &n1, glm::vec3 &n2, glm::vec3 &n);
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
+	void DrawLine(Vertex p1, Vertex p2, glm::vec3 color, bool scale);
 	void drawCube(); 
-	void drawBetween2Line(std::vector<glm::vec3> &points, Edge &e1, Edge &e2);
-	void scanLine(std::vector<glm::vec3>&, int &e1, int &e2, int &y);
+	void drawBetween2Line(std::vector<Vertex> &points, Edge &e1, Edge &e2);
+	void scanLine(std::vector<Vertex>&, int &e1, int &e2, int &y);
 	void fillTriangle( Face &face, glm::vec3 color); 
-	void fillTriangle(std::vector<glm::vec3> points, glm::vec3 color);
+	void fillTriangle(std::vector<Vertex> points, glm::vec3 color);
 	void fillTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);
 
 
 	std::vector<std::string> ExcludeModels;
-	static bool sort_asc_x(const glm::vec2 &x, const glm::vec2 &y) { return x.x < y.x; }
-	static bool sort_dec_y(const glm::vec2 &x, const glm::vec2 &y) { return x.y > y.y; }
+	static bool sort_asc_x(const Vertex &x, const Vertex &y) { return x.getPoint().x < y.getPoint().x; }
+	static bool sort_dec_y(const Vertex &x, const Vertex &y) { return x.getPoint().y > y.getPoint().y; }
 
 public:
 	Renderer(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
@@ -116,6 +120,6 @@ public:
 	void setViewPortWidth( int w) { this->viewportWidth = w; }
 	void setViewPortHeight( int h) { this->viewportHeight = h; }
 	void setAmbientIntensity(const float &c) { this->ambient = this->ambientK  * c; }
-	void setAmbientCoefficient(const float &c) { this->ambient = this->ambientIntensity * c; std::cout << "ambient " << this->ambient << std::endl; }
+	void setAmbientCoefficient(const float &c) { this->ambient = this->ambientIntensity * c; }
 	void setAmbientColor(const glm::vec3 &color) { this->ambientColor = color; }
 };

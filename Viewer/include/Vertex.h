@@ -30,5 +30,8 @@ public:
 	void addNormal(glm::vec3 &v) { this->normal += v; this->normals.push_back(v); }
 	glm::vec3 getNormal() const { return this->normal; }
 	void setNormal(const glm::vec3 &v) {  this->normal = v; }
+
+	void setPointx(const float &x) { this->point.x = x; }
+	void setPointy(const float &y) { this->point.y = y; }
 	
 };

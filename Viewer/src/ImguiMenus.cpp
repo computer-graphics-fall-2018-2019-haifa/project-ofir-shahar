@@ -196,9 +196,12 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 	// 3.1 Show add light window.
 	if (showAddLightWindow)
 	{
+		int type = 0;
 		static int x_pos = 0;
 		static int y_pos = 0;
 		static int z_pos = 0;
+		static int diffusive;
+		static int specular;
 		float clearColor;
 		Light light;
 		ImGui::Begin("Light", &showAddLightWindow);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
@@ -206,15 +209,22 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		if (ImGui::SliderInt("light x position", (int*)&x_pos, -5000, 5000) && renderer.isHasModel()) { }
 		if (ImGui::SliderInt("light y position", (int*)&y_pos, -5000, 5000) && renderer.isHasModel()) { }
 		if (ImGui::SliderInt("light z position", (int*)&z_pos, -5000, 5000) && renderer.isHasModel()) { }
+		ImGui::BeginGroup();
+		if (ImGui::RadioButton("diffusive", &diffusive, 1)) { type = 1; specular = 0; }
+		if (ImGui::RadioButton("specular", &specular, 2)) { type = 2; diffusive = 0; }
+		
 		ImGui::ColorEdit3("clear color", (float*)&lightColor);
+
 
 		if (ImGui::Button("add"))
 		{
 			light.setPosition(glm::vec3(x_pos, y_pos, z_pos));
 			light.setColor(lightColor);
 			light.setActive(true);
+			light.setType(type);
 			scene.addLight(light);
 		}
+		ImGui::EndGroup();
 		ImGui::EndChild();
 		ImGui::End();
 	}
@@ -227,17 +237,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		ImGui::Begin("Lights", &showLightWindow);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
 		ImGui::BeginChild("light_win", ImVec2(220, 150));
 		ImGui::Text("Ambient light");
-		//if (ImGui::SliderFloat("intensity", (float*)&Intensity, 0.0f, 1.0f) && renderer.isHasModel()) { renderer.setAmbientIntensity(Intensity); }
 		if (ImGui::SliderFloat("factor", (float*)&factor, 0.0f, 1.0f) && renderer.isHasModel()) { renderer.setAmbientCoefficient(factor); }
 		if (ImGui::ColorEdit3("ambient color", (float*)&lightColor)) { renderer.setAmbientColor(lightColor); }
 
-		/*if (ImGui::Button("add"))
-		{
-			light.setPosition(glm::vec3(x_pos, y_pos, z_pos));
-			light.setColor(lightColor);
-			light.setActive(true);
-			scene.addLight(light);
-		}*/
 		ImGui::EndChild();
 		ImGui::End();
 	}
