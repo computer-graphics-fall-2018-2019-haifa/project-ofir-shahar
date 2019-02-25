@@ -8,6 +8,7 @@
 #include <imgui/imgui.h>
 #include <cmath>
 #include "Camera.h"
+#include "Light.h"
 #include "Edge.h"
 #include "Definitions.h"
 #include "InitShader.h"
@@ -24,7 +25,7 @@
  */
 class Renderer
 {
-private:
+private:		//members
 	float *colorBuffer;
 	float *zBuffer;
 	float **viewport;
@@ -38,6 +39,7 @@ private:
 	float ambientIntensity;
 	float ambientK;
 	float fov;
+	bool fillTriangles;
 	bool projection; 
 	bool hasModel;
 	bool tooDrawaCube, toDrawFaceNormals, toDrawLineNormals, toDrawVertexNormals;
@@ -45,17 +47,19 @@ private:
 	glm::vec3 diffusivePos;
 	glm::mat4x4 worldToCameraTransformation;
 	std::shared_ptr<MeshModel> currentModel;
+	Camera currentCamera;
+	Scene scene;
+	GLuint glScreenTex;
+	GLuint glScreenVtc;
+
+	//class methods
+	std::vector<Light> lights;
 	void putPixel(int i, int j, const glm::vec3 & color);
 	void putPixel(int x, int y, const glm::vec3& color, const float &z);
 	void createBuffers(int viewportWidth, int viewportHeight);
 	float zDepth(glm::vec3, std::vector<Vertex>);
 	glm::vec3 baryCentric(std::vector<glm::vec3> &polygon, glm::vec3 &point);
 	float Fab(glm::vec3 &a, glm::vec3 &b, glm::vec3 &point);
-	Camera currentCamera;
-	Scene scene;
-	GLuint glScreenTex;
-	GLuint glScreenVtc;
-
 	void createOpenGLBuffer();
 	void initOpenGLRendering();
 
@@ -64,11 +68,10 @@ private:
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
 	void DrawLine(Vertex p1, Vertex p2, glm::vec3 color, bool scale);
 	void drawCube(); 
-	void drawBetween2Line(std::vector<Vertex> &points, Edge &e1, Edge &e2);
-	void scanLine(std::vector<Vertex>&, int &e1, int &e2, int &y);
+	void drawBetween2Edges(std::vector<Vertex> &points, Edge &e1, Edge &e2, const glm::vec3 &color);
+	void scanLine(std::vector<Vertex>&, int &e1, int &e2, int &y, const glm::vec3 &color);
 	void fillTriangle( Face &face, glm::vec3 color); 
-	void fillTriangle(std::vector<Vertex> points, glm::vec3 color);
-	void fillTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);
+	void fillTriangle(std::vector<Vertex> points, const glm::vec3 &color);
 
 
 	std::vector<std::string> ExcludeModels;
@@ -90,6 +93,7 @@ public:
 	void rotateWorldY(float y);
 	void rotateWorldZ(float z);
 	void translate(float x, float y, float z);
+	void addLight(const Light &l) { this->lights.push_back(l); }
 	
 	//getters\setters
 	//---------------
@@ -101,8 +105,10 @@ public:
 	const bool getToDrawVertexNormals() { return this->toDrawVertexNormals; }
 	const int& getViewPortWidth() const { return this->viewportWidth; }
 	const int& getViewPortHeight() const { return this->viewportHeight; }
+	const bool & getFillTriangles() const { return this->fillTriangles; }
 
 	//setters
+	void setFillTriangles(const bool &b) { this->fillTriangles = b; }
 	void setToDrawVertexNormals(const bool &b) { this->toDrawVertexNormals = b; }
 	void SetViewport(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
 	void setExcludeModels(std::vector<std::string> v) { this->ExcludeModels = v; }
