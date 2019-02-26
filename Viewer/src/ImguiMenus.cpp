@@ -21,12 +21,12 @@ bool showAnotherWindow = false;
 bool showLightWindow = false;
 bool showAddLightWindow = false;
 
-glm::vec4 clearColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
+glm::vec3 objectColor;
 glm::vec3 lightColor;
 
 const glm::vec4& GetClearColor()
 {
-	return clearColor;
+	return BACKGROUND;
 }
 
 void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
@@ -39,6 +39,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
+		//static float objectColor;
 		static float f = 1500.0f;
 		static float turnUpDown = 0.0f;
 		static int counter = 0;
@@ -61,7 +62,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		static float rotateWorldX = 0.0f;
 		static float rotateWorldY = 0.0f;
 		static float rotateWorldZ = 0.0f;
-		ImGui::Begin("Ofir And Shahar Project");                          // Create a window called "Hello, world!" and append into it.
+		ImGui::Begin("Shahar Project");                          // Create a window called "Hello, world!" and append into it.
 		
 		/*ImGui::Text("This is some useful text.");*/               // Display some text (you can use a format strings too)
 		//ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our window open/close state
@@ -107,7 +108,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 			renderer.translate(translateX, translateY, translateZ);
 		}
 		ImGui::Text("Scaling:");
-		if (ImGui::SliderFloat("scale", &f, 0.0f, 2000.0f) && renderer.isHasModel()) {
+		if (ImGui::SliderFloat("scale", &f, 0.0f, 6000.0f) && renderer.isHasModel()) {
 			renderer.setScaleNumber(f);
 		}
 		ImGui::Text("World Translations");
@@ -143,12 +144,19 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 			//IMPLEMENT HERE WHAT HAPPENS WHEN ------MIDDLE MOUSE BUTTON ------- IS DOWN
 			//FOR INSTANCE ROTATE CAMERA TO THE DIRECTION OF MOUSE
 		}
-		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
+		if (ImGui::ColorEdit3("object color", (float*)&objectColor)) {
+			renderer.setAmbientColor(objectColor);
+		}
 		//showboundering cube (toggle)
 		if (ImGui::Button("cube"))                            
 		{
 			renderer.setToDrawaCube(!renderer.getToDrawaCube());
 			std::cout << "draw cube: " << renderer.getToDrawaCube() << std::endl; 
+		}
+		//fill triangles (toggle)
+		if (ImGui::Button("fill triangles"))
+		{
+			renderer.setFillTriangles(!renderer.getFillTriangles());
 		}
 		//show face normals (toggle)
 		if (ImGui::Button("face normals"))                            

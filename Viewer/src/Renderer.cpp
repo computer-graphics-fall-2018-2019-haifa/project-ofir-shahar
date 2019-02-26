@@ -19,9 +19,10 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int viewportX, int vie
 	this->toDrawLineNormals = false;
 	this->toDrawVertexNormals = false;
 	this->tooDrawaCube = false;
+	this->fillTriangles = false;
 	this->diffusive = 0.5;
 	this->ambient = 0.5f;
-	this->ambientColor = GREEN;
+	this->ambientColor = PURPLE;
 	this->ambientIntensity = 1;
 	this->worldToCameraTransformation = glm::mat4x4(glm::vec4(1, 0, 0, 0), glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), glm::vec4(viewportWidth / 2, viewportHeight / 2, 0, 1));
 }
@@ -32,6 +33,8 @@ Renderer::~Renderer()
 	{
 		delete[] colorBuffer;
 	}
+	if (zBuffer)
+		delete[] zBuffer;
 }
 
 
@@ -199,6 +202,7 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 		for (int j = 0; j < viewportHeight; j++)
 		{
 			putPixel(i, j, color);
+			//zBuffer[Z_INDEX(viewportWidth, i, j)] = INT32_MIN;
 		}
 	}
 }
@@ -414,7 +418,7 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 				e = e - 2 * (xRight - xLeft);
 			}
 			// turn on pixel at point (x,y) with a black color
-			putPixel((int)xLeft, (int)yLeft, color/*, dx * x_theta*/);
+			putPixel((int)xLeft, (int)yLeft, color, dx * x_theta);
 			xLeft = xLeft + 1;
 			dx++;
 			e = e + 2 * (yRight - yLeft);
@@ -429,7 +433,7 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 				e = e - 2 * (yRight - yLeft);
 			}
 			// turn on pixel at point (x,y) with a black color
-			putPixel((int)xLeft, (int)yLeft, color/*, dy * y_theta*/);
+			putPixel((int)xLeft, (int)yLeft, color, dy * y_theta);
 			yLeft = yLeft + 1;
 			dy++;
 			e = e + 2 * (xRight - xLeft);
@@ -444,7 +448,7 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 				e = e - 2 * (xRight - xLeft);
 			}
 			// turn on pixel at point (x,y) with a black color
-			putPixel((int)xLeft, (int)yLeft, color/*, dx * x_theta*/);
+			putPixel((int)xLeft, (int)yLeft, color, dx * x_theta);
 			xLeft = xLeft + 1;
 			dx++;
 			e = e - 2 * (yRight - yLeft);
@@ -459,7 +463,7 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 				e = e + 2 * (yRight - yLeft);
 			}
 			// turn on pixel at point (x,y) with a black color
-			putPixel((int)xLeft, (int)yLeft, color/*, dy * y_theta*/);
+			putPixel((int)xLeft, (int)yLeft, color, dy * y_theta);
 			yLeft = yLeft - 1;
 			dy++;
 			e = e + 2 * (xRight - xLeft);
@@ -502,7 +506,7 @@ void Renderer::drawCube()
 
 void Renderer::fillTriangle(Face &face, glm::vec3 color) {}
 
-void Renderer::drawBetween2Line(std::vector<Vertex> &points, Edge & e1, Edge & e2)
+void Renderer::drawBetween2Edges(std::vector<Vertex> &points, Edge & e1, Edge & e2, const glm::vec3 &color)
 {
 	int  dy;
 	float ratio = 0.0f;
@@ -527,21 +531,22 @@ void Renderer::drawBetween2Line(std::vector<Vertex> &points, Edge & e1, Edge & e
 		int ex1 = e1.getP1().x - (int)(edge1xdiff * alpha_1);
 		int ex2 = e2.getP1().x - (int)((ratio)* dy);
 
-		scanLine(points, ex1, ex2, y);
+		scanLine(points, ex1, ex2, y, color);
 
 		alpha_1 += factorStep1;
 	}
 
 }
 
-void Renderer::scanLine(std::vector<Vertex> &points, int &e1, int &e2, int &y)
+void Renderer::scanLine(std::vector<Vertex> &points, int &e1, int &e2, int &y, const glm::vec3 &color)
 {
+	int dx = 0;
 	int xdiff, x1 = e1, x2 = e2;
 	int newx = 0, newy = 0;
 	float factor = 0.0f;
 	float factorStep = 0.0f;
 	float z = 1.0f, oldz = 0.0f;
-	float color = 0.0f;
+	float light = 0.0f;
 	glm::vec3 baryCoor, normal;
 	std::vector<glm::vec3> _points;
 	_points.push_back(points.at(0).getPoint());
@@ -557,13 +562,14 @@ void Renderer::scanLine(std::vector<Vertex> &points, int &e1, int &e2, int &y)
 	if ((xdiff = abs(x2 - x1)) == 0) return;
 
 	factorStep = 1.0f / (float)xdiff;
-	color = this->ambient + this->diffusive;
+	light = this->ambient + this->diffusive;
 
-	for (int x = x1; x <= x2; x++)
+	for (int x = x1 ; x < x2 ; x++)
 	{
 		{
 			z = zDepth(glm::vec3(x, y, z), points);
 			baryCoor = baryCentric(_points, glm::vec3(x, y, z)); 
+
 			normal.x = (points.at(0).getNormal().x * baryCoor.x + points.at(1).getNormal().x * baryCoor.x + points.at(2).getNormal().x * baryCoor.x);
 			normal.y = (points.at(0).getNormal().y * baryCoor.y + points.at(1).getNormal().y * baryCoor.y + points.at(2).getNormal().y * baryCoor.y);
 			normal.z = (points.at(0).getNormal().z * baryCoor.z + points.at(1).getNormal().z * baryCoor.z + points.at(2).getNormal().z * baryCoor.z);
@@ -571,21 +577,50 @@ void Renderer::scanLine(std::vector<Vertex> &points, int &e1, int &e2, int &y)
 			{
 				for (size_t i = 0; i < this->lights.size(); i++)
 				{
-					color += glm::dot(glm::normalize(this->lights.at(i).getLightPos()), normal);
+					light += glm::dot(glm::normalize(this->lights.at(i).getLightPos()), normal);
 				}
 				
 			}
 			putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, color * this->ambientColor, z);
+
+			normal.x = (points.at(0).getNormal().x * baryCoor.x + points.at(1).getNormal().x * baryCoor.y + points.at(2).getNormal().x * baryCoor.z);
+			normal.y = (points.at(0).getNormal().y * baryCoor.x + points.at(1).getNormal().y * baryCoor.y + points.at(2).getNormal().y * baryCoor.z);
+			normal.z = (points.at(0).getNormal().z * baryCoor.x + points.at(1).getNormal().z * baryCoor.y + points.at(2).getNormal().z * baryCoor.z);
+			//color
+			if (scene.getLights().size() != 0)
+			{
+				float combinedColor = 0.0f;
+				for (int i = 0; i < scene.getLights().size(); i++)
+				{
+					//combinedColor += scene.getLights().at(i).
+				}
+				light = this->ambient * this->diffusive * glm::dot(glm::normalize(this->diffusivePos), normal);
+			}
+			else if (this->fillTriangles)
+			{
+				dx = 1;
+				light = 1.0f;
+			}
+			else
+			{
+				light = this->ambient;
+				dx = 0;
+			}
+
+			//putting the pixel with the adjusted light
+			putPixel((x + this->viewportWidth / 2) + dx, (y + this->viewportHeight / 2), light * color, z);
+
 		}
 		factor += factorStep;
 	}
 }
 
 
-void Renderer::fillTriangle(std::vector<Vertex> points, glm::vec3 color)
+void Renderer::fillTriangle(std::vector<Vertex> points, const glm::vec3 &color)
 {
 	float alpha_1 = 0, alpha_2 = 0, alpha_3 = 0;
 	float edge1ydiff, edge2ydiff, edge3ydiff;
+	std::vector<Edge> edges;
 	glm::vec2 z, z1, z2, z3, z4, z5;
 	glm::vec2 x_left, y_top, y_down;
 
@@ -594,16 +629,14 @@ void Renderer::fillTriangle(std::vector<Vertex> points, glm::vec3 color)
 	z2 = glm::vec2(points.at(1).getPoint().x, points.at(1).getPoint().y);
 	z3 = glm::vec2(points.at(2).getPoint().x, points.at(2).getPoint().y);
 
-	Edge longEdge(z1, z3, GREEN);
-	Edge shortEdge1(z1, z2, GREEN);
-	Edge shortEdge2(z2, z3, GREEN);
+	Edge longEdge(z1, z3, color);
+	Edge shortEdge1(z1, z2, color);
+	Edge shortEdge2(z2, z3, color);
 
-	drawBetween2Line(points, longEdge, shortEdge1);
-	drawBetween2Line(points, longEdge, shortEdge2);
+	drawBetween2Edges(points, longEdge, shortEdge1, color);
+	drawBetween2Edges(points, longEdge, shortEdge2, color);
 }
 
-//no implementation
-void Renderer::fillTriangle(glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec3 color) {}
 
 void Renderer::Render(const Scene& scene)
 {
@@ -641,11 +674,6 @@ void Renderer::Render(const Scene& scene)
 		glm::mat4 worldTransform = model->GetWorldTransformation();
 		glm::mat4 worldTranslate = model->GetWorldTranslate();
 		glm::mat4 worldRotate = model->GetWorldRotation();
-
-
-		glm::vec3 red_color(1, 0, 0);
-		glm::vec3 green_color(0, 1, 0);
-		glm::vec3 black_color(0, 0, 0);
 		glm::vec4 normal_vertex;
 		//get the faces from the pointer to the model
 		std::vector<Face> faces = (*model).GetFaces();
@@ -659,8 +687,9 @@ void Renderer::Render(const Scene& scene)
 		typedef std::vector<glm::vec4>::iterator center_it;
 		//glm::mat4 t = this->currentCamera.getViewWorldTransform();
 
-		/*if (model->GetModelName() == "grid.obj")
-			drawGrid(model); */
+		//for debug use earse afterwards
+		int count = 0;
+
 
 		//adjust cube coordinates
 		for (int i = 0; i < 8; i++)
@@ -719,6 +748,8 @@ void Renderer::Render(const Scene& scene)
 		// ######################################################
 		for (std::vector<Vertex>::iterator vertex = vertexs.begin(); vertex != vertexs.end(); vertex++) 
 		{
+
+			
 			glm::vec3 normal = vertex->getNormal();
 			glm::vec4 newVertex = glm::vec4((*vertex).getPoint().x, (*vertex).getPoint().y, (*vertex).getPoint().z, 1);
 			newVertex = scaleTransform * newVertex;
@@ -784,10 +815,10 @@ void Renderer::Render(const Scene& scene)
 				//with the vertex with the index from the start of the vector
 				if ((vindex+1) == indices.end()) {
 					//DrawLine(vertices.at(*(vindex)-1), vertices.at(indices.at(0)-1), glm::vec3(0, 0, 0),true);
-					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(indices.at(0) - 1).getPoint(), this->ambient * this->ambientColor, true);
+					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(indices.at(0) - 1).getPoint(), BLACK/*this->ambient * this->ambientColor*/, true);
 				} 
 				else //draw a line between the two vertices by their indices from the vector "indices"
-					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(*(vindex + 1) - 1).getPoint(), this->ambient * this->ambientColor, true);
+					DrawLine(vertexs.at(*(vindex)-1).getPoint(), vertexs.at(*(vindex + 1) - 1).getPoint(), BLACK/*this->ambient * this->ambientColor*/, true);
 
 
 
@@ -809,12 +840,12 @@ void Renderer::Render(const Scene& scene)
 				//draw face normals
 				if (this->toDrawFaceNormals && (*model).getIsCurrentModel())
 				{
-					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y, red_color);
-					putPixel(viewportWidth / 2 + centerv.x + 1, viewportHeight / 2 + centerv.y, red_color);
-					putPixel(viewportWidth / 2 + centerv.x - 1, viewportHeight / 2 + centerv.y, red_color);
-					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y + 1, red_color);
-					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y - 1, red_color);
-					DrawLine( centerv, glm::vec3(centerv.x + normal.x, centerv.y + normal.y, -(centerv.z + normal.z)), red_color, true);
+					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y, RED);
+					putPixel(viewportWidth / 2 + centerv.x + 1, viewportHeight / 2 + centerv.y, RED);
+					putPixel(viewportWidth / 2 + centerv.x - 1, viewportHeight / 2 + centerv.y, RED);
+					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y + 1, RED);
+					putPixel(viewportWidth / 2 + centerv.x, viewportHeight / 2 + centerv.y - 1, RED);
+					DrawLine( centerv, glm::vec3(centerv.x + normal.x, centerv.y + normal.y, -(centerv.z + normal.z)), RED, true);
 				}
 
 			}
@@ -822,7 +853,9 @@ void Renderer::Render(const Scene& scene)
 			points.push_back(first);
 			points.push_back(second);
 			points.push_back(third);
-			fillTriangle(points, green_color); 
+			glm::vec3 finalColor = (this->fillTriangles) ? glm::vec3(0.8, 0.8, 0.8) : this->ambientColor;
+			fillTriangle(points, finalColor);
+
 		}
 	}
 
