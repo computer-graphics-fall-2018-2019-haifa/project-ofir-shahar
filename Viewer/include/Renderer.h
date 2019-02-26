@@ -45,6 +45,7 @@ private:
 	glm::vec3 diffusivePos;
 	glm::mat4x4 worldToCameraTransformation;
 	std::shared_ptr<MeshModel> currentModel;
+	std::vector<Light> lights;
 	void putPixel(int i, int j, const glm::vec3 & color);
 	void putPixel(int x, int y, const glm::vec3& color, const float &z);
 	void createBuffers(int viewportWidth, int viewportHeight);
@@ -90,6 +91,7 @@ public:
 	void rotateWorldY(float y);
 	void rotateWorldZ(float z);
 	void translate(float x, float y, float z);
+	void addLight(const Light &l) { this->lights.push_back(l); }
 	
 	//getters\setters
 	//---------------

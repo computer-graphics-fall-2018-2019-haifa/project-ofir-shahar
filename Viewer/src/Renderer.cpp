@@ -557,6 +557,7 @@ void Renderer::scanLine(std::vector<Vertex> &points, int &e1, int &e2, int &y)
 	if ((xdiff = abs(x2 - x1)) == 0) return;
 
 	factorStep = 1.0f / (float)xdiff;
+	color = this->ambient + this->diffusive;
 
 	for (int x = x1; x <= x2; x++)
 	{
@@ -566,7 +567,14 @@ void Renderer::scanLine(std::vector<Vertex> &points, int &e1, int &e2, int &y)
 			normal.x = (points.at(0).getNormal().x * baryCoor.x + points.at(1).getNormal().x * baryCoor.x + points.at(2).getNormal().x * baryCoor.x);
 			normal.y = (points.at(0).getNormal().y * baryCoor.y + points.at(1).getNormal().y * baryCoor.y + points.at(2).getNormal().y * baryCoor.y);
 			normal.z = (points.at(0).getNormal().z * baryCoor.z + points.at(1).getNormal().z * baryCoor.z + points.at(2).getNormal().z * baryCoor.z);
-			color = this->ambient * this->diffusive * glm::dot(glm::normalize(this->diffusivePos),normal);
+			if (this->lights.size() != 0)
+			{
+				for (size_t i = 0; i < this->lights.size(); i++)
+				{
+					color += glm::dot(glm::normalize(this->lights.at(i).getLightPos()), normal);
+				}
+				
+			}
 			putPixel(x + this->viewportWidth / 2, y + this->viewportHeight / 2, color * this->ambientColor, z);
 		}
 		factor += factorStep;

@@ -222,7 +222,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 			light.setColor(lightColor);
 			light.setActive(true);
 			light.setType(type);
-			scene.addLight(light);
+			renderer.addLight(light);
+			showAddLightWindow = false;
 		}
 		ImGui::EndGroup();
 		ImGui::EndChild();

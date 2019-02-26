@@ -27,6 +27,8 @@ public:
 	void setActive(const bool &b) { this->isActive = b; }
 	void setType(const int &i) { this->type = i; }
 
+	const glm::vec3 getLightPos() const { return this->pos; }
+
 	float Ambient(const float &AmbientLightIntensity, const float &AmbientFraction)  { return AmbientLightIntensity * AmbientFraction; }
 	float Difusive(const float &Kd, const float &Ld, glm::vec3 &l, glm::vec3 &n)  ;
 	float Specular(const float &Ks, const float &r, const float &v, const int &alpha, const float &Ls)  ;
