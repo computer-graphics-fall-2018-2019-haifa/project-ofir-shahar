@@ -39,6 +39,7 @@ private:		//members
 	float ambientIntensity;
 	float ambientK;
 	float fov;
+	bool drawLines;
 	bool fillTriangles;
 	bool projection; 
 	bool hasModel;
@@ -46,6 +47,7 @@ private:		//members
 	glm::vec3 ambientColor;
 	glm::vec3 diffusivePos;
 	glm::mat4x4 worldToCameraTransformation;
+	glm::mat4x4 proj;		//delete later
 	std::shared_ptr<MeshModel> currentModel;
 	std::vector<Light> lights;
 	Camera currentCamera;
@@ -66,16 +68,19 @@ private:		//members
 	//drawing routings
 	float CalculateColor(glm::vec3 &n1, glm::vec3 &n2, glm::vec3 &n);
 	void DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
+	void DrawLine1(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale);
 	void DrawLine(Vertex p1, Vertex p2, glm::vec3 color, bool scale);
 	void drawCube(); 
+	void drawTriangle(std::vector<Vertex>&points, glm::vec3 &color);
 	void drawBetween2Edges(std::vector<Vertex> &points, Edge &e1, Edge &e2, const glm::vec3 &color);
 	void scanLine(std::vector<Vertex>&, int &e1, int &e2, int &y, const glm::vec3 &color);
-	void fillTriangle( Face &face, glm::vec3 color); 
+	void scanLine1(std::vector<Vertex>&, int &e1, int &e2, int &y, const glm::vec3 &color);
+	void fillTriangle2(std::vector<Vertex> points, const glm::vec3 & color);
+	void fillTriangle1(std::vector<Vertex> points, const glm::vec3 &color);
 	void fillTriangle(std::vector<Vertex> points, const glm::vec3 &color);
 
 
 	std::vector<std::string> ExcludeModels;
-	static bool sort_asc_x(const Vertex &x, const Vertex &y) { return x.getPoint().x < y.getPoint().x; }
 	static bool sort_dec_y(const Vertex &x, const Vertex &y) { return x.getPoint().y > y.getPoint().y; }
 
 public:
@@ -98,6 +103,7 @@ public:
 	//getters\setters
 	//---------------
 	//getters
+	const glm::mat4x4 getProj() const { return this->proj; }		//delete later
 	const std::vector<std::string> getExcludeModels() const { return this->ExcludeModels; }
 	const bool getProjection();
 	bool getToDrawaCube() const { return this->tooDrawaCube; }
@@ -107,8 +113,11 @@ public:
 	const int& getViewPortHeight() const { return this->viewportHeight; }
 	const bool & getFillTriangles() const { return this->fillTriangles; }
 	const std::vector<Light> getLights() const { return this->lights; }
+	const bool& getdrawLines() const { return this->drawLines; }
 
 	//setters
+	void Renderer::setProj( float & fovy,  float & aspectRatio,  float & near,  float & far); 
+	void setdrawLines(const bool &b) { this->drawLines = b; }
 	void setFillTriangles(const bool &b) { this->fillTriangles = b; }
 	void setToDrawVertexNormals(const bool &b) { this->toDrawVertexNormals = b; }
 	void SetViewport(int viewportWidth, int viewportHeight, int viewportX = 0, int viewportY = 0);
