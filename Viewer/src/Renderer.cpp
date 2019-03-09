@@ -499,6 +499,8 @@ void Renderer::DrawLine(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 void Renderer::DrawLine1(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale)
 {
 	int x1, x2, y1, y2;
+	int z1, z2;
+	
 	// Bresenham's line algorithm
 	// order the points so one is left and one is right depending on x1 and x2 values.
 	if (scale) {
@@ -506,12 +508,16 @@ void Renderer::DrawLine1(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale
 		x2 = viewportWidth / 2 + (p2.x);
 		y1 = viewportHeight / 2 + (p1.y);
 		y2 = viewportHeight / 2 + (p2.y);
+		z1 = p1.z;
+		z2 = p2.z;
 	}
 	else {
 		x1 = p1.x;
 		x2 = p2.x;
 		y1 = p1.y;
 		y2 = p2.y;
+		z1 = p1.z;
+		z2 = p2.z;
 	}
 
 	const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
@@ -525,10 +531,13 @@ void Renderer::DrawLine1(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale
 	{
 		std::swap(x1, x2);
 		std::swap(y1, y2);
+		std::swap(z1, z2);
 	}
 
 	const float dx = x2 - x1;
 	const float dy = fabs(y2 - y1);
+	const float dz = (z1 - z2) / dx;
+	float z = z1;
 
 	float error = dx / 2.0f;
 	const int ystep = (y1 < y2) ? 1 : -1;
@@ -536,15 +545,17 @@ void Renderer::DrawLine1(glm::vec3 p1, glm::vec3 p2, glm::vec3 color, bool scale
 
 	const int maxX = (int)x2;
 
+	//start from left x-coordinate to the right x-coordinate
 	for (int x = (int)x1; x < maxX; x++)
 	{
+		z += x * dz;
 		if (steep)
 		{
-			putPixel(y, x, color, true);
+			putPixel(y, x, color, z);
 		}
 		else
 		{
-			putPixel(x, y, color, true);
+			putPixel(x, y, color, z);
 		}
 
 		error -= dy;
@@ -1061,6 +1072,7 @@ void Renderer::Render(const Scene& scene)
 		{
 			//face vertices for fill triangles purpose
 			Vertex first, second, third;
+			std::vector<Vertex> points;
 			first = vertexs.at((*face).GetVertexIndex(0) - 1);
 			second = vertexs.at((*face).GetVertexIndex(1) - 1);
 			third = vertexs.at((*face).GetVertexIndex(2) - 1);
@@ -1104,8 +1116,8 @@ void Renderer::Render(const Scene& scene)
 			//		DrawLine( centerv, glm::vec3(centerv.x + normal.x, centerv.y + normal.y, -(centerv.z + normal.z)), RED, true);
 			//	}
 			//}
-/*
-			std::vector<Vertex> points;
+
+			
 			points.push_back(first);
 			points.push_back(second);
 			points.push_back(third);
@@ -1113,9 +1125,9 @@ void Renderer::Render(const Scene& scene)
 			glm::vec3 finalColor = (this->fillTriangles) ? glm::vec3(0.8, 0.8, 0.8) : this->ambientColor;
 			if (this->fillTriangles)
 				fillTriangle2(points, GREEN);
-*/
-		}
 
+		}
+/*
 		Vertex first(glm::vec3(150, 120, 0), glm::vec3(0, 0, 0));
 		Vertex second(glm::vec3(250, 70, 0), glm::vec3(0, 0, 0));
 		Vertex third(glm::vec3(20, 20, 0), glm::vec3(0, 0, 0));
@@ -1153,7 +1165,7 @@ void Renderer::Render(const Scene& scene)
 			fillTriangle2(points, GREEN);
 			fillTriangle2(points1, RED);
 			fillTriangle2(points2, PURPLE);
-		}
+		}*/
 	}
 
 	
