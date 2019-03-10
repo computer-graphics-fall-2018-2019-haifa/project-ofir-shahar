@@ -97,17 +97,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		}
 		if (ImGui::SliderFloat("Rotate local z", &rotateLocalZ, 0.0, 360.0f) && renderer.isHasModel()) {
 			renderer.rotateLocalZ(rotateLocalZ);
-		}/*
-		ImGui::Text("Local Translations:");
-		if (ImGui::SliderFloat("Translate x", &translateX, -1280.0f, 1280.0f) && renderer.isHasModel()) {
-			renderer.translate(translateX,translateY,translateZ);
 		}
-		if (ImGui::SliderFloat("Translate y", &translateY, -1280.0f, 1280.0f) && renderer.isHasModel()) {
-			renderer.translate(translateX, translateY, translateZ);
-		}
-		if (ImGui::SliderFloat("Translate z", &translateZ, -1280.0f, 1280.0f) && renderer.isHasModel()) {
-			renderer.translate(translateX, translateY, translateZ);
-		}*/
 		ImGui::Text("Scaling:");
 		if (ImGui::SliderFloat("scale", &f, 0.0f, 6000.0f) && renderer.isHasModel()) {
 			renderer.setScaleNumber(f);
@@ -119,7 +109,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene, Renderer& renderer)
 		if (ImGui::SliderFloat("Y:", &worldY, 0.0f, 1280.0f)) {
 			renderer.setWorldTranslation(worldX, worldY, worldZ);
 		}
-		if (ImGui::SliderFloat("Z:", &worldZ, 0.0f, 1280.0f)) {
+		if (ImGui::SliderFloat("Z:", &worldZ, 0.0f, 80.0f)) {
 			renderer.setWorldTranslation(worldX, worldY, worldZ);
 		}
 		ImGui::Text("World Rotations");

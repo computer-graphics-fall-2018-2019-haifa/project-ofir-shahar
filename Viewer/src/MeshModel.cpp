@@ -245,7 +245,7 @@ void MeshModel::setTranslationTransform(float x, float y, float z) {
 	glm::vec4 yVec = translationTransform[1];
 	glm::vec4 zVec = translationTransform[2];
 	glm::vec4 lVec(x, y, z, 1);
-	translationTransform = glm::mat4(xVec, yVec, zVec, lVec);
+	//translationTransform = glm::mat4(xVec / z, yVec / z, zVec / z, lVec);
 	localTransform = this->translationTransform * (this->rotationTransform * this->scaleTransform);
 }
 
@@ -254,7 +254,8 @@ void MeshModel::setWorldTranslation(float x, float y, float z) {
 	glm::vec4 yVec = worldTranslation[1];
 	glm::vec4 zVec = worldTranslation[2];
 	glm::vec4 lVec(x, y, z, 1);
-	worldTranslation = glm::mat4(xVec, yVec, zVec, lVec);
+	if (z == 0) z = 1;
+	worldTranslation = glm::mat4(xVec / z, yVec / z, zVec, lVec);
 	worldTransform = this->worldTranslation * this->worldRotation;
 }
 
